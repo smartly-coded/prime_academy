@@ -13,12 +13,12 @@ class SplashTwo extends StatelessWidget {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // تحديد نوع التخطيط حسب حجم الشاشة
+           
             final isTablet = constraints.maxWidth > 600;
             final isMobile = constraints.maxWidth < 600;
             final isLandscape = constraints.maxWidth > constraints.maxHeight;
-            final gifUrl =
-                "https://cdn.primeacademy.education/primeacademy/uploads/Final-Book-Mobile-ezgif-com-optimize.gif";
+            final gifAsset = "lib/assets/Gifs/onboarding.gif";
+
             final mainTitle = "في برايم اكاديمي ";
             final subTitle = "دري شنو؟ النجاح صار مرررره سهل !";
             String image = "lib/assets/icons/banner.jpg";
@@ -29,11 +29,12 @@ class SplashTwo extends StatelessWidget {
               ),
               child: isMobile
                   ? buildMobileLayout(
+                      
                       constraints,
                       isMobile,
                       isTablet,
                       isLandscape,
-                      gifUrl,
+                      gifAsset,
                       mainTitle,
                       subTitle,
                       image,
@@ -43,7 +44,7 @@ class SplashTwo extends StatelessWidget {
                       isMobile,
                       isTablet,
                       isLandscape,
-                      gifUrl,
+                      gifAsset,
                       mainTitle,
                       subTitle,
                       image,

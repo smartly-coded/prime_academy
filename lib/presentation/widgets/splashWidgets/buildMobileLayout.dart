@@ -12,7 +12,7 @@ Widget buildMobileLayout(
   String subTitle,
   String image,
 ) {
-  // للشاشات الصغيرة - تخطيط عمودي
+  
   if (isMobile && !isLandscape) {
     return Column(
       children: [
@@ -30,6 +30,7 @@ Widget buildMobileLayout(
         Expanded(
           flex: 3,
           child: buildTextSection(
+            
             constraints,
             isMobile,
             mainTitle,

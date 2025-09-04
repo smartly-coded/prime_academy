@@ -3,41 +3,29 @@ import 'package:flutter/material.dart';
 Widget buildGifSection(
   BoxConstraints constraints,
   bool isMobile,
-  String gifUrl,
+  String assetPath,
 ) {
   return SizedBox(
     height: isMobile ? constraints.maxHeight * 0.7 : 300,
     width: double.infinity,
-
     child: ClipRRect(
       borderRadius: BorderRadius.circular(10),
-      child: Image.network(
-        gifUrl,
+      child: Image.asset(
+        assetPath,
         fit: BoxFit.cover,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                  : null,
-            ),
-          );
-        },
         errorBuilder: (context, error, stackTrace) {
           return Container(
             color: Colors.red[100],
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: const [
                   Icon(Icons.error, color: Colors.red),
+                  SizedBox(height: 8),
                   Text(
                     'خطأ في تحميل الصورة',
                     style: TextStyle(color: Colors.red),
                   ),
-                  Text('URL: $gifUrl', style: TextStyle(fontSize: 12)),
                 ],
               ),
             ),

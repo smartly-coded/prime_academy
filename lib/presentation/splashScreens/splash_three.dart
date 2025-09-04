@@ -17,8 +17,8 @@ class SplashThree extends StatelessWidget {
             final isTablet = constraints.maxWidth > 600;
             final isMobile = constraints.maxWidth < 600;
             final isLandscape = constraints.maxWidth > constraints.maxHeight;
-            final gifUrl =
-                "https://cdn.primeacademy.education/primeacademy/uploads/Final-Book-Mobile-ezgif-com-optimize.gif";
+            final gifAsset = "lib/assets/Gifs/splash2.gif";
+
             final mainTitle = "في برايم اكاديمي ";
             final subTitle = "هدفنا اخراج جيل جديد";
             String image = "lib/assets/icons/banner3.png";
@@ -33,7 +33,7 @@ class SplashThree extends StatelessWidget {
                       isMobile,
                       isTablet,
                       isLandscape,
-                      gifUrl,
+                      gifAsset,
                       mainTitle,
                       subTitle,
                       image,
@@ -43,7 +43,7 @@ class SplashThree extends StatelessWidget {
                       isMobile,
                       isTablet,
                       isLandscape,
-                      gifUrl,
+                      gifAsset,
                       mainTitle,
                       subTitle,
                       image,

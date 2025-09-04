@@ -17,8 +17,8 @@ class SplashOne extends StatelessWidget {
             final isTablet = constraints.maxWidth > 600;
             final isMobile = constraints.maxWidth < 600;
             final isLandscape = constraints.maxWidth > constraints.maxHeight;
-            final gifUrl =
-                'https://cdn.primeacademy.education/primeacademy/uploads/ezgif-70a66403487d80-ezgif-com-optimize-1.gif';
+            final gifAsset = "lib/assets/Gifs/splash1.gif";
+
             final mainTitle = "برايم اكاديمي ";
             final subTitle =
                 " ! تلم لك كل دروسك بالشكل الذي تبيه و على مزاجك بعد";
@@ -34,7 +34,7 @@ class SplashOne extends StatelessWidget {
                       isMobile,
                       isTablet,
                       isLandscape,
-                      gifUrl,
+                      gifAsset,
                       mainTitle,
                       subTitle,
                       image,
@@ -44,7 +44,7 @@ class SplashOne extends StatelessWidget {
                       isMobile,
                       isTablet,
                       isLandscape,
-                      gifUrl,
+                      gifAsset,
                       mainTitle,
                       subTitle,
                       image,
