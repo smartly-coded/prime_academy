@@ -1,6 +1,7 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_state.dart';
 import 'package:prime_academy/presentation/homeScreen/start-screen.dart';
@@ -8,7 +9,9 @@ import 'package:prime_academy/presentation/splashScreens/splash_one.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_three.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_two.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupGetIt();
   runApp(DevicePreview(enabled: true, builder: (context) => MyApp()));
 }
 

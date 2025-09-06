@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/Utils/validators.dart';
+import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
+import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,9 +12,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Form(
-            key: _formKey,
+            key: context.read<LoginCubit>().formKey,
             child: Container(
               width: isTablet ? size.width * 0.5 : size.width * 0.9,
               padding: const EdgeInsets.all(20),
@@ -46,7 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                 
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
@@ -59,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _emailController,
+                    controller: context.read<LoginCubit>().emailController,
                     textAlign: TextAlign.right,
                     style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
@@ -87,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _passwordController,
+                    controller: context.read<LoginCubit>().passwordController,
                     obscureText: _obscurePassword,
                     textAlign: TextAlign.right,
                     style: const TextStyle(color: Colors.black),
@@ -127,9 +126,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            print("Email: ${_emailController.text}");
-                            print("Password: ${_passwordController.text}");
+                          if (context
+                              .read<LoginCubit>()
+                              .formKey
+                              .currentState!
+                              .validate()) {
+                            context.read<LoginCubit>().emitLoginStates(
+                              LoginRequestBody(
+                                email: context
+                                    .read<LoginCubit>()
+                                    .emailController
+                                    .text,
+                                password: context
+                                    .read<LoginCubit>()
+                                    .passwordController
+                                    .text,
+                              ),
+                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(
