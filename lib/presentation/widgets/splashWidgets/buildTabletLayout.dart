@@ -11,6 +11,7 @@ Widget buildTabletLayout(
   String mainTitle,
   String subTitle,
   String image,
+  BuildContext context,
 ) {
   // للشاشات الصغيرة - تخطيط عمودي
   if (isTablet && !isLandscape) {
@@ -24,6 +25,7 @@ Widget buildTabletLayout(
             mainTitle,
             subTitle,
             image,
+            context,
           ),
         ),
 
@@ -52,6 +54,7 @@ Widget buildTabletLayout(
                 mainTitle,
                 subTitle,
                 image,
+                context,
               ),
             ),
 

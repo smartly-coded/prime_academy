@@ -11,8 +11,8 @@ Widget buildMobileLayout(
   String mainTitle,
   String subTitle,
   String image,
+  BuildContext context,
 ) {
-  
   if (isMobile && !isLandscape) {
     return Column(
       children: [
@@ -30,12 +30,12 @@ Widget buildMobileLayout(
         Expanded(
           flex: 3,
           child: buildTextSection(
-            
             constraints,
             isMobile,
             mainTitle,
             subTitle,
             image,
+            context,
           ),
         ),
 
@@ -61,6 +61,7 @@ Widget buildMobileLayout(
                 mainTitle,
                 subTitle,
                 image,
+                context,
               ),
             ),
 

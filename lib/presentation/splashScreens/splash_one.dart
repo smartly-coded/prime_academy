@@ -38,6 +38,7 @@ class SplashOne extends StatelessWidget {
                       mainTitle,
                       subTitle,
                       image,
+                      context,
                     )
                   : buildTabletLayout(
                       constraints,
@@ -48,6 +49,7 @@ class SplashOne extends StatelessWidget {
                       mainTitle,
                       subTitle,
                       image,
+                      context,
                     ),
             );
           },

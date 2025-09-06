@@ -37,6 +37,7 @@ class SplashThree extends StatelessWidget {
                       mainTitle,
                       subTitle,
                       image,
+                      context,
                     )
                   : buildTabletLayout(
                       constraints,
@@ -47,6 +48,7 @@ class SplashThree extends StatelessWidget {
                       mainTitle,
                       subTitle,
                       image,
+                      context,
                     ),
             );
           },

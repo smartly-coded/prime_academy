@@ -13,7 +13,6 @@ class SplashTwo extends StatelessWidget {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-           
             final isTablet = constraints.maxWidth > 600;
             final isMobile = constraints.maxWidth < 600;
             final isLandscape = constraints.maxWidth > constraints.maxHeight;
@@ -29,7 +28,6 @@ class SplashTwo extends StatelessWidget {
               ),
               child: isMobile
                   ? buildMobileLayout(
-                      
                       constraints,
                       isMobile,
                       isTablet,
@@ -38,6 +36,7 @@ class SplashTwo extends StatelessWidget {
                       mainTitle,
                       subTitle,
                       image,
+                      context,
                     )
                   : buildTabletLayout(
                       constraints,
@@ -48,6 +47,7 @@ class SplashTwo extends StatelessWidget {
                       mainTitle,
                       subTitle,
                       image,
+                      context,
                     ),
             );
           },

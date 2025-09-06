@@ -6,6 +6,7 @@ Widget buildTextSection(
   String mainTitle,
   String subTitle,
   String image,
+  BuildContext context,
 ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.end,
@@ -33,7 +34,7 @@ Widget buildTextSection(
             mainTitle,
 
             style: TextStyle(
-              fontSize: getResponsiveFontSize(constraints.maxWidth, 32, 28, 25),
+              fontSize: getResponsiveFontSize(context, fontSize: 18),
               fontWeight: FontWeight.bold,
               color: Colors.white,
               height: 1.2,
@@ -52,7 +53,7 @@ Widget buildTextSection(
             subTitle,
             textAlign: TextAlign.start,
             style: TextStyle(
-              fontSize: getResponsiveFontSize(constraints.maxWidth, 30, 25, 20),
+              fontSize: getResponsiveFontSize(context, fontSize: 20),
               fontWeight: FontWeight.w600,
               color: Colors.white,
               height: 1.3,
@@ -88,13 +89,22 @@ Widget buildTextSection(
   );
 }
 
-double getResponsiveFontSize(
-  double screenWidth,
-  double large,
-  double medium,
-  double small,
-) {
-  if (screenWidth > 600) return large;
-  if (screenWidth > 480) return medium;
-  return small;
+//scale factor = width/platform
+//responsive font size =base font size* scaleFactor
+double getResponsiveFontSize(BuildContext context, {required double fontSize}) {
+  double scaleFactor = getScaleFactor(context);
+  double responsiveFontSize = fontSize * scaleFactor;
+  double lowerLimit = responsiveFontSize * .8;
+  double upperLimit = responsiveFontSize * 1.2;
+  return responsiveFontSize.clamp(lowerLimit, upperLimit);
+}
+
+double getScaleFactor(BuildContext context) {
+  double width = MediaQuery.sizeOf(context).width;
+  if (width < 600) {
+    return width / 400;
+  } else {
+    //tablet
+    return width / 700;
+  }
 }
