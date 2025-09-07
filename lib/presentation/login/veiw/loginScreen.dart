@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/Utils/validators.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
+import 'package:prime_academy/features/authScreen/logic/login_state.dart';
+import 'package:prime_academy/presentation/widgets/loginWidgets/loginBlocListener.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -164,6 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
+                  const LoginBlocListener(),
                 ],
               ),
             ),

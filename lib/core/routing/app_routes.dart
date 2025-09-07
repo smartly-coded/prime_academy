@@ -11,7 +11,7 @@ class AppRoutes {
   static const String home = '/';
   static const String login = '/login';
   static const String splash = '/splash';
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+  Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
         return MaterialPageRoute(

@@ -2,6 +2,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
+import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_state.dart';
 import 'package:prime_academy/presentation/homeScreen/start-screen.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
+        onGenerateRoute: AppRoutes().generateRoute,
         debugShowCheckedModeBanner: false,
         home: BlocBuilder<SplashCubit, SplashState>(
           builder: (context, state) {

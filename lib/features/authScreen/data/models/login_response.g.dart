@@ -8,12 +8,12 @@ part of 'login_response.dart';
 
 LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) =>
     LoginResponse(
-      id: json['id'] as String?,
+      id: (json['id'] as num?)?.toInt(),
       firstname: json['firstname'] as String?,
       lastname: json['lastname'] as String?,
       username: json['username'] as String?,
       email: json['email'] as String?,
-      role: json['role'] as String?,
+      role: (json['role'] as num?)?.toInt(),
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),

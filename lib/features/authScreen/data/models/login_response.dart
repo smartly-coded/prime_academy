@@ -5,12 +5,12 @@ part 'login_response.g.dart';
 
 @JsonSerializable()
 class LoginResponse {
-  String? id;
+  int? id;
   String? firstname;
   String? lastname;
   String? username;
   String? email;
-  String? role;
+  int? role;
   @JsonKey(name: "updated_at")
   DateTime? updatedAt;
   @JsonKey(name: "created_at")

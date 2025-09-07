@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/presentation/login/veiw/loginScreen.dart';
 
 class HomePage extends StatelessWidget {
@@ -34,12 +34,7 @@ class HomePage extends StatelessWidget {
               ),
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, AppRoutes.login);
                 },
                 child: const Text(
                   "Login",

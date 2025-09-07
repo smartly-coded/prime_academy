@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String apiBaseUrl = "localhost:4005/api/";
+  static const String apiBaseUrl = "http://192.168.0.105:4005/api/";
   static const String login = "auth/login";
 }
 
@@ -13,7 +13,6 @@ class ApiErrors {
   static const String internalServerError = "internalServerError";
   static const String unknownError = "unknownError";
   static const String timeoutError = "timeoutError";
-  static const String defaultError = "defaultError";
   static const String cacheError = "cacheError";
   static const String noInternetError = "noInternetError";
   static const String loadingMessage = "loading_message";
