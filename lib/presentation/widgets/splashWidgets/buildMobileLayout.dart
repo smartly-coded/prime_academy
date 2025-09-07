@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/presentation/widgets/splashWidgets/buildGif.dart';
-import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_with_border.dart';
+import 'package:prime_academy/presentation/widgets/splashWidgets/buildText.dart';
 
 Widget buildMobileLayout(
   BoxConstraints constraints,
@@ -16,17 +16,19 @@ Widget buildMobileLayout(
   if (isMobile && !isLandscape) {
     return Column(
       children: [
-        const SizedBox(height: 20), // ✅ مسافة أقل من الأعلى
-        // GIF في الأعلى - حجم أكبر
+        const SizedBox(height: 40),
+
+       
         Expanded(
-          flex: 5, // ✅ زيادة حجم الـ GIF
+          flex: 2,
           child: buildGifSection(constraints, isMobile, gifUrl),
         ),
 
-        const SizedBox(height: 16), // ✅ مسافة أقل بين GIF والنص
-        // النص في الأسفل - حجم أقل
+        const SizedBox(height: 32),
+
+       
         Expanded(
-          flex: 3, // ✅ تقليل حجم منطقة النص
+          flex: 3,
           child: buildTextSection(
             constraints,
             isMobile,
@@ -37,7 +39,7 @@ Widget buildMobileLayout(
           ),
         ),
 
-        const SizedBox(height: 10), // ✅ مسافة أقل من الأسفل
+        const SizedBox(height: 20),
       ],
     );
   }

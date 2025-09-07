@@ -29,11 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
         leadingWidth: 180,
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Image.asset("lib/assets/images/footer-logo.webp", height: 45),
+          child: Image.asset("assets/images/footer-logo.webp", height: 45),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 160),
+      body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -65,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       filled: true,
-
+        
                       fillColor: const Color.fromARGB(255, 228, 230, 235),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
@@ -75,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     validator: Validators.validateEmail,
                   ),
                   const SizedBox(height: 20),
-
+        
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
@@ -116,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     validator: Validators.validatePassword,
                   ),
                   const SizedBox(height: 30),
-
+        
                   Center(
                     child: Container(
                       width: isTablet ? size.width * 0.4 : size.width * 0.6,

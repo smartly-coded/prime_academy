@@ -17,11 +17,11 @@ class SplashThree extends StatelessWidget {
             final isTablet = constraints.maxWidth > 600;
             final isMobile = constraints.maxWidth < 600;
             final isLandscape = constraints.maxWidth > constraints.maxHeight;
-            final gifAsset = "lib/assets/Gifs/splash2.gif";
+            final gifAsset = "assets/Gifs/splash2.gif";
 
             final mainTitle = "في برايم اكاديمي ";
             final subTitle = "هدفنا اخراج جيل جديد";
-            String image = "lib/assets/icons/banner3.png";
+            String image = "assets/icons/banner3.png";
             return Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: isMobile ? 16.0 : 10,

@@ -16,13 +16,16 @@ class SplashTwo extends StatelessWidget {
             final isTablet = constraints.maxWidth > 600;
             final isMobile = constraints.maxWidth < 600;
             final isLandscape = constraints.maxWidth > constraints.maxHeight;
-            final gifAsset = "lib/assets/Gifs/onboarding.gif";
+            final gifAsset = "assets/Gifs/onboarding.gif";
 
             final mainTitle = "في برايم اكاديمي ";
-            final subTitle = "تدري شنو؟ النجاح صار مرررره سهل !";
-            String image = "lib/assets/icons/banner.jpg";
+            final subTitle = "دري شنو؟ النجاح صار مرررره سهل !";
+            String image = "assets/icons/banner.jpg";
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: isMobile ? 16.0 : 10),
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 16.0 : 10,
+                vertical: isMobile ? 20.0 : 10,
+              ),
               child: isMobile
                   ? buildMobileLayout(
                       constraints,

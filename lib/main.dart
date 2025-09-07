@@ -5,6 +5,7 @@ import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_state.dart';
+import 'package:prime_academy/layout/app_layout.dart';
 import 'package:prime_academy/presentation/homeScreen/start-screen.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_one.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_three.dart';
@@ -28,14 +29,18 @@ class MyApp extends StatelessWidget {
         builder: DevicePreview.appBuilder,
         onGenerateRoute: AppRoutes().generateRoute,
         debugShowCheckedModeBanner: false,
-        home: BlocBuilder<SplashCubit, SplashState>(
-          builder: (context, state) {
-            if (state is SplashOneState) return SplashOne();
-            if (state is SplashTwoState) return SplashTwo();
-            if (state is SplashThreeState) return SplashThree();
-            //if (state is SplashFinished) return StartScreen();
-            return SizedBox(); // أول ما يفتح قبل تحديد الحالة
-          },
+        home: Directionality(
+          // هنا الاتجاه
+          textDirection: TextDirection.rtl,
+          child: BlocBuilder<SplashCubit, SplashState>(
+            builder: (context, state) {
+              if (state is SplashOneState) return SplashOne();
+              if (state is SplashTwoState) return SplashTwo();
+              if (state is SplashThreeState) return SplashThree();
+              if (state is SplashFinished) return AppLayout();
+              return SizedBox();
+            },
+          ),
         ),
       ),
     );

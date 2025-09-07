@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
-import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
-import 'package:prime_academy/presentation/widgets/homeWidgets/build_text.dart';
-import 'package:prime_academy/presentation/widgets/homeWidgets/three_tabs_widget.dart';
+import 'package:prime_academy/presentation/login/veiw/loginScreen.dart';
 
-class HomeScreen extends StatelessWidget {
-  final LoginResponse? user;
-  const HomeScreen({super.key, this.user});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +15,7 @@ class HomeScreen extends StatelessWidget {
         actions: [
           Container(
             padding: EdgeInsets.all(2),
-            width: 100,
+            width: 80,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xff4f2349), Color(0xffa76433)],
@@ -26,21 +23,21 @@ class HomeScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             child: Container(
-              width: 80,
+              width: 60,
 
-
+              //padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Color(0XFF0f1217), 
+                color: Color(0XFF0f1217), // لون الخلفية الداخلية
                 borderRadius: BorderRadius.circular(
                   15,
-                ), 
+                ), // أصغر من الخارجي بـ 3px
               ),
               child: TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, AppRoutes.login);
                 },
                 child: const Text(
-                  "تسجيل الخروج",
+                  "Login",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -48,11 +45,11 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          buildText("مرحبا", "${user!.firstname} ${user!.lastname}", context),
-          ThreeTabsWidget(),
-        ],
+      body: const Center(
+        child: Text(
+          "مرحباً بك في الصفحة الرئيسية 👋",
+          style: TextStyle(fontSize: 18, color: Colors.white),
+        ),
       ),
     );
   }

@@ -73,7 +73,7 @@ class ResponseMessage {
 
   // Client error messages
   static const String badRequest = ApiErrors.badRequestError;
-  static const String unauthorized = "وصلت لاقصى عدد من مرات تسجيل الدخول";
+  static const String unauthorized = ApiErrors.unauthorizedError;
   static const String forbidden = ApiErrors.forbiddenError;
   static const String notFound = ApiErrors.notFoundError;
   static const String apiLogicError = "خطأ في منطق API";
@@ -88,8 +88,7 @@ class ResponseMessage {
   static const String connectionError = "خطأ في الاتصال";
   static const String cancel = "تم إلغاء الطلب";
   static const String cacheError = ApiErrors.cacheError;
-  static const String noInternetConnection =
-      "يرجي الاتصال بالانترنت و اعاده المحاوله";
+  static const String noInternetConnection = ApiErrors.noInternetError;
   static const String parseError = "خطأ في تحليل البيانات";
   static const String certificateError = "خطأ في شهادة الأمان";
   static const String unknownError = "خطأ غير معروف";
