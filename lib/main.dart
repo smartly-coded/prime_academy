@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
             if (state is SplashOneState) return SplashOne();
             if (state is SplashTwoState) return SplashTwo();
             if (state is SplashThreeState) return SplashThree();
-            if (state is SplashFinished) return StartScreen();
+            //if (state is SplashFinished) return StartScreen();
             return SizedBox(); // أول ما يفتح قبل تحديد الحالة
           },
         ),
