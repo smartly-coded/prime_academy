@@ -19,13 +19,10 @@ class SplashTwo extends StatelessWidget {
             final gifAsset = "lib/assets/Gifs/onboarding.gif";
 
             final mainTitle = "في برايم اكاديمي ";
-            final subTitle = "دري شنو؟ النجاح صار مرررره سهل !";
+            final subTitle = "تدري شنو؟ النجاح صار مرررره سهل !";
             String image = "lib/assets/icons/banner.jpg";
             return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 16.0 : 10,
-                vertical: isMobile ? 20.0 : 10,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: isMobile ? 16.0 : 10),
               child: isMobile
                   ? buildMobileLayout(
                       constraints,

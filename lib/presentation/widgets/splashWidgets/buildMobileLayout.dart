@@ -16,19 +16,17 @@ Widget buildMobileLayout(
   if (isMobile && !isLandscape) {
     return Column(
       children: [
-        const SizedBox(height: 40),
-
-        // GIF في الأعلى
+        const SizedBox(height: 20), // ✅ مسافة أقل من الأعلى
+        // GIF في الأعلى - حجم أكبر
         Expanded(
-          flex: 2,
+          flex: 5, // ✅ زيادة حجم الـ GIF
           child: buildGifSection(constraints, isMobile, gifUrl),
         ),
 
-        const SizedBox(height: 32),
-
-        // النص في الأسفل
+        const SizedBox(height: 16), // ✅ مسافة أقل بين GIF والنص
+        // النص في الأسفل - حجم أقل
         Expanded(
-          flex: 3,
+          flex: 3, // ✅ تقليل حجم منطقة النص
           child: buildTextSection(
             constraints,
             isMobile,
@@ -39,7 +37,7 @@ Widget buildMobileLayout(
           ),
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 10), // ✅ مسافة أقل من الأسفل
       ],
     );
   }
