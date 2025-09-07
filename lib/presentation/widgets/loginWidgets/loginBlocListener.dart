@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 import 'package:prime_academy/features/authScreen/logic/login_state.dart';
+import 'package:prime_academy/presentation/homeScreen/home_screen.dart';
 
 class LoginBlocListener extends StatelessWidget {
   const LoginBlocListener({super.key});
@@ -22,7 +23,14 @@ class LoginBlocListener extends StatelessWidget {
               ),
             );
           },
-          success: (loginResponse) {},
+          success: (loginResponse) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => HomeScreen(user: loginResponse),
+              ),
+            );
+          },
           error: (error) {
             Navigator.of(context).pop();
 

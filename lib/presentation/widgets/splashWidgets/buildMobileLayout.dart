@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/presentation/widgets/splashWidgets/buildGif.dart';
-import 'package:prime_academy/presentation/widgets/splashWidgets/buildText.dart';
+import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_with_border.dart';
 
 Widget buildMobileLayout(
   BoxConstraints constraints,
