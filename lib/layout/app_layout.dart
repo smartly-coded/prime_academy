@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/presentation/ContactUs/ContactUs_page.dart';
+import 'package:prime_academy/presentation/Start_homeScreen/start-screen.dart';
 import 'package:prime_academy/presentation/about/about.dart';
 import 'nav_items.dart';
 
@@ -15,6 +16,7 @@ class _AppLayoutState extends State<AppLayout> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
+    StartPage(),
     ContactUsPage(),
     AboutUsPage(),
     ContactUsPage(),

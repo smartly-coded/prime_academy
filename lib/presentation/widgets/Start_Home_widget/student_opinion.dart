@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 class TestimonialsSection extends StatefulWidget {
   const TestimonialsSection({super.key});
@@ -52,7 +53,7 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
       if (_pageController.hasClients) {
         _currentPage++;
         if (_currentPage >= _testimonials.length) {
-          _currentPage = 0; 
+          _currentPage = 0;
         }
         _pageController.animateToPage(
           _currentPage,
@@ -79,7 +80,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
       color: const Color(0xFF1a1d24),
       child: Column(
         children: [
-         
           Container(
             padding: const EdgeInsets.all(3),
             margin: const EdgeInsets.only(bottom: 30),
@@ -93,10 +93,10 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: const Color(0XFF0f1217),
+                color: Mycolors.darkblue,
               ),
               child: const Text(
-                "ماذا قال عن الطالب",
+                "ماذا قالوا عنا الطلاب",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -107,7 +107,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
             ),
           ),
 
-          
           SizedBox(
             height: isMobile ? 240 : 280,
             child: PageView.builder(

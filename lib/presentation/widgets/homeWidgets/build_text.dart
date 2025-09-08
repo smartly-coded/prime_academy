@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 Widget buildText(String mainTitle, String subTitle, BuildContext context) {
   return Column(
-    crossAxisAlignment: CrossAxisAlignment.end,
-
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
       // العنوان الرئيسي
