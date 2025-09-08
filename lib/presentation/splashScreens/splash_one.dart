@@ -20,14 +20,10 @@ class SplashOne extends StatelessWidget {
             final gifAsset = "assets/Gifs/splash1.gif";
 
             final mainTitle = "برايم اكاديمي ";
-            final subTitle =
-                " ! تلم لك كل دروسك بالشكل الذي تبيه و على مزاجك بعد";
+            final subTitle = "تلم لك كل دروسك بالشكل الذي تبيه و على مزاجك بعد";
             String image = "assets/icons/banner.jpg";
             return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 16.0 : 10,
-                vertical: isMobile ? 20.0 : 10,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: isMobile ? 16.0 : 10),
               child: isMobile
                   ? buildMobileLayout(
                       constraints,

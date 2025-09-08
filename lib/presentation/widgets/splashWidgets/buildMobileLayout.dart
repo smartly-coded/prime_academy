@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/presentation/widgets/splashWidgets/buildGif.dart';
-import 'package:prime_academy/presentation/widgets/splashWidgets/buildText.dart';
+
+import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_with_border.dart';
 
 Widget buildMobileLayout(
   BoxConstraints constraints,
@@ -16,17 +17,6 @@ Widget buildMobileLayout(
   if (isMobile && !isLandscape) {
     return Column(
       children: [
-        const SizedBox(height: 40),
-
-       
-        Expanded(
-          flex: 2,
-          child: buildGifSection(constraints, isMobile, gifUrl),
-        ),
-
-        const SizedBox(height: 32),
-
-       
         Expanded(
           flex: 3,
           child: buildTextSection(
@@ -38,7 +28,11 @@ Widget buildMobileLayout(
             context,
           ),
         ),
-
+        const SizedBox(height: 16),
+        Expanded(
+          flex: 5,
+          child: buildGifSection(constraints, isMobile, gifUrl),
+        ),
         const SizedBox(height: 20),
       ],
     );

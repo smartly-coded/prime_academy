@@ -10,33 +10,37 @@ Widget buildTextSection(
 ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.end,
-    mainAxisAlignment: isMobile
-        ? MainAxisAlignment.end
-        : MainAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.start,
     children: [
       // العنوان الرئيسي
-      Container(
-        padding: EdgeInsets.all(3), // عرض البوردر
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xff4f2349), Color(0xffa76433)],
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
+      Align(
+        alignment: Alignment.centerRight,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          padding: EdgeInsets.all(3), // عرض البوردر
           decoration: BoxDecoration(
-            color: Color(0XFF0f1217), // لون الخلفية الداخلية
-            borderRadius: BorderRadius.circular(7), // أصغر من الخارجي بـ 3px
+            gradient: LinearGradient(
+              colors: [Color(0xff4f2349), Color(0xffa76433)],
+            ),
+            borderRadius: BorderRadius.circular(10),
           ),
-          child: Text(
-            mainTitle,
-            textAlign: TextAlign.end,
-            style: TextStyle(
-              fontSize: getResponsiveFontSize(context, fontSize: 18),
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.2,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            decoration: BoxDecoration(
+              color: Color(0XFF0f1217), // لون الخلفية الداخلية
+              borderRadius: BorderRadius.circular(7), // أصغر من الخارجي بـ 3px
+            ),
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                mainTitle,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: getResponsiveFontSize(context, fontSize: 18),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  height: 1.2,
+                ),
+              ),
             ),
           ),
         ),
