@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/presentation/ContactUs/ContactUs_page.dart';
 import 'package:prime_academy/presentation/about/about.dart';
-import 'package:prime_academy/presentation/homeScreen/start-screen.dart';
-import 'package:prime_academy/presentation/login/veiw/loginScreen.dart';
-
 import 'nav_items.dart';
 
 class AppLayout extends StatefulWidget {
@@ -18,7 +15,6 @@ class _AppLayoutState extends State<AppLayout> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-    StartPage(),
     ContactUsPage(),
     AboutUsPage(),
     ContactUsPage(),
@@ -53,8 +49,7 @@ class _AppLayoutState extends State<AppLayout> {
               ),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, 
-                  AppRoutes.login);
+                  Navigator.pushNamed(context, AppRoutes.login);
                 },
                 child: const Text(
                   "حسابي",
