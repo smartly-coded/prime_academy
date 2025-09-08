@@ -91,53 +91,7 @@
 //   }
 // }
 
-// import 'package:flutter/material.dart';
-// import 'package:prime_academy/presentation/widgets/Start_Home_widget/trophy_section.dart';
 
-// class StartPage extends StatelessWidget {
-//   const StartPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         Positioned.fill(
-
-//           child: Image.asset("assets/images/background.jpg", fit: BoxFit.cover),
-//         ),
-//         const SingleChildScrollView(
-//           padding: EdgeInsets.all(20),
-//           child: TrophySection(),
-//         ),
-//       ],
-//     );
-//   }
-// }
-// import 'package:flutter/material.dart';
-// import 'package:prime_academy/presentation/widgets/Start_Home_widget/trophy_section.dart';
-
-// class StartPage extends StatelessWidget {
-//   const StartPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: const Color(0XFF0f1217),
-//       body: Stack(
-//         children: [
-//           SizedBox.expand(
-//             child: Image.asset(
-//               "assets/images/background.jpg",
-//               fit: BoxFit.cover,
-//             ),
-//           ),
-
-//           const SafeArea(child: Column(children: [TrophySection()])),
-//         ],
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/Feature_section.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/footer_section.dart';

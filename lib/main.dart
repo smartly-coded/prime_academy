@@ -6,7 +6,7 @@ import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_state.dart';
 import 'package:prime_academy/layout/app_layout.dart';
-import 'package:prime_academy/presentation/homeScreen/start-screen.dart';
+import 'package:prime_academy/presentation/Start_homeScreen/start-screen.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_one.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_three.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_two.dart';
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: AppRoutes().generateRoute,
         debugShowCheckedModeBanner: false,
         home: Directionality(
-          // هنا الاتجاه
+          
           textDirection: TextDirection.rtl,
           child: BlocBuilder<SplashCubit, SplashState>(
             builder: (context, state) {

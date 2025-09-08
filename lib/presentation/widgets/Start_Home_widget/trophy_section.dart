@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/presentation/login/veiw/loginScreen.dart';
-import 'package:prime_academy/presentation/widgets/Start_Home_widget/Feature_section.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/video_player.dart';
 
 class TrophySection extends StatelessWidget {
@@ -99,12 +99,7 @@ class TrophySection extends StatelessWidget {
               ),
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, AppRoutes.login);
                 },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -168,13 +163,10 @@ class TrophySection extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                
-               
               ],
             ),
           ],
         ),
-        
       ],
     );
   }
