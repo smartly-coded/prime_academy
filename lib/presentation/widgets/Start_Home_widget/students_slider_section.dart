@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 class StudentsSliderSection extends StatefulWidget {
   const StudentsSliderSection({super.key});
@@ -74,7 +75,7 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: const Color(0XFF0f1217),
+                color: Mycolors.darkblue,
               ),
               child: const Text(
                 "طلاب برايم أكاديمي",

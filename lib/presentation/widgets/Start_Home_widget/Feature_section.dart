@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_withoutImage.dart';
 
 class FeaturesSection extends StatelessWidget {
   const FeaturesSection({super.key});
@@ -9,52 +11,22 @@ class FeaturesSection extends StatelessWidget {
     final isMobile = width < 600;
 
     return Container(
-      color: const Color.fromARGB(255, 45, 42, 70),
+      color: Mycolors.backgroundColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
-                  colors: [Color(0xffa76433), Color(0xff4f2349)],
-                ),
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: const Color(0XFF0f1217),
-                ),
-
-                child: const Text(
-                  "ابدأ بالتعلم مع برايم أكاديمي",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Cairo',
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            buildTextWithBorder("ابدأ بالتعلم مع برايم أكاديمي", "", context),
 
             const SizedBox(height: 30),
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: isMobile ? 2 : 4,
+              crossAxisCount: isMobile ? 1 : 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: isMobile
-                  ? 0.75
-                  : 1, // ✅ يخلي الكارت أطول شوية على الموبايل
+              childAspectRatio: isMobile ? 2 : 1,
               children: const [
                 FeatureCard(
                   icon: Icons.menu_book,
@@ -109,7 +81,7 @@ class FeatureCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF0f1217),
+          color: Mycolors.cardColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -130,14 +102,17 @@ class FeatureCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: Text(
-                description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white70,
-                  fontFamily: 'Cairo',
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                    fontFamily: 'Cairo',
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
           ],

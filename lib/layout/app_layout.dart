@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/presentation/ContactUs/ContactUs_page.dart';
+
 import 'package:prime_academy/presentation/Home/veiw/home_screen.dart';
+
+import 'package:prime_academy/presentation/Start_homeScreen/start-screen.dart';
+
 import 'package:prime_academy/presentation/about/about.dart';
 import 'package:prime_academy/presentation/Start_homeScreen/start-screen.dart';
 
@@ -19,7 +23,10 @@ class _AppLayoutState extends State<AppLayout> {
 
   final List<Widget> _pages = const [
     StartPage(),
+
     HomePage(),
+
+
     AboutUsPage(),
     ContactUsPage(),
   ];

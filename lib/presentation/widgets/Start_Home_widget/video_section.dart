@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_withoutImage.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoSection extends StatefulWidget {
@@ -48,37 +49,12 @@ class _VideoSectionState extends State<VideoSection> {
       color: const Color(0XFF0f1217),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(3),
-           
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: const LinearGradient(
-                colors: [Color(0xffa76433), Color(0xff4f2349)],
-              ),
-            ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: const Color(0XFF0f1217),
-              ),
-              child: const Text(
-                "فيه برايم أكاديمي",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
+          buildTextWithBorder("في برايم أكاديمي", "", context),
 
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
             child: const Text(
-              "لاتخاف تنسى الفيديوهات عندك،\n تعيدها متى ما تبي، ومرات قد ما تبي!",
+              "لاتخاف تنسى الفيديوهات عندك، تعيدها متى ما تبي، ومرات قد ما تبي!",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

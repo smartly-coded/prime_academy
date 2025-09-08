@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/presentation/login/veiw/loginScreen.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/video_player.dart';
+import 'package:prime_academy/presentation/widgets/homeWidgets/build_text.dart';
+import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_withoutImage.dart';
 
 class TrophySection extends StatelessWidget {
   const TrophySection({super.key});
@@ -11,97 +13,31 @@ class TrophySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 10),
-
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xff4f2349), Color(0xffa76433)],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0XFF0f1217),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  "نافس وتعلم",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: 'Cairo',
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              "هدفنا إخراج جــيل جـديد",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontFamily: 'Cairo',
-              ),
-            ),
-          ],
-        ),
-
+        buildTextWithBorder("نافس و تعلم", "هدفنا إخراج جيل جديد", context),
         const SizedBox(height: 15),
 
         Row(
-          children: const [
-            Text(
-              "برايم أكاديمي",
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: Colors.orange,
-                fontFamily: 'Cairo',
-              ),
-            ),
-            SizedBox(width: 5),
-            Text(
-              "رحلتك التعليمية",
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontFamily: 'Cairo',
-              ),
-            ),
-          ],
-        ),
-        const Text(
-          "الشاملة في الكويت",
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontFamily: 'Cairo',
-          ),
-        ),
-
-        const SizedBox(height: 200),
-
-        Row(
           children: [
             Container(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xff4f2349), Color(0xffa76433)],
+                  colors: [
+                    Color(0xffd67944),
+
+                    Color(0xff863868),
+                    Color(0xff51255b),
+                  ],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
                 ),
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(15),
               ),
               child: TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, AppRoutes.login);
                 },
                 style: TextButton.styleFrom(
+                  shadowColor: Color(0XFF222633),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 25,
                     vertical: 12,
@@ -128,8 +64,12 @@ class TrophySection extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
-                      colors: [Colors.orange, Colors.purple],
-                      begin: Alignment.topLeft,
+                      colors: [
+                        Color(0xffd67944),
+                        Color(0xff51255b),
+                        Color(0xff51255b),
+                      ],
+                      begin: Alignment.bottomLeft,
                       end: Alignment.bottomRight,
                     ),
                   ),
@@ -139,7 +79,7 @@ class TrophySection extends StatelessWidget {
                       height: 44,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.black,
+                        color: Color(0XFF222633),
                       ),
                       child: IconButton(
                         icon: const Icon(

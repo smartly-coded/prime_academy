@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 
-Widget buildTextSection(
-  BoxConstraints constraints,
-  bool isMobile,
+Widget buildTextWithBorder(
   String mainTitle,
   String subTitle,
-  String image,
   BuildContext context,
 ) {
   return Column(
-    crossAxisAlignment: CrossAxisAlignment.end,
+    crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
       // العنوان الرئيسي
@@ -20,13 +17,15 @@ Widget buildTextSection(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xff4f2349), Color(0xffa76433)],
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
             ),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
             decoration: BoxDecoration(
-              color: Color(0XFF0f1217), // لون الخلفية الداخلية
+              color: Color(0XFF222633), // لون الخلفية الداخلية
               borderRadius: BorderRadius.circular(7), // أصغر من الخارجي بـ 3px
             ),
             child: Directionality(
@@ -71,27 +70,6 @@ Widget buildTextSection(
                 TextSpan(text: " "),
 
                 // الصورة كـ WidgetSpan في آخر النص
-                WidgetSpan(
-                  alignment: PlaceholderAlignment.middle,
-                  child: TweenAnimationBuilder(
-                    tween: Tween<double>(begin: -3.0, end: 3.0),
-                    duration: const Duration(seconds: 3),
-                    curve: Curves.easeInOut,
-                    builder: (context, double value, child) {
-                      return Transform.translate(
-                        offset: Offset(0, value),
-                        child: SizedBox(
-                          width: isMobile ? 40 : 60,
-                          height: isMobile ? 40 : 60,
-                          child: Image.asset(image),
-                        ),
-                      );
-                    },
-                    onEnd: () {
-                      // إعادة تشغيل الأنيميشن إذا أردت
-                    },
-                  ),
-                ),
               ],
             ),
           ),

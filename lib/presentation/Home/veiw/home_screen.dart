@@ -1,3 +1,4 @@
+
 // import 'package:flutter/material.dart';
 // import 'package:prime_academy/core/routing/app_routes.dart';
 // import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
@@ -57,6 +58,7 @@
 //   }
 // }
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -297,7 +299,7 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
-        // mainAxisSize: MainAxisSize.min, // 👈 يخلي الكارد على قد المحتوى
+        // mainAxisSize: MainAxisSize.min, 
         children: [
           Container(
             width: double.infinity,
@@ -338,7 +340,7 @@ class _HomePageState extends State<HomePage> {
 
           GestureDetector(
             onTap: () {
-              // هنا تفتح صفحة الدورة
+              
             },
             child: Container(
               width: double.infinity,

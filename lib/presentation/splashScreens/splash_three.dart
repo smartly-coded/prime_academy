@@ -23,10 +23,7 @@ class SplashThree extends StatelessWidget {
             final subTitle = "هدفنا اخراج جيل جديد";
             String image = "assets/icons/banner3.png";
             return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 16.0 : 10,
-                vertical: isMobile ? 20.0 : 10,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: isMobile ? 16.0 : 10),
               child: isMobile
                   ? buildMobileLayout(
                       constraints,
