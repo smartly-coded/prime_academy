@@ -50,6 +50,7 @@ class _AppLayoutState extends State<AppLayout> {
               child: TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, AppRoutes.login);
+                  Navigator.pushNamed(context, AppRoutes.login);
                 },
                 child: const Text(
                   "حسابي",
@@ -60,7 +61,9 @@ class _AppLayoutState extends State<AppLayout> {
           ),
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/');
+            },
           ),
         ],
       ),
