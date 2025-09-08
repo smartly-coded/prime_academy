@@ -40,6 +40,7 @@ dependencies:
   freezed: ^3.0.0-0.0.dev
   freezed_annotation: ^3.1.0
   get_it: ^8.2.0
+  image_picker: ^1.2.0
   json_annotation: ^4.9.0
   json_serializable: ^6.11.1
   pretty_dio_logger: ^1.4.0

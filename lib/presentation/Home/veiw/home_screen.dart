@@ -56,10 +56,32 @@
 //     );
 //   }
 // }
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  File? _image;
+
+  Future<void> _openGallery(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,55 +90,87 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0f1217),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0f1217),
-        elevation: 0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      appBar: AppBar(backgroundColor: const Color(0xFF0f1217), elevation: 0),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: isMobile ? 15 : width * 0.1,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  "مرحبا",
-                  style: TextStyle(
-                    fontSize: isMobile ? 16 : 18,
-                    color: Colors.white70,
-                    fontFamily: 'Cairo',
+                GestureDetector(
+                  onTap: () {
+                    _openGallery(context);
+                  },
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1),
+                    ),
+                    child: _image == null
+                        ? const Icon(
+                            Icons.camera_alt_outlined,
+                            color: Colors.white,
+                          )
+                        : ClipOval(
+                            child: Image.file(
+                              _image!,
+                              fit: BoxFit.cover,
+                              width: 50,
+                              height: 50,
+                            ),
+                          ),
                   ),
                 ),
-                Text(
-                  "Student User",
-                  style: TextStyle(
-                    fontSize: isMobile ? 18 : 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontFamily: 'Cairo',
-                  ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "مرحبا",
+                      style: TextStyle(
+                        fontSize: isMobile ? 16 : 18,
+                        color: Colors.white70,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                    Text(
+                      "Student User",
+                      style: TextStyle(
+                        fontSize: isMobile ? 18 : 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
+            SizedBox(height: isMobile ? 20 : 30),
 
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xffa76433), Color(0xff4f2349)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
+            GestureDetector(
+              onTap: () {},
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0f1217),
-                  borderRadius: BorderRadius.circular(10),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xffa76433), Color(0xff4f2349)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.logout, color: Colors.white, size: 18),
                     const SizedBox(width: 5),
@@ -132,131 +186,57 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: isMobile ? 15 : width * 0.1,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle("الدورات المنتسب بها"),
-            const SizedBox(height: 15),
-
-            GridView.count(
-              crossAxisCount: isMobile ? 1 : 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: isMobile ? 1.5 : 1.8,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20,
-              children: [
-                _buildCourseCard(
-                  title: "الدورة الأولى",
-                  progress: 75,
-                  isMobile: isMobile,
-                ),
-                _buildCourseCard(
-                  title: "الدورة الثانية",
-                  progress: 40,
-                  isMobile: isMobile,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 30),
-
-            _buildSectionTitle("الدورات المقترحة"),
-            const SizedBox(height: 15),
-
-            GridView.count(
-              crossAxisCount: isMobile ? 1 : 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: isMobile ? 1.5 : 1.8,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20,
-              children: [
-                _buildSuggestedCourseCard(
-                  title: "الدورة المقترحة 1",
-                  isMobile: isMobile,
-                ),
-                _buildSuggestedCourseCard(
-                  title: "الدورة المقترحة 2",
-                  isMobile: isMobile,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 30),
-
-            _buildSectionTitle("تصنيف الطالب"),
-            const SizedBox(height: 15),
+            SizedBox(height: isMobile ? 20 : 30),
 
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFF1a1d24),
+                color: const Color(0xFF2a2d34),
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
               ),
-              child: Column(
-                children: [
-                  Text(
-                    "متفوق",
-                    style: TextStyle(
-                      fontSize: isMobile ? 20 : 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
-                      fontFamily: 'Cairo',
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "أنت من الطلاب المتفوقين في المنصة. استمر في الأداء الجيد!",
-                    style: TextStyle(
-                      fontSize: isMobile ? 14 : 16,
-                      color: Colors.white70,
-                      fontFamily: 'Cairo',
-                    ),
-                  ),
-                ],
+              child: SizedBox(
+                height: 50,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _buildCategoryItem(" الدورات الملتحق بها", true, isMobile),
+                    _buildCategoryItem("الجوائز", false, isMobile),
+                    _buildCategoryItem("تصنيفي الحالي", false, isMobile),
+                  ],
+                ),
               ),
             ),
+
+            SizedBox(height: isMobile ? 20 : 30),
+
+            _buildSelectedCategoryContent(true, isMobile),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xffa76433), Color(0xff4f2349)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
+  Widget _buildCategoryItem(String title, bool isSelected, bool isMobile) {
+    return GestureDetector(
+      onTap: () {},
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          color: const Color(0xFF0f1217),
+          color: isSelected ? const Color.fromARGB(255, 61, 65, 75) : null,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.transparent : const Color(0xFF2a2d34),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: isMobile ? 14 : 16,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: isSelected ? Colors.white : Colors.white70,
               fontFamily: 'Cairo',
             ),
           ),
@@ -265,167 +245,117 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCourseCard({
-    required String title,
-    required int progress,
-    required bool isMobile,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1a1d24),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
+  Widget _buildSelectedCategoryContent(bool isCoursesSelected, bool isMobile) {
+    if (isCoursesSelected) {
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: isMobile ? 1 : 2,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+          childAspectRatio: isMobile ? 0.9 : 0.8,
+        ),
+        itemCount: 3,
+        itemBuilder: (context, index) {
+          return _buildCourseCard(
+            courseName: "math course ${index + 1}",
+            isMobile: isMobile,
+          );
+        },
+      );
+    } else {
+      return Center(
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1a1d24),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Text(
+            isCoursesSelected ? "لا توجد دورات" : "لا توجد جوائز",
             style: TextStyle(
-              fontSize: isMobile ? 18 : 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontFamily: 'Cairo',
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // شريط التقدم
-          Container(
-            height: 10,
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Stack(
-              children: [
-                Container(
-                  width: (progress / 100) * (isMobile ? 250 : 300),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xffa76433), Color(0xff4f2349)],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            "$progress% مكتمل",
-            style: const TextStyle(
-              fontSize: 14,
+              fontSize: isMobile ? 16 : 18,
               color: Colors.white70,
               fontFamily: 'Cairo',
             ),
           ),
-          const SizedBox(height: 20),
+        ),
+      );
+    }
+  }
 
-          // زر الذهاب للدورة
+  Widget _buildCourseCard({
+    required String courseName,
+    required bool isMobile,
+  }) {
+    return Container(
+      //margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 50, 55, 68),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        // mainAxisSize: MainAxisSize.min, // 👈 يخلي الكارد على قد المحتوى
+        children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(3),
+            height: isMobile ? 80 : 100,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2a2d34),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Center(
+              child: Icon(Icons.menu_book, color: Colors.white, size: 35),
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [Color(0xffa76433), Color(0xff4f2349)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(15),
             ),
+            child: Text(
+              courseName,
+              style: TextStyle(
+                fontSize: isMobile ? 14 : 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontFamily: 'Cairo',
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          GestureDetector(
+            onTap: () {
+              // هنا تفتح صفحة الدورة
+            },
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
-                color: const Color(0xFF0f1217),
+                gradient: const LinearGradient(
+                  colors: [Color(0xffa76433), Color(0xff4f2349)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
                 child: Text(
                   "الذهاب للدورة",
                   style: TextStyle(
-                    fontSize: isMobile ? 14 : 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontFamily: 'Cairo',
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSuggestedCourseCard({
-    required String title,
-    required bool isMobile,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1a1d24),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
-        image: const DecorationImage(
-          image: AssetImage(
-            "assets/images/course_bg.png",
-          ), // يمكن استبدالها بصورة خلفية
-          fit: BoxFit.cover,
-          opacity: 0.2,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: isMobile ? 18 : 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontFamily: 'Cairo',
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "دورة مقترحة بناءً على أدائك وتقدمك في المنصة",
-            style: TextStyle(
-              fontSize: isMobile ? 14 : 16,
-              color: Colors.white70,
-              fontFamily: 'Cairo',
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // زر عرض التفاصيل
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xffa76433), Color(0xff4f2349)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0f1217),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  "عرض التفاصيل",
-                  style: TextStyle(
-                    fontSize: isMobile ? 14 : 16,
+                    fontSize: isMobile ? 13 : 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     fontFamily: 'Cairo',
