@@ -24,9 +24,9 @@ class _AppLayoutState extends State<AppLayout> {
   final List<Widget> _pages = const [
     StartPage(),
 
-    HomePage(),
+    // HomeScreen(),
 
-
+ ContactUsPage(),
     AboutUsPage(),
     ContactUsPage(),
   ];
