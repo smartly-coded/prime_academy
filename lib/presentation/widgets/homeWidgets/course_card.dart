@@ -1,14 +1,19 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+
+import 'package:prime_academy/core/helpers/constants.dart';
 
 class CourseCard extends StatelessWidget {
   final String courseName;
   final bool isMobile;
+  final String? image;
 
   const CourseCard({
-    super.key,
+    Key? key,
     required this.courseName,
     required this.isMobile,
-  });
+    this.image,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +32,15 @@ class CourseCard extends StatelessWidget {
               color: const Color(0xFF2a2d34),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Center(
-              child: Icon(Icons.menu_book, color: Colors.white, size: 35),
-            ),
+            child: (image != null && image!.isNotEmpty)
+                ? Center(child: Image.network(image!))
+                : const Center(
+                    child: Icon(
+                      Icons.menu_book,
+                      color: Color.fromARGB(224, 255, 170, 0),
+                      size: 40,
+                    ),
+                  ),
           ),
           const SizedBox(height: 10),
           Container(

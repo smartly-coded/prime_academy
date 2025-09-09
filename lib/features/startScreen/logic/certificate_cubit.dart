@@ -4,17 +4,15 @@ import 'package:prime_academy/features/startScreen/data/repos/start_screen_repo.
 import 'package:prime_academy/features/startScreen/logic/start_screen_state.dart';
 import 'package:prime_academy/core/networking/api_result.dart';
 
-class StartScreenCubit extends Cubit<StartScreenState> {
+class CertificateCubit extends Cubit<StartScreenState> {
   final StartScreenRepo _startScreenRepo;
-
-  StartScreenCubit(this._startScreenRepo) : super(StartScreenState.initial());
-
-  void emitStartScreenState() async {
+  CertificateCubit(this._startScreenRepo) : super(StartScreenState.initial());
+  void emitCertificateState() async {
     emit(const StartScreenState.loading());
-    final response = await _startScreenRepo.getStudents();
+    final response = await _startScreenRepo.getCertificates();
     response.when(
-      success: (studentsResponse) async {
-        emit(StartScreenState.success(studentsResponse));
+      success: (certificates) async {
+        emit(StartScreenState<List<CertificateResponse>>.success(certificates));
       },
       failure: (error) {
         emit(StartScreenState.error(error: error.apiErrorModel.message ?? ''));

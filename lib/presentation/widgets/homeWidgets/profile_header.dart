@@ -54,19 +54,18 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                     ),
                   )
                 : (widget.user.image != null &&
-                        widget.user.image!.url!.isNotEmpty)
-                    ? ClipOval(
-                        child: Image.network(
-                          "http://192.168.1.9:4005${widget.user.image!.url}",
-                          fit: BoxFit.cover,
-                          width: 50,
-                          height: 50,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.person, color: Colors.white),
-                        ),
-                      )
-                    : const Icon(Icons.camera_alt_outlined,
-                        color: Colors.white),
+                      widget.user.image!.url!.isNotEmpty)
+                ? ClipOval(
+                    child: Image.network(
+                      "http://192.168.0.105:4005${widget.user.image!.url}",
+                      fit: BoxFit.cover,
+                      width: 50,
+                      height: 50,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.person, color: Colors.white),
+                    ),
+                  )
+                : const Icon(Icons.camera_alt_outlined, color: Colors.white),
           ),
         ),
         const SizedBox(width: 10),

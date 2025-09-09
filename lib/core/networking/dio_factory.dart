@@ -58,10 +58,16 @@ class DioFactory {
           return handler.next(response);
         },
         onRequest: (options, handler) async {
-          final token = await storage.read(key: "accessToken");
+          final accessToken = await storage.read(key: "accessToken");
+          final refreshToken = await storage.read(key: "refreshToken");
 
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
+          if (accessToken != null) {
+            options.headers['Authorization'] = 'Bearer $accessToken';
+          }
+
+          if (accessToken != null && refreshToken != null) {
+            options.headers['Cookie'] =
+                'accessToken=$accessToken; refreshToken=$refreshToken';
           }
 
           return handler.next(options);

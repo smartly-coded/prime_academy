@@ -6,12 +6,12 @@ class SplashCubit extends Cubit<SplashState> {
 
   void start() async {
     emit(SplashOneState());
-    await Future.delayed(Duration(seconds: 10));
+    await Future.delayed(Duration(seconds: 5));
 
     emit(SplashTwoState());
-    await Future.delayed(Duration(seconds: 10));
+    await Future.delayed(Duration(seconds: 5));
     emit(SplashThreeState());
-    await Future.delayed(Duration(seconds: 10));
+    await Future.delayed(Duration(seconds: 5));
     emit(SplashFinished());
   }
 }

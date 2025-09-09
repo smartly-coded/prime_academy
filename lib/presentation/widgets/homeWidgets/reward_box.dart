@@ -21,7 +21,6 @@ class RewardBox extends StatelessWidget {
         ),
         child: Column(
           children: [
-           
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
@@ -35,6 +34,7 @@ class RewardBox extends StatelessWidget {
                 children: [
                   const Icon(Icons.emoji_events, color: Colors.yellow),
                   const SizedBox(width: 8),
+
                   Text(
                     "عدد الجوائز : $rewardsCount",
                     style: TextStyle(

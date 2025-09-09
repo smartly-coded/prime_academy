@@ -26,7 +26,7 @@ class FeaturesSection extends StatelessWidget {
               crossAxisCount: isMobile ? 1 : 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: isMobile ? 2 : 1,
+              childAspectRatio: isMobile ? 1.8 : 1,
               children: const [
                 FeatureCard(
                   icon: Icons.menu_book,
@@ -100,7 +100,7 @@ class FeatureCard extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),

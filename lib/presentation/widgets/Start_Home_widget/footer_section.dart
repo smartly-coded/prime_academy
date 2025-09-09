@@ -72,13 +72,15 @@ class FooterSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.orange,
+                  color: Colors.white,
                   fontFamily: 'Cairo',
                 ),
               ),
               const SizedBox(height: 15),
               Wrap(
-                spacing: 20,
+                direction: Axis.vertical,
+
+                spacing: 10,
                 runSpacing: 10,
                 children: [
                   _buildCourseItem("اللغة العربية"),
@@ -95,13 +97,15 @@ class FooterSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.orange,
+                  color: Colors.white,
                   fontFamily: 'Cairo',
                 ),
               ),
               const SizedBox(height: 15),
               Wrap(
-                spacing: 20,
+                direction: Axis.vertical,
+                spacing: 10,
+
                 runSpacing: 10,
                 children: [
                   _buildCourseItem("تأسيس"),
@@ -200,7 +204,7 @@ class FooterSection extends StatelessWidget {
               const SizedBox(height: 30),
 
               Text(
-                "© 2024 PRIME ACADEMY. جميع الحقوق محفوظة",
+                "© 2025 PRIME ACADEMY. جميع الحقوق محفوظة",
                 style: TextStyle(
                   color: Colors.white54,
                   fontSize: 14,
@@ -223,14 +227,12 @@ class FooterSection extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: IconButton(
-        icon: Icon(icon, color: Colors.orange, size: 24),
+        icon: Icon(icon, color: Colors.white, size: 24),
         onPressed: () {},
         tooltip: tooltip,
       ),
     );
   }
-
-
 
   Widget _buildCourseItem(String text) {
     return Text(

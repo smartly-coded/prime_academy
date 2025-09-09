@@ -20,7 +20,7 @@ class LoginBlocListener extends StatelessWidget {
               context: context,
               builder: (context) => const Center(
                 child: CircularProgressIndicator(
-                  color: Mycolors.backgroundColor,
+                  color: Color.fromARGB(255, 162, 9, 196),
                 ),
               ),
             );
@@ -34,7 +34,7 @@ class LoginBlocListener extends StatelessWidget {
               ),
             );
 
-            Navigator.pushReplacementNamed(
+            Navigator.pushNamed(
               context,
               AppRoutes.Home,
               arguments: loginResponse,

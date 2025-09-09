@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:prime_academy/core/helpers/constants.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/startScreen/logic/start_screen_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/start_screen_state.dart';
@@ -17,9 +18,6 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
   Timer? _timer;
   int _currentIndex = 0;
   List<dynamic> _students = [];
-
-  static const String baseUrl =
-      "https://cdn-dev.primeacademy.education/primeacademydev";
 
   @override
   void initState() {
@@ -58,8 +56,8 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
     }
 
     return imagePath.startsWith('/')
-        ? baseUrl + imagePath
-        : baseUrl + '/' + imagePath;
+        ? Constants.baseUrl + imagePath
+        : Constants.baseUrl + '/' + imagePath;
   }
 
   void _goToStudentDetail(dynamic student) {
