@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:prime_academy/core/networking/api_constants.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
+import 'package:prime_academy/features/startScreen/data/models/student_response.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 
@@ -13,4 +14,6 @@ abstract class ApiService {
 
   @POST(ApiConstants.login)
   Future<LoginResponse> login(@Body() LoginRequestBody loginRequestBody);
+  @GET(ApiConstants.studentsPreview)
+  Future<StudentsResponse> getStudents();
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
+import 'package:prime_academy/features/startScreen/data/repos/start_screen_repo.dart';
+import 'package:prime_academy/features/startScreen/logic/start_screen_cubit.dart';
 import 'package:prime_academy/presentation/ContactUs/ContactUs_page.dart';
 import 'package:prime_academy/presentation/Start_homeScreen/start-screen.dart';
 import 'package:prime_academy/presentation/about/about.dart';
@@ -15,8 +19,12 @@ class AppLayout extends StatefulWidget {
 class _AppLayoutState extends State<AppLayout> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
-    StartPage(),
+  final List<Widget> _pages = [
+    BlocProvider(
+      create: (_) =>
+          StartScreenCubit(getIt<StartScreenRepo>())..emitStartScreenState(),
+      child: StartPage(),
+    ),
     ContactUsPage(),
     AboutUsPage(),
     ContactUsPage(),
@@ -51,7 +59,6 @@ class _AppLayoutState extends State<AppLayout> {
               ),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.login);
                   Navigator.pushNamed(context, AppRoutes.login);
                 },
                 child: const Text(

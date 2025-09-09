@@ -46,7 +46,14 @@ class _VideoSectionState extends State<VideoSection> {
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 40),
-      color: const Color(0XFF0f1217),
+
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(40),
+          topRight: Radius.circular(40),
+        ),
+        color: const Color(0XFF0f1217),
+      ),
       child: Column(
         children: [
           buildTextWithBorder("في برايم أكاديمي", "", context),

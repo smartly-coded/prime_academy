@@ -4,6 +4,8 @@ import 'package:get_it/get_it.dart';
 import 'package:prime_academy/core/networking/api_service.dart';
 import 'package:prime_academy/features/authScreen/data/repos/login_repo.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
+import 'package:prime_academy/features/startScreen/data/repos/start_screen_repo.dart';
+import 'package:prime_academy/features/startScreen/logic/start_screen_cubit.dart';
 
 import '../networking/dio_factory.dart';
 
@@ -20,4 +22,6 @@ Future<void> setupGetIt() async {
   // login
   getIt.registerLazySingleton<LoginRepo>(() => LoginRepo(getIt()));
   getIt.registerFactory<LoginCubit>(() => LoginCubit(getIt()));
+  getIt.registerLazySingleton<StartScreenRepo>(() => StartScreenRepo(getIt()));
+  getIt.registerFactory<StartScreenCubit>(() => StartScreenCubit(getIt()));
 }
