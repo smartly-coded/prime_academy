@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 import 'package:prime_academy/features/authScreen/logic/login_state.dart';
 
@@ -24,7 +25,21 @@ class LoginBlocListener extends StatelessWidget {
               ),
             );
           },
-          success: (loginResponse) {},
+          success: (loginResponse) {
+            // Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Login Success"),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+            Navigator.pushReplacementNamed(
+              context,
+              AppRoutes.Home,
+              arguments: loginResponse,
+            );
+          },
           error: (error) {
             Navigator.of(context).pop();
 

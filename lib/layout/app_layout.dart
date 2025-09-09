@@ -70,9 +70,7 @@ class _AppLayoutState extends State<AppLayout> {
           ),
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.white),
-            onPressed: () {
-              Navigator.pushNamed(context, '/');
-            },
+            onPressed: () {},
           ),
         ],
       ),
