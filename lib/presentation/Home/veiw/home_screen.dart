@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ] else if (selectedIndex == 1) ...[
-                RewardBox(isMobile: isMobile, rewardsCount: 2),
+                RewardBox(isMobile: isMobile),
               ],
             ],
           ),

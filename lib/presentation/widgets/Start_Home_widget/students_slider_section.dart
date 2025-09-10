@@ -57,7 +57,7 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
 
     return imagePath.startsWith('/')
         ? Constants.baseUrl + imagePath
-        : Constants.baseUrl + '/' + imagePath;
+        : '${Constants.baseUrl}/$imagePath';
   }
 
   void _goToStudentDetail(dynamic student) {

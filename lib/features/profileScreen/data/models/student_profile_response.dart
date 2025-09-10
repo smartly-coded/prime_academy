@@ -155,7 +155,6 @@ class Trophy {
   Map<String, dynamic> toJson() => _$TrophyToJson(this);
 }
 
-// إضافة TrophyImage model (منفصل عن UserImage لوضوح أكثر)
 @JsonSerializable()
 class TrophyImage {
   int? id;
