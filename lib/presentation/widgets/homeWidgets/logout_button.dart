@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LogoutButton extends StatelessWidget {
   final bool isMobile;
@@ -7,7 +8,12 @@ class LogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        const storage = FlutterSecureStorage();
+        await storage.delete(key: "accessToken");
+        await storage.delete(key: "refreshToken");
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      },
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(

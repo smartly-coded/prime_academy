@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 class FooterSection extends StatelessWidget {
   const FooterSection({super.key});
@@ -10,13 +11,12 @@ class FooterSection extends StatelessWidget {
     final isMobile = width < 600;
 
     return Container(
-      color: const Color(0xFF0f1217),
+      color: Mycolors.backgroundColor,
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1000),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
                 'assets/images/footer-logo.webp',
@@ -76,6 +76,12 @@ class FooterSection extends StatelessWidget {
                   fontFamily: 'Cairo',
                 ),
               ),
+              Divider(
+                color: Mycolors.orange,
+                thickness: 2,
+                indent: 100,
+                endIndent: 100,
+              ),
               const SizedBox(height: 15),
               Wrap(
                 direction: Axis.vertical,
@@ -100,6 +106,12 @@ class FooterSection extends StatelessWidget {
                   color: Colors.white,
                   fontFamily: 'Cairo',
                 ),
+              ),
+              Divider(
+                color: Mycolors.orange,
+                thickness: 2,
+                indent: 100,
+                endIndent: 100,
               ),
               const SizedBox(height: 15),
               Wrap(
@@ -128,6 +140,12 @@ class FooterSection extends StatelessWidget {
                       fontFamily: 'Cairo',
                     ),
                   ),
+                  Divider(
+                    color: Mycolors.orange,
+                    thickness: 2,
+                    indent: 60,
+                    endIndent: 60,
+                  ),
                   const SizedBox(height: 10),
                   Text(
                     "للحصول على حصص مجانية وامتنابعة اخر الأخبار\nادخل رقم هاتفك المحمول",
@@ -143,7 +161,7 @@ class FooterSection extends StatelessWidget {
                   Container(
                     width: isMobile ? width * 0.8 : width * 0.5,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 22, 22, 22),
+                      color: Mycolors.backgroundColor,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white, width: 1),
                     ),
@@ -223,7 +241,7 @@ class FooterSection extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: const Color(0xFF2a2d34),
+        color: const Color.fromARGB(0, 42, 45, 52),
         shape: BoxShape.circle,
       ),
       child: IconButton(
@@ -236,6 +254,7 @@ class FooterSection extends StatelessWidget {
 
   Widget _buildCourseItem(String text) {
     return Text(
+      textAlign: TextAlign.end,
       text,
       style: const TextStyle(
         fontSize: 16,

@@ -5,7 +5,9 @@ import 'package:prime_academy/features/authScreen/data/models/login_response.dar
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
+import 'package:prime_academy/features/startScreen/logic/student_preview_cubit.dart';
 import 'package:prime_academy/presentation/Home/veiw/home_screen.dart';
+import 'package:prime_academy/presentation/Start_homeScreen/student_detail_screen.dart';
 import 'package:prime_academy/presentation/login/veiw/loginScreen.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_one.dart';
 
@@ -13,6 +15,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String splash = '/splash';
   static const String Home = '/home';
+  static const String studentDetail = 'student-detail';
 
   Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -37,6 +40,14 @@ class AppRoutes {
           builder: (_) => BlocProvider(
             create: (context) => getIt<LoginCubit>(),
             child: LoginScreen(),
+          ),
+        );
+      case studentDetail:
+        final studentId = settings.arguments as int;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<StudentPreviewCubit>(),
+            child: StudentDetailScreen(studentId: studentId),
           ),
         );
       default:

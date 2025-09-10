@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/constants.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/profileScreen/data/models/student_profile_response.dart';
 import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
@@ -34,9 +35,9 @@ class _HomePageState extends State<HomePage> {
     final isMobile = width < 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0f1217),
+      backgroundColor: Mycolors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Mycolors.backgroundColor,
         elevation: 0,
         title: Image.asset("assets/images/footer-logo.webp", height: 40),
         actions: [
@@ -130,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                           itemCount: profile.courses!.length,
                           itemBuilder: (context, index) {
                             final course = profile.courses![index];
-                            final imageUrl = _buildImageUrl(
+                            final imageUrl = buildImageUrl(
                               course.featuredImage?.url,
                             );
                             return CourseCard(
@@ -159,7 +160,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-String _buildImageUrl(String? imagePath) {
+String buildImageUrl(String? imagePath) {
   if (imagePath == null || imagePath.isEmpty) return "";
 
   if (imagePath.startsWith('http')) {

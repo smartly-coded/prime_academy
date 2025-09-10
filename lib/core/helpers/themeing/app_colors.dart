@@ -6,4 +6,5 @@ class Mycolors {
     0XFF222633,
   ); //used in background color of the button
   static const cardColor = Color(0xff1e222a);
+  static const orange = Color(0xffbd742b);
 }

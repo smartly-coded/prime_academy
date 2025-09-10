@@ -4,6 +4,7 @@ class ApiConstants {
   static const String studentsPreview = "students/preview";
   static const String certificates = "exhibitions/certificates";
   static const String studentProfile = "students/my-profile";
+  static const String studentPreview = "students/preview";
 }
 
 class ApiErrors {

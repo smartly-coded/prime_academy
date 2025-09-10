@@ -4,6 +4,7 @@ import 'package:prime_academy/features/authScreen/data/models/login_request_body
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/profileScreen/data/models/student_profile_response.dart';
 import 'package:prime_academy/features/startScreen/data/models/certificate_response.dart';
+import 'package:prime_academy/features/startScreen/data/models/student_preview_response.dart';
 import 'package:prime_academy/features/startScreen/data/models/student_response.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
@@ -22,4 +23,6 @@ abstract class ApiService {
   Future<List<CertificateResponse>> getCertificates();
   @GET(ApiConstants.studentProfile)
   Future<StudentProfileResponse> getStudentProfileData();
+  @GET("students/preview/{id}")
+  Future<StudentPreviewResponse> previewStudent(@Path("id") int id);
 }
