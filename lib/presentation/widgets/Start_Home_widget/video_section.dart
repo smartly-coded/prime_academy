@@ -56,7 +56,10 @@ class _VideoSectionState extends State<VideoSection> {
       ),
       child: Column(
         children: [
-          buildTextWithBorder("في برايم أكاديمي", "", context),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+            child: buildTextWithBorder("في برايم أكاديمي", "", context),
+          ),
 
           Container(
             padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),

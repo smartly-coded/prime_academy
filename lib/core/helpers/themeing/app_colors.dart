@@ -13,4 +13,5 @@ class Mycolors {
   static const bronze = Color(0xffFB6700);
   static const lightgrey = Color(0xFF495463);
   static const blue = Color(0xFF1F70DC);
+  static const orange = Color(0xffbd742b);
 }

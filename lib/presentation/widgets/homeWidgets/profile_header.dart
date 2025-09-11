@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
+import 'package:prime_academy/presentation/Home/veiw/home_screen.dart';
 
 class ProfileHeader extends StatefulWidget {
   final LoginResponse user;
@@ -31,7 +32,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
-
+    final imageUrl = buildImageUrl(widget.user.image!.url);
     return Row(
       children: [
         GestureDetector(
@@ -57,7 +58,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       widget.user.image!.url!.isNotEmpty)
                 ? ClipOval(
                     child: Image.network(
-                      "http://192.168.0.105:4005${widget.user.image!.url}",
+                      imageUrl,
                       fit: BoxFit.cover,
                       width: 50,
                       height: 50,

@@ -7,8 +7,10 @@ import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 import 'package:prime_academy/features/profileScreen/data/Repos/student_profile_repo.dart';
 import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/startScreen/data/repos/start_screen_repo.dart';
+import 'package:prime_academy/features/startScreen/data/repos/student_preview_repo.dart';
 import 'package:prime_academy/features/startScreen/logic/certificate_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/start_screen_cubit.dart';
+import 'package:prime_academy/features/startScreen/logic/student_preview_cubit.dart';
 
 import '../networking/dio_factory.dart';
 
@@ -32,4 +34,10 @@ Future<void> setupGetIt() async {
     () => StudentProfileRepo(getIt()),
   );
   getIt.registerFactory<ProfileCubit>(() => ProfileCubit(getIt()));
+  getIt.registerLazySingleton<StudentPreviewRepo>(
+    () => StudentPreviewRepo(getIt()),
+  );
+  getIt.registerFactory<StudentPreviewCubit>(
+    () => StudentPreviewCubit(getIt()),
+  );
 }

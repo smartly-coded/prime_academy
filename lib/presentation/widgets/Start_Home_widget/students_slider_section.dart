@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/constants.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/startScreen/logic/start_screen_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/start_screen_state.dart';
 
@@ -57,7 +58,7 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
 
     return imagePath.startsWith('/')
         ? Constants.baseUrl + imagePath
-        : Constants.baseUrl + '/' + imagePath;
+        : '${Constants.baseUrl}/$imagePath';
   }
 
   void _goToStudentDetail(dynamic student) {
@@ -65,9 +66,11 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
     _stopTimer();
 
     // الانتقال للصفحة
-    Navigator.pushNamed(context, '/student-detail', arguments: student).then((
-      _,
-    ) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.studentDetail,
+      arguments: student.id,
+    ).then((_) {
       // إعادة تشغيل التايمر عند الرجوع
       _startTimer();
     });

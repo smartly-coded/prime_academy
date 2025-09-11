@@ -34,7 +34,7 @@ class LoginBlocListener extends StatelessWidget {
               ),
             );
 
-            Navigator.pushNamed(
+            Navigator.pushReplacementNamed(
               context,
               AppRoutes.Home,
               arguments: loginResponse,

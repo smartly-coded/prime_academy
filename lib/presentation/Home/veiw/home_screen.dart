@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                           itemCount: profile.courses!.length,
                           itemBuilder: (context, index) {
                             final course = profile.courses![index];
-                            final imageUrl = _buildImageUrl(
+                            final imageUrl = buildImageUrl(
                               course.featuredImage?.url,
                             );
                             return CourseCard(
@@ -151,10 +151,7 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ] else if (selectedIndex == 1) ...[
-                RewardBox(isMobile: isMobile, rewardsCount: 2),
-              ] else if (selectedIndex == 2) ...[
-                // قسم التصنيف (الترتيب)
-                RankingWidget(isMobile: isMobile),
+                RewardBox(isMobile: isMobile),
               ],
 
             ],
@@ -165,7 +162,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-String _buildImageUrl(String? imagePath) {
+String buildImageUrl(String? imagePath) {
   if (imagePath == null || imagePath.isEmpty) return "";
 
   if (imagePath.startsWith('http')) {
