@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:prime_academy/core/helpers/constants.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 class CourseCard extends StatelessWidget {
   final String courseName;
@@ -20,7 +21,7 @@ class CourseCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 50, 55, 68),
+        color: Mycolors.cardColor1,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
@@ -29,7 +30,7 @@ class CourseCard extends StatelessWidget {
             width: double.infinity,
             height: isMobile ? 80 : 100,
             decoration: BoxDecoration(
-              color: const Color(0xFF2a2d34),
+              color: Mycolors.darkblue,
               borderRadius: BorderRadius.circular(10),
             ),
             child: (image != null && image!.isNotEmpty)

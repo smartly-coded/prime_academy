@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 class CategoryTabs extends StatelessWidget {
   final bool isMobile;
@@ -16,23 +17,17 @@ class CategoryTabs extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTabSelected(index),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          color: isSelected ? const Color.fromARGB(255, 61, 65, 75) : null,
-          borderRadius: BorderRadius.circular(10),
+          color: isSelected ? Mycolors.darkblue : Mycolors.cardColor1,
         ),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.transparent : const Color(0xFF2a2d34),
-            borderRadius: BorderRadius.circular(10),
-          ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
           child: Text(
             title,
             style: TextStyle(
               fontSize: isMobile ? 14 : 16,
               fontWeight: FontWeight.bold,
-              color: isSelected ? Colors.white : Colors.white70,
+              color: isSelected ? Color(0xFFF1E6EE) : Color(0xFF817F6B),
               fontFamily: 'Cairo',
             ),
           ),
@@ -44,9 +39,8 @@ class CategoryTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFF2a2d34),
+        color: Mycolors.cardColor1,
         borderRadius: BorderRadius.circular(15),
       ),
       child: SizedBox(

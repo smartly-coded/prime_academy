@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/constants.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/profileScreen/data/models/student_profile_response.dart';
 import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:prime_academy/presentation/widgets/homeWidgets/category_tabs.dar
 import 'package:prime_academy/presentation/widgets/homeWidgets/course_card.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/empty_state.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/logout_button.dart';
+import 'package:prime_academy/presentation/widgets/homeWidgets/my_rank.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/profile_header.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/reward_box.dart';
 
@@ -34,9 +36,9 @@ class _HomePageState extends State<HomePage> {
     final isMobile = width < 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0f1217),
+      backgroundColor: Mycolors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Mycolors.backgroundColor,
         elevation: 0,
         title: Image.asset("assets/images/footer-logo.webp", height: 40),
         actions: [
@@ -150,7 +152,11 @@ class _HomePageState extends State<HomePage> {
                 ),
               ] else if (selectedIndex == 1) ...[
                 RewardBox(isMobile: isMobile, rewardsCount: 2),
+              ] else if (selectedIndex == 2) ...[
+                // قسم التصنيف (الترتيب)
+                RankingWidget(isMobile: isMobile),
               ],
+
             ],
           ),
         ),

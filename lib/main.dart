@@ -1,8 +1,12 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
+import 'package:prime_academy/core/networking/api_constants.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
+import 'package:prime_academy/features/ranckingScreen/data/repos/rank_repo.dart';
+import 'package:prime_academy/features/ranckingScreen/logic/rank_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_state.dart';
 import 'package:prime_academy/layout/app_layout.dart';
@@ -16,14 +20,25 @@ void main() async {
   await setupGetIt();
   runApp(DevicePreview(enabled: true, builder: (context) => MyApp()));
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SplashCubit()..start(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => SplashCubit()..start(),
+        ),
+        
+        BlocProvider(
+          create: (_) => RankCubit(
+            RankRepository(
+              
+            ),
+          )
+        ),
+      ],
       child: MaterialApp(
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
@@ -37,7 +52,7 @@ class MyApp extends StatelessWidget {
               if (state is SplashTwoState) return SplashTwo();
               if (state is SplashThreeState) return SplashThree();
               if (state is SplashFinished) return AppLayout();
-              return SizedBox();
+              return const SizedBox();
             },
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 class RewardBox extends StatelessWidget {
   final int rewardsCount;
@@ -16,7 +17,7 @@ class RewardBox extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: const Color(0xFF2a2d34),
+          color: Mycolors.cardColor1,
           borderRadius: BorderRadius.circular(15),
         ),
         child: Column(
@@ -32,7 +33,7 @@ class RewardBox extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.emoji_events, color: Colors.yellow),
+                  const Icon(Icons.emoji_events, color: Mycolors.gold),
                   const SizedBox(width: 8),
 
                   Text(
