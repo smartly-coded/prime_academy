@@ -1,9 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/presentation/Modules/veiw/modulesPage.dart';
 
 class CourseCard extends StatelessWidget {
   final String courseName;
+  final int courseId;
   final bool isMobile;
   final String? image;
 
@@ -12,6 +14,7 @@ class CourseCard extends StatelessWidget {
     required this.courseName,
     required this.isMobile,
     this.image,
+    required this.courseId,
   }) : super(key: key);
 
   @override
@@ -34,7 +37,6 @@ class CourseCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            
             Container(
               height: isMobile ? 200 : 140,
               decoration: BoxDecoration(
@@ -105,14 +107,12 @@ class CourseCard extends StatelessWidget {
               ),
             ),
 
-            // محتوى الكارد
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // اسم الكورس
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
@@ -149,11 +149,20 @@ class CourseCard extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: 15), // زر الذهاب للدورة
+                    SizedBox(height: 15),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ModulesPage(
+                              courseId: courseId,
+                              courseName: courseName,
+                            ),
+                          ),
+                        );
+                      },
                       child: Container(
-                        padding: const EdgeInsets.all(2), // سمك البوردر
+                        padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [Color(0xffa76433), Color(0xff4f2349)],
@@ -170,11 +179,11 @@ class CourseCard extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
-                                Icons.play_arrow,
-                                color: Colors.white,
-                                size: 20,
-                              ),
+                              // const Icon(
+                              //   Icons.play_arrow,
+                              //   color: Colors.white,
+                              //   size: 20,
+                              // ),
                               const SizedBox(width: 8),
                               Text(
                                 "الذهاب للدورة",

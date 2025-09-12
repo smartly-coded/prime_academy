@@ -6,6 +6,7 @@ class ApiConstants {
   static const String studentProfile = "students/my-profile";
   static const String ranks = "courses/ranks/";
   static const String studentPreview = "students/preview";
+  
 }
 
 class ApiErrors {

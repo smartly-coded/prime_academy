@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/core/networking/api_constants.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
+import 'package:prime_academy/features/CoursesModules/data/repo/modules_repository.dart';
+import 'package:prime_academy/features/CoursesModules/logic/modules_cubit.dart';
 import 'package:prime_academy/features/ranckingScreen/data/repos/rank_repo.dart';
 import 'package:prime_academy/features/ranckingScreen/logic/rank_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
@@ -38,6 +40,13 @@ class MyApp extends StatelessWidget {
             ),
           )
         ),
+
+            BlocProvider(
+      create: (context) => ModulesCubit(ModulesRepository(
+       
+      )),
+    ),
+
       ],
       child: MaterialApp(
         locale: DevicePreview.locale(context),

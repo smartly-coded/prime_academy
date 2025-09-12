@@ -10,9 +10,10 @@ import 'package:prime_academy/presentation/widgets/homeWidgets/category_tabs.dar
 import 'package:prime_academy/presentation/widgets/homeWidgets/course_card.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/empty_state.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/logout_button.dart';
-import 'package:prime_academy/presentation/widgets/homeWidgets/my_rank.dart';
+
 import 'package:prime_academy/presentation/widgets/homeWidgets/profile_header.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/reward_box.dart';
+import 'package:prime_academy/presentation/widgets/homeWidgets/my_rank.dart';
 
 class HomePage extends StatefulWidget {
   final LoginResponse user;
@@ -139,6 +140,7 @@ class _HomePageState extends State<HomePage> {
                               image: imageUrl,
                               courseName: course.title ?? '',
                               isMobile: isMobile,
+                              courseId: course.id ?? 0,
                             );
                           },
                         );
@@ -152,8 +154,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ] else if (selectedIndex == 1) ...[
                 RewardBox(isMobile: isMobile),
+              ] else if (selectedIndex == 2) ...[
+                RankingWidget(isMobile: isMobile),
               ],
-
             ],
           ),
         ),
