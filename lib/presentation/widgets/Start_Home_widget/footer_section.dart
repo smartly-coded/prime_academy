@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:prime_academy/core/Utils/validators.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/features/start_CommRequest/logic/CommRequest_cubit.dart';
 
 class FooterSection extends StatelessWidget {
   const FooterSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final _phoneController = TextEditingController();
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
 
@@ -129,94 +133,139 @@ class FooterSection extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              Column(
-                children: [
-                  Text(
-                    "ابقى على تواصل !",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontFamily: 'Cairo',
-                    ),
-                  ),
-                  Divider(
-                    color: Mycolors.orange,
-                    thickness: 2,
-                    indent: 60,
-                    endIndent: 60,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "للحصول على حصص مجانية وامتنابعة اخر الأخبار\nادخل رقم هاتفك المحمول",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontFamily: 'Cairo',
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    width: isMobile ? width * 0.8 : width * 0.5,
-                    decoration: BoxDecoration(
-                      color: Mycolors.backgroundColor,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white, width: 1),
-                    ),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(
-                          Icons.phone,
-                          color: Color.fromARGB(255, 229, 228, 228),
-                        ),
-                        hintText: "رقم هاتفك المحمول",
-                        hintStyle: const TextStyle(
-                          color: Color.fromARGB(255, 229, 228, 228),
-                          fontFamily: 'Cairo',
-                        ),
-                        border: InputBorder.none,
+              BlocListener<CommRequestCubit, CommRequestState>(
+                listener: (context, state) {
+                  if (state is CommRequestSuccess) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("✅ تم إرسال الطلب بنجاح"),
+                        backgroundColor: Colors.green,
                       ),
-                      style: const TextStyle(
-                        color: Colors.black,
+                    );
+                  } else if (state is CommRequestFailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("❌ فشل إرسال الطلب: ${state.error}"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                child: Column(
+                  children: [
+                    Text(
+                      "ابقى على تواصل !",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                         fontFamily: 'Cairo',
                       ),
-                      keyboardType: TextInputType.phone,
                     ),
-                  ),
-                  const SizedBox(height: 15),
-
-                  Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xffa76433), Color(0xff4f2349)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                    Divider(
+                      color: Mycolors.orange,
+                      thickness: 2,
+                      indent: 60,
+                      endIndent: 60,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "للحصول على حصص مجانية وامتنابعة اخر الأخبار\nادخل رقم هاتفك المحمول",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontFamily: 'Cairo',
+                        height: 1.5,
                       ),
-                      borderRadius: BorderRadius.circular(15),
                     ),
-
-                    child: Container(
-                      padding: const EdgeInsets.all(15),
+                    const SizedBox(height: 20),
+                    Container(
+                      width: isMobile ? width * 0.8 : width * 0.5,
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 28, 31, 48),
-                        borderRadius: BorderRadius.circular(15),
+                        color: Mycolors.backgroundColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white, width: 1),
                       ),
-
-                      child: Text(
-                        "ارسال",
-                        style: TextStyle(
+                      child: TextFormField(
+                        controller: _phoneController,
+                        validator: Validators.validateKuwaitPhone,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.phone,
+                            color: Color.fromARGB(255, 229, 228, 228),
+                          ),
+                          hintText: "رقم هاتفك المحمول",
+                          hintStyle: TextStyle(
+                            color: Color.fromARGB(255, 229, 228, 228),
+                            fontFamily: 'Cairo',
+                          ),
+                          border: InputBorder.none,
+                        ),
+                        style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
                           fontFamily: 'Cairo',
+                        ),
+                        keyboardType: TextInputType.phone,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    GestureDetector(
+                      onTap: () {
+                        final phone = _phoneController.text.trim();
+                        if (Validators.validateKuwaitPhone(phone) == null) {
+                          context.read<CommRequestCubit>().sendRequest(phone);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("❌ أدخل رقم هاتف صحيح"),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xffa76433), Color(0xff4f2349)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 28, 31, 48),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child:
+                              BlocBuilder<CommRequestCubit, CommRequestState>(
+                                builder: (context, state) {
+                                  if (state is CommRequestLoading) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                    );
+                                  }
+                                  return Text(
+                                    "ارسال",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Cairo',
+                                    ),
+                                  );
+                                },
+                              ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               const SizedBox(height: 30),
