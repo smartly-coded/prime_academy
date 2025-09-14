@@ -96,12 +96,14 @@ class _ModuleTileState extends State<ModuleTile> {
                       time: item.time,
                       type: item.title,
                       onTap: () {
+                        print("ItemId sent: ${item.id}");
                         Navigator.pushNamed(
                           context,
                           AppRoutes.moduleLessonsPreview,
                           arguments: {
                             'moduleId': widget.module.id,
                             'courseId': widget.courseId,
+                            "itemId": item.id,
                           },
                         );
                       },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
@@ -10,13 +11,13 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 class ViewModule extends StatefulWidget {
   final int moduleId;
   final int courseId;
-  final String? selectedVideoUrl;
+  final int itemId;
 
   const ViewModule({
     super.key,
     required this.moduleId,
     required this.courseId,
-    this.selectedVideoUrl,
+    required this.itemId,
   });
 
   @override
@@ -33,10 +34,6 @@ class _ViewModuleState extends State<ViewModule> {
       widget.moduleId,
       widget.courseId,
     );
-
-    if (widget.selectedVideoUrl != null) {
-      _initializePlayer(widget.selectedVideoUrl!);
-    }
   }
 
   void _initializePlayer(String url) {
@@ -136,11 +133,30 @@ class _ViewModuleState extends State<ViewModule> {
                   ),
                 ),
                 success: (module) {
+                  final selectedItem = module.items.firstWhere(
+                    (item) => item.id == widget.itemId,
+                    orElse: () => module.items.first as Item,
+                  );
+
+                  final videoUrl = selectedItem.lesson?.externalUrl;
+
+                  // جهز الـ controller لو فيه فيديو
+                  if (videoUrl != null && videoUrl.isNotEmpty) {
+                    if (_controller == null) {
+                      _initializePlayer(videoUrl);
+                    } else {
+                      _controller!.load(
+                        YoutubePlayer.convertUrlToId(videoUrl)!,
+                      );
+                    }
+                  }
+
                   final lessons =
                       module.items
                           ?.where((item) => item.lesson != null)
                           .toList() ??
                       [];
+
                   final externalSources =
                       module.items
                           ?.where((item) => item.externalSource != null)
@@ -149,7 +165,6 @@ class _ViewModuleState extends State<ViewModule> {
 
                   return Column(
                     children: [
-                      // YouTube Player - محسن للعمل داخلياً
                       if (_controller != null)
                         Container(
                           margin: EdgeInsets.all(16),
@@ -165,12 +180,12 @@ class _ViewModuleState extends State<ViewModule> {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: player,
+                            child: YoutubePlayer(controller: _controller!),
                           ),
                         ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: 80, // ارتفاع مناسب للأزرار
+                        height: 80,
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(

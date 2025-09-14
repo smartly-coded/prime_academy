@@ -8,6 +8,7 @@ import 'package:prime_academy/presentation/widgets/modulesWidgets/module_tile.da
 class ModulesPage extends StatelessWidget {
   final int courseId;
   final String courseName;
+
   const ModulesPage({
     super.key,
     required this.courseId,

@@ -56,14 +56,14 @@ class AppRoutes {
         final args = settings.arguments as Map<String, dynamic>;
         final moduleId = args['moduleId'] as int;
         final courseId = args['courseId'] as int;
-        final videoUrl = args['externalUrl'] as String?;
+        final itemId = args['itemId'] as int;
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => getIt<ModuleLessonsCubit>(),
             child: ViewModule(
               moduleId: moduleId,
               courseId: courseId,
-              selectedVideoUrl: videoUrl,
+              itemId: itemId,
             ),
           ),
         );
