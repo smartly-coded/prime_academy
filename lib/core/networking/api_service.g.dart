@@ -12,7 +12,7 @@ part of 'api_service.dart';
 
 class _ApiService implements ApiService {
   _ApiService(this._dio, {this.baseUrl, this.errorLogger}) {
-    baseUrl ??= 'http://192.168.1.9:4005/api/';
+    baseUrl ??= 'http://192.168.0.105:4005/api/';
   }
 
   final Dio _dio;
@@ -155,6 +155,37 @@ class _ApiService implements ApiService {
     late StudentPreviewResponse _value;
     try {
       _value = StudentPreviewResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<ModuleLessonsResponse> getModuleLessons(
+    int moduleId,
+    ModuleLessonsRequestBody moduleLessonsRequestBody,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(moduleLessonsRequestBody.toJson());
+    final _options = _setStreamType<ModuleLessonsResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'module-items/${moduleId}/user',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ModuleLessonsResponse _value;
+    try {
+      _value = ModuleLessonsResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

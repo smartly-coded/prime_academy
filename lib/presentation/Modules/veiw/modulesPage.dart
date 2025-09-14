@@ -8,7 +8,11 @@ import 'package:prime_academy/presentation/widgets/modulesWidgets/module_tile.da
 class ModulesPage extends StatelessWidget {
   final int courseId;
   final String courseName;
-  const ModulesPage({super.key, required this.courseId, required this.courseName});
+  const ModulesPage({
+    super.key,
+    required this.courseId,
+    required this.courseName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +91,7 @@ class ModulesPage extends StatelessWidget {
                     ...course.modules.map(
                       (module) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: ModuleTile(module: module),
+                        child: ModuleTile(module: module, courseId: courseId),
                       ),
                     ),
                   ],

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_model.dart';
+
 import 'lesson_item.dart';
 
 class ModuleTile extends StatefulWidget {
   final ModuleModel module;
+  final int courseId;
 
-  const ModuleTile({super.key, required this.module});
+  const ModuleTile({super.key, required this.module, required this.courseId});
 
   @override
   State<ModuleTile> createState() => _ModuleTileState();
@@ -51,7 +54,6 @@ class _ModuleTileState extends State<ModuleTile> {
                 Spacer(),
                 Expanded(
                   child: Column(
-                   
                     children: [
                       Text(
                         widget.module.title,
@@ -89,10 +91,20 @@ class _ModuleTileState extends State<ModuleTile> {
             Column(
               children: widget.module.items
                   .map(
-                    (lesson) => LessonItem(
-                      title: lesson.title,
-                      time: lesson.time,
-                      type: lesson.type,
+                    (item) => LessonItem(
+                      title: item.title,
+                      time: item.time,
+                      type: item.title,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.moduleLessonsPreview,
+                          arguments: {
+                            'moduleId': widget.module.id,
+                            'courseId': widget.courseId,
+                          },
+                        );
+                      },
                     ),
                   )
                   .toList(),
