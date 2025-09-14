@@ -5,6 +5,7 @@ import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/startScreen/data/repos/start_screen_repo.dart';
 import 'package:prime_academy/features/startScreen/logic/certificate_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/start_screen_cubit.dart';
+import 'package:prime_academy/presentation/Chat/chatPage.dart';
 import 'package:prime_academy/presentation/ContactUs/ContactUs_page.dart';
 import 'package:prime_academy/presentation/Start_homeScreen/start-screen.dart';
 import 'package:prime_academy/presentation/about/about.dart';
@@ -36,7 +37,7 @@ class _AppLayoutState extends State<AppLayout> {
       ],
       child: StartPage(),
     ),
-    ContactUsPage(),
+    ChatScreen(),
     AboutUsPage(),
     ContactUsPage(),
   ];
