@@ -22,7 +22,9 @@ class ModuleModel {
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
       // ✅ لو special true → هنعرض description كـ subtitle
-      subtitle: isSpecial ? (json['description'] ?? 'This is a special lesson') : json['subtitle'],
+      subtitle: isSpecial
+          ? (json['description'] ?? 'This is a special lesson')
+          : json['subtitle'],
       special: isSpecial,
       items: (json['items'] as List? ?? [])
           .map((e) => ItemModel.fromJson(e))

@@ -38,24 +38,20 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_secure_storage: ^9.2.4
-
-  
- 
-
   flutter_vlc_player: ^7.4.3
   freezed: ^3.0.0-0.0.dev
   freezed_annotation: ^3.1.0
   get_it: ^8.2.0
   image_picker: ^1.2.0
- 
   json_annotation: ^4.9.0
-  
   json_serializable: ^6.11.1
   pretty_dio_logger: ^1.4.0
   retrofit: ^4.7.2
   retrofit_generator: ^10.0.4
   shared_preferences: ^2.5.3
+  url_launcher: ^6.3.2
   video_player: ^2.10.0
+  youtube_player_flutter: ^9.1.2
 
 dev_dependencies:
   flutter_lints: ^6.0.0

@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:prime_academy/core/networking/api_constants.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_request_body.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/profileScreen/data/models/student_profile_response.dart';
@@ -25,4 +27,9 @@ abstract class ApiService {
   Future<StudentProfileResponse> getStudentProfileData();
   @GET("students/preview/{id}")
   Future<StudentPreviewResponse> previewStudent(@Path("id") int id);
+  @POST("module-items/{moduleId}/user")
+  Future<ModuleLessonsResponse> getModuleLessons(
+    @Path("moduleId") int moduleId,
+    @Body() ModuleLessonsRequestBody moduleLessonsRequestBody,
+  );
 }

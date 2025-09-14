@@ -14,8 +14,9 @@ class ItemModel {
   });
 
   factory ItemModel.fromJson(Map<String, dynamic> json) {
-    final itemType =
-        json['item_type'] == 'lesson' ? LessonType.video : LessonType.link;
+    final itemType = json['item_type'] == 'lesson'
+        ? LessonType.video
+        : LessonType.link;
 
     String extractedTitle = '';
     String? extractedTime;
