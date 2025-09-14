@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/features/start_CommRequest/logic/CommRequest_cubit.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/Feature_section.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/footer_section.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/student_opinion.dart';
@@ -34,7 +36,11 @@ class StartPage extends StatelessWidget {
             const StudentsSliderSection(),
             const TestimonialsSection(),
             StudentsGreadesSection(),
-            FooterSection(),
+           BlocProvider(
+  create: (context) => CommRequestCubit(),
+  child: FooterSection(),
+),
+
           ],
         ),
       ),

@@ -1,19 +1,4 @@
-// import 'package:dio/dio.dart';
-// import 'package:prime_academy/features/ranckingScreen/data/models/rankingModel.dart';
-// import 'package:prime_academy/core/networking/api_constants.dart';
 
-// class RankRepository {
-//   final Dio dio;
-//   RankRepository(this.dio);
-
-//   Future<List<RankingModel>> getRanks(int courseId) async {
-//     final response = await dio.get(
-//       "${ApiConstants.apiBaseUrl}courses/ranks/$courseId",
-//     );
-//     final data = response.data as List;
-//     return data.map((e) => RankingModel.fromJson(e)).toList();
-//   }
-// }
 import 'package:dio/dio.dart';
 import 'package:prime_academy/core/networking/api_constants.dart';
 import 'package:prime_academy/core/networking/dio_factory.dart';
@@ -23,7 +8,7 @@ import 'package:prime_academy/features/ranckingScreen/data/models/rankingModel.d
 class RankRepository {
   final Dio dio;
 
-  // constructor بيستخدم DioFactory
+ 
   RankRepository() : dio = DioFactory.getDio();
 
   Future<List<RankingModel>> getRanks(int courseId) async {
