@@ -7,7 +7,7 @@ class LessonDetailsCubit extends Cubit<LessonDetailsState> {
   final LessonDetailsRepo _lessonDetailsRepo;
   LessonDetailsCubit(this._lessonDetailsRepo)
     : super(LessonDetailsState.initial());
-  void emitModuleLessonsStates(int itemId) async {
+  void emitLessonDetailsStates(int itemId) async {
     emit(const LessonDetailsState.loading());
     final response = await _lessonDetailsRepo.getLessonDetails(itemId);
     response.when(

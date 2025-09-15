@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
+import 'package:prime_academy/features/CoursesModules/logic/lesson_details_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
@@ -58,8 +59,11 @@ class AppRoutes {
         final courseId = args['courseId'] as int;
         final itemId = args['itemId'] as int;
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => getIt<ModuleLessonsCubit>(),
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => getIt<ModuleLessonsCubit>()),
+              BlocProvider(create: (context) => getIt<LessonDetailsCubit>()),
+            ],
             child: ViewModule(
               moduleId: moduleId,
               courseId: courseId,

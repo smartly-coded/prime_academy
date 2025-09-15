@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model.dart';
+import 'package:prime_academy/features/CoursesModules/logic/lesson_details_cubit.dart';
+import 'package:prime_academy/features/CoursesModules/logic/lesson_details_state.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
@@ -26,341 +28,407 @@ class ViewModule extends StatefulWidget {
 
 class _ViewModuleState extends State<ViewModule> {
   YoutubePlayerController? _controller;
+  int? _currentSelectedItemId;
+  String? _currentVideoId; // لتتبع الفيديو الحالي
+  bool _isDisposing = false; // فلاج لمنع العمليات أثناء التدمير
 
   @override
   void initState() {
     super.initState();
+    _currentSelectedItemId = widget.itemId;
     context.read<ModuleLessonsCubit>().emitModuleLessonsStates(
       widget.moduleId,
       widget.courseId,
     );
+    context.read<LessonDetailsCubit>().emitLessonDetailsStates(widget.itemId);
   }
 
   void _initializePlayer(String url) {
+    if (_isDisposing || !mounted) return;
+
     final videoId = YoutubePlayer.convertUrlToId(url);
-    if (videoId != null) {
+    if (videoId != null && _currentVideoId != videoId) {
+      _currentVideoId = videoId;
+
       _controller = YoutubePlayerController(
         initialVideoId: videoId,
         flags: const YoutubePlayerFlags(
-          autoPlay: false,
+          autoPlay: true,
           mute: false,
           enableCaption: true,
-          captionLanguage: 'ar', // العربية إذا متاحة
+          captionLanguage: 'ar',
           forceHD: false,
           loop: false,
           isLive: false,
           disableDragSeek: false,
-          useHybridComposition: true, // مهم لـ Android performance
+          useHybridComposition: true,
           hideThumbnail: false,
         ),
       );
     }
   }
 
-  void _playVideo(String url) {
+  // الحل الأفضل والأبسط - استخدام load method:
+  void _changeVideo(String url) {
+    if (_isDisposing || !mounted) return;
+
     final videoId = YoutubePlayer.convertUrlToId(url);
-    if (videoId != null) {
+    if (videoId != null && _currentVideoId != videoId) {
+      print('Loading new video: $videoId');
+
       if (_controller != null) {
-        // إذا كان هناك player موجود، حمل فيديو جديد
+        // استخدام load method لتغيير الفيديو بدون إعادة إنشاء الcontroller
+        setState(() {
+          _currentVideoId = videoId;
+        });
         _controller!.load(videoId);
       } else {
-        // إذا لم يكن هناك player، أنشئ واحد جديد
-        setState(() {
-          _initializePlayer(url);
+        // إنشاء controller جديد لو مش موجود
+        _initializePlayer(url);
+      }
+    }
+  }
+
+  void _safeDisposeController() {
+    if (_controller != null) {
+      try {
+        final tempController = _controller!;
+        _controller = null;
+        _currentVideoId = null;
+
+        // تدمير الكنترولر في الـ frame التالي
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            tempController.dispose();
+          } catch (e) {
+            print('Error disposing controller: $e');
+          }
         });
+      } catch (e) {
+        print('Error in safe dispose: $e');
       }
     }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _isDisposing = true;
+    _safeDisposeController();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayerBuilder(
-      player: YoutubePlayer(
-        controller:
-            _controller ??
-            YoutubePlayerController(
-              initialVideoId: 'dQw4w9WgXcQ', // placeholder video
-              flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
-            ),
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: Colors.red,
-        progressColors: const ProgressBarColors(
-          playedColor: Colors.red,
-          handleColor: Colors.redAccent,
-        ),
-        onReady: () {
-          print('Player is ready.');
-        },
-        onEnded: (data) {
-          print('Video ended: ${data.videoId}');
-        },
-      ),
-      builder: (context, player) {
-        return Scaffold(
-          backgroundColor: Mycolors.backgroundColor,
-          appBar: AppBar(
-            backgroundColor: Mycolors.backgroundColor,
-            elevation: 0,
-            title: Text(
-              "دروس الوحدة",
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Cairo',
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            iconTheme: IconThemeData(color: Colors.white),
+    return Scaffold(
+      backgroundColor: Mycolors.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: Mycolors.backgroundColor,
+        elevation: 0,
+        title: Text(
+          "دروس الوحدة",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Cairo',
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-          body: BlocBuilder<ModuleLessonsCubit, ModuleLessonsState>(
-            builder: (context, state) {
-              return state.when(
-                initial: () => const Center(
-                  child: Text(
-                    "جاري تحميل الدروس...",
-                    style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
-                  ),
-                ),
-                loading: () => const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ),
-                success: (module) {
-                  final selectedItem = module.items.firstWhere(
-                    (item) => item.id == widget.itemId,
-                    orElse: () => module.items.first as Item,
-                  );
+        ),
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<LessonDetailsCubit, LessonDetailsState>(
+            listener: (context, state) {
+              if (!mounted || _isDisposing) return;
 
-                  final videoUrl = selectedItem.lesson?.externalUrl;
-
-                  // جهز الـ controller لو فيه فيديو
-                  if (videoUrl != null && videoUrl.isNotEmpty) {
-                    if (_controller == null) {
-                      _initializePlayer(videoUrl);
+              print('LessonDetailsState changed: $state');
+              state.whenOrNull(
+                success: (lessonDetails) {
+                  print('Success: URL = ${lessonDetails.externalUrl}');
+                  final url = lessonDetails.externalUrl;
+                  if (url != null && url.isNotEmpty) {
+                    final videoId = YoutubePlayer.convertUrlToId(url);
+                    if (videoId != null) {
+                      print('Changing video to: $videoId');
+                      _changeVideo(url);
                     } else {
-                      _controller!.load(
-                        YoutubePlayer.convertUrlToId(videoUrl)!,
-                      );
+                      print('Invalid YouTube URL: $url');
                     }
+                  } else {
+                    print('No URL found in lesson details');
                   }
-
-                  final lessons =
-                      module.items
-                          ?.where((item) => item.lesson != null)
-                          .toList() ??
-                      [];
-
-                  final externalSources =
-                      module.items
-                          ?.where((item) => item.externalSource != null)
-                          .toList() ??
-                      [];
-
-                  return Column(
-                    children: [
-                      if (_controller != null)
-                        Container(
-                          margin: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: YoutubePlayer(controller: _controller!),
-                          ),
-                        ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: 80,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              _buildButton(
-                                "اسأل الذكاء الاصطناعي",
-                                "assets/icons/bot.png",
-                                () {
-                                  _openExternalLink("https://chatgpt.com/");
-                                },
-                              ),
-                              _buildButton(
-                                "اسأل المعلم",
-                                "assets/icons/message.png",
-                                () {},
-                              ),
-                              _buildButton(
-                                "الملازم الالكترونيه",
-                                "assets/icons/open-book.png",
-                                () {},
-                              ),
-                              _buildButton(
-                                "الفيديوهات",
-                                "assets/icons/play.png",
-                                () {},
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // قائمة الدروس
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Mycolors.darkblue,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              // Header للقائمة
-                              Container(
-                                padding: EdgeInsets.all(16),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.playlist_play,
-                                      color: Colors.white,
-                                      size: 24,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      "محتويات الوحدة (${lessons.length + externalSources.length})",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Cairo',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              Divider(color: Colors.white12, height: 1),
-
-                              // قائمة العناصر
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount:
-                                      (lessons.length + externalSources.length),
-                                  itemBuilder: (context, index) {
-                                    if (index < lessons.length) {
-                                      // عرض الدروس
-                                      final item = lessons[index];
-                                      final lesson = item.lesson!;
-
-                                      return LessonItem(
-                                        title: lesson.title,
-                                        time: _formatDuration(
-                                          lesson.videoLength,
-                                        ),
-                                        type: item.itemType,
-                                        onTap: () {
-                                          if (lesson.externalUrl != null) {
-                                            setState(() {
-                                              _playVideo(lesson.externalUrl!);
-                                            });
-                                          }
-                                        },
-                                      );
-                                    } else {
-                                      // عرض المصادر الخارجية
-                                      final sourceIndex =
-                                          index - lessons.length;
-                                      final item = externalSources[sourceIndex];
-                                      final externalSource =
-                                          item.externalSource!;
-
-                                      return LessonItem(
-                                        title: externalSource.title,
-                                        time: null,
-                                        type: item.itemType,
-                                        onTap: () {
-                                          _openExternalLink(externalSource.url);
-                                        },
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
                 },
-                error: (error) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error_outline, color: Colors.red, size: 48),
-                      SizedBox(height: 16),
-                      Text(
-                        "خطأ في تحميل البيانات",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 18,
-                          fontFamily: 'Cairo',
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        error,
-                        style: TextStyle(
-                          color: Colors.red.withOpacity(0.8),
-                          fontSize: 14,
-                          fontFamily: 'Cairo',
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          context
-                              .read<ModuleLessonsCubit>()
-                              .emitModuleLessonsStates(
-                                widget.moduleId,
-                                widget.courseId,
-                              );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        child: Text(
-                          "إعادة المحاولة",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Cairo',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                loading: () {
+                  print('Loading lesson details...');
+                },
+                error: (msg) {
+                  print('Error loading lesson: $msg');
+                  if (mounted && !_isDisposing) {
+                    _showErrorDialog("فشل تحميل تفاصيل الدرس: $msg");
+                  }
+                },
               );
             },
           ),
-        );
-      },
+        ],
+        child: BlocBuilder<ModuleLessonsCubit, ModuleLessonsState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => const Center(
+                child: Text(
+                  "جاري تحميل الدروس...",
+                  style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+                ),
+              ),
+              loading: () => const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              success: (module) {
+                final lessons =
+                    module.items
+                        ?.where((item) => item.lesson != null)
+                        .toList() ??
+                    [];
+
+                final externalSources =
+                    module.items
+                        ?.where((item) => item.externalSource != null)
+                        .toList() ??
+                    [];
+
+                return Column(
+                  children: [
+                    // عرض الفيديو
+                    if (_controller != null)
+                      Container(
+                        margin: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: YoutubePlayer(
+                            controller: _controller!,
+                            showVideoProgressIndicator: true,
+                            progressIndicatorColor: Colors.red,
+                            progressColors: const ProgressBarColors(
+                              playedColor: Colors.red,
+                              handleColor: Colors.redAccent,
+                            ),
+                            onReady: () {
+                              if (mounted && !_isDisposing) {
+                                print('Player is ready.');
+                              }
+                            },
+                            onEnded: (data) {
+                              if (mounted && !_isDisposing) {
+                                print('Video ended: ${data.videoId}');
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+
+                    // الأزرار
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      height: 80,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildButton(
+                              "اسأل الذكاء الاصطناعي",
+                              "assets/icons/bot.png",
+                              () {
+                                _openExternalLink("https://chatgpt.com/");
+                              },
+                            ),
+                            _buildButton(
+                              "اسأل المعلم",
+                              "assets/icons/message.png",
+                              () {},
+                            ),
+                            _buildButton(
+                              "الملازم الالكترونيه",
+                              "assets/icons/open-book.png",
+                              () {},
+                            ),
+                            _buildButton(
+                              "الفيديوهات",
+                              "assets/icons/play.png",
+                              () {},
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // قائمة الدروس
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Mycolors.darkblue,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            // Header للقائمة
+                            Container(
+                              padding: EdgeInsets.all(16),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.playlist_play,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "محتويات الوحدة (${lessons.length + externalSources.length})",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Cairo',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Divider(color: Colors.white12, height: 1),
+
+                            // قائمة العناصر
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount:
+                                    (lessons.length + externalSources.length),
+                                itemBuilder: (context, index) {
+                                  if (index < lessons.length) {
+                                    // عرض الدروس
+                                    final item = lessons[index];
+                                    final lesson = item.lesson!;
+                                    final isSelected =
+                                        _currentSelectedItemId == item.id;
+
+                                    return LessonItem(
+                                      title: lesson.title,
+                                      time: _formatDuration(lesson.videoLength),
+                                      type: item.itemType,
+                                      isSelected: isSelected,
+                                      onTap: () {
+                                        if (!mounted || _isDisposing) return;
+
+                                        print('Tapping on lesson: ${item.id}');
+                                        setState(() {
+                                          _currentSelectedItemId = item.id;
+                                        });
+
+                                        // تحميل تفاصيل الدرس
+                                        context
+                                            .read<LessonDetailsCubit>()
+                                            .emitLessonDetailsStates(item.id);
+                                      },
+                                    );
+                                  } else {
+                                    // عرض المصادر الخارجية
+                                    final sourceIndex = index - lessons.length;
+                                    final item = externalSources[sourceIndex];
+                                    final externalSource = item.externalSource!;
+                                    final isSelected =
+                                        _currentSelectedItemId == item.id;
+
+                                    return LessonItem(
+                                      title: externalSource.title,
+                                      time: null,
+                                      type: item.itemType,
+                                      isSelected: isSelected,
+                                      onTap: () {
+                                        if (!mounted || _isDisposing) return;
+
+                                        setState(() {
+                                          _currentSelectedItemId = item.id;
+                                        });
+                                        _openExternalLink(externalSource.url);
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+              error: (error) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 48),
+                    SizedBox(height: 16),
+                    Text(
+                      "خطأ في تحميل البيانات",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 18,
+                        fontFamily: 'Cairo',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      error,
+                      style: TextStyle(
+                        color: Colors.red.withOpacity(0.8),
+                        fontSize: 14,
+                        fontFamily: 'Cairo',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        context
+                            .read<ModuleLessonsCubit>()
+                            .emitModuleLessonsStates(
+                              widget.moduleId,
+                              widget.courseId,
+                            );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      child: Text(
+                        "إعادة المحاولة",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -377,6 +445,8 @@ class _ViewModuleState extends State<ViewModule> {
   }
 
   void _openExternalLink(String url) {
+    if (!mounted || _isDisposing) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -416,10 +486,7 @@ class _ViewModuleState extends State<ViewModule> {
     try {
       final Uri uri = Uri.parse(url);
       if (await canLaunchUrl(uri)) {
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication, // يفتح في المتصفح الخارجي
-        );
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
         _showErrorDialog('لا يمكن فتح الرابط: $url');
       }
@@ -429,6 +496,8 @@ class _ViewModuleState extends State<ViewModule> {
   }
 
   void _showErrorDialog(String message) {
+    if (!mounted || _isDisposing) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -458,7 +527,7 @@ class _ViewModuleState extends State<ViewModule> {
     return GestureDetector(
       onTap: ontap,
       child: Container(
-        width: 170, // عرض ثابت للزرار
+        width: 170,
         margin: EdgeInsets.symmetric(horizontal: 6),
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         decoration: BoxDecoration(
