@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:prime_academy/core/networking/api_constants.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_request_body.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
@@ -32,4 +33,6 @@ abstract class ApiService {
     @Path("moduleId") int moduleId,
     @Body() ModuleLessonsRequestBody moduleLessonsRequestBody,
   );
+  @GET("module-items/lesson/{itemId}/user")
+  Future<LessonDetailsResponse> getLessonDetails(@Path("itemId") int itemId);
 }

@@ -274,7 +274,9 @@ class _ViewModuleState extends State<ViewModule> {
                                         type: item.itemType,
                                         onTap: () {
                                           if (lesson.externalUrl != null) {
-                                            _playVideo(lesson.externalUrl!);
+                                            setState(() {
+                                              _playVideo(lesson.externalUrl!);
+                                            });
                                           }
                                         },
                                       );
