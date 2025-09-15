@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-
+import 'package:prime_academy/features/CoursesModules/data/models/lesson_type.dart';
 part 'module_lessons_response_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
@@ -46,7 +46,7 @@ class Item {
   @JsonKey(name: 'module_id')
   final int moduleId;
   @JsonKey(name: 'item_type')
-  final String itemType;
+  final LessonType itemType;
   @JsonKey(name: 'lesson_id')
   final int? lessonId;
   @JsonKey(name: 'external_source_id')

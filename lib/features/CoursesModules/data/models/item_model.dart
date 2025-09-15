@@ -1,8 +1,8 @@
-enum LessonType { video, link }
+import 'package:prime_academy/features/CoursesModules/data/models/lesson_type.dart';
 
 class ItemModel {
   final int id;
-  final LessonType type;
+  final LessonType type; // Enum
   final String title;
   final String? time;
 
@@ -22,20 +22,18 @@ class ItemModel {
     String? extractedTime;
 
     if (json['lesson'] != null) {
-      // جاي من كائن lesson
       extractedTitle = json['lesson']['title'] ?? '';
       if (json['lesson']['video_length'] != null) {
         final secs = json['lesson']['video_length'] as int;
-        extractedTime = "${(secs ~/ 60)} min"; // مثلا بالدقايق
+        extractedTime = "${(secs ~/ 60)} min";
       }
     } else if (json['external_source'] != null) {
-      // جاي من external_source
       extractedTitle = json['external_source']['title'] ?? '';
     }
 
     return ItemModel(
       id: json['id'],
-      type: itemType,
+      type: itemType, // Enum هنا
       title: extractedTitle,
       time: extractedTime,
     );

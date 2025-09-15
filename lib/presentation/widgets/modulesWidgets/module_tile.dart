@@ -94,9 +94,8 @@ class _ModuleTileState extends State<ModuleTile> {
                     (item) => LessonItem(
                       title: item.title,
                       time: item.time,
-                      type: item.title,
+                      type: item.type,
                       onTap: () {
-                        print("ItemId sent: ${item.id}");
                         Navigator.pushNamed(
                           context,
                           AppRoutes.moduleLessonsPreview,

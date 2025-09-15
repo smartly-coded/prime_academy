@@ -271,7 +271,7 @@ class _ViewModuleState extends State<ViewModule> {
                                         time: _formatDuration(
                                           lesson.videoLength,
                                         ),
-                                        type: lesson.title,
+                                        type: item.itemType,
                                         onTap: () {
                                           if (lesson.externalUrl != null) {
                                             _playVideo(lesson.externalUrl!);

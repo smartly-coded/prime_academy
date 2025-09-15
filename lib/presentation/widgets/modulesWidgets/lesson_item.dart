@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
-import 'package:prime_academy/features/CoursesModules/data/models/item_model.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/lesson_type.dart';
 
 class LessonItem extends StatelessWidget {
   final String title;
   final String? time;
-  final String type;
+  final LessonType type;
   final VoidCallback? onTap;
 
   const LessonItem({
