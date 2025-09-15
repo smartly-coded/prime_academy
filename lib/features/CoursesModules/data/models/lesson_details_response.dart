@@ -89,3 +89,60 @@ class Ranges {
 
   Map<String, dynamic> toJson() => _$RangesToJson(this);
 }
+
+@JsonSerializable()
+class VideoQuestion {
+  final int id;
+  final String title;
+  @JsonKey(name: 'lesson_id')
+  final int lessonId;
+  final int timestamp;
+  final String type;
+  @JsonKey(name: 'created_at')
+  final DateTime createdAt;
+  @JsonKey(name: 'updated_at')
+  final DateTime updatedAt;
+  @JsonKey(name: 'correct_answers')
+  final List<CorrectAnswer> correctAnswers;
+
+  VideoQuestion({
+    required this.id,
+    required this.title,
+    required this.lessonId,
+    required this.timestamp,
+    required this.type,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.correctAnswers,
+  });
+
+  factory VideoQuestion.fromJson(Map<String, dynamic> json) =>
+      _$VideoQuestionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VideoQuestionToJson(this);
+}
+
+@JsonSerializable()
+class CorrectAnswer {
+  final int id;
+  @JsonKey(name: 'question_id')
+  final int questionId;
+  final String title;
+  @JsonKey(name: 'created_at')
+  final DateTime createdAt;
+  @JsonKey(name: 'updated_at')
+  final DateTime updatedAt;
+
+  CorrectAnswer({
+    required this.id,
+    required this.questionId,
+    required this.title,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory CorrectAnswer.fromJson(Map<String, dynamic> json) =>
+      _$CorrectAnswerFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CorrectAnswerToJson(this);
+}

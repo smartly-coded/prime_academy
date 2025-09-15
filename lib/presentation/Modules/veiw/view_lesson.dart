@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
-import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_state.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/question_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -31,7 +32,10 @@ class _ViewModuleState extends State<ViewModule> {
   int? _currentSelectedItemId;
   String? _currentVideoId; // لتتبع الفيديو الحالي
   bool _isDisposing = false; // فلاج لمنع العمليات أثناء التدمير
-
+  LessonDetailsResponse? _currentLessonDetails;
+  List<VideoQuestion> _lessonQuestions = [];
+  List<int> _askedQuestionTimestamps = [];
+  bool _isQuestionDialogOpen = false;
   @override
   void initState() {
     super.initState();
@@ -144,6 +148,16 @@ class _ViewModuleState extends State<ViewModule> {
               print('LessonDetailsState changed: $state');
               state.whenOrNull(
                 success: (lessonDetails) {
+                  _currentLessonDetails = lessonDetails;
+
+                  // معالجة الأسئلة
+                  _lessonQuestions = _parseQuestionsFromResponse(lessonDetails);
+                  _askedQuestionTimestamps.clear();
+
+                  print(
+                    'Loaded ${_lessonQuestions.length} questions for this lesson',
+                  );
+
                   print('Success: URL = ${lessonDetails.externalUrl}');
                   final url = lessonDetails.externalUrl;
                   if (url != null && url.isNotEmpty) {
@@ -523,36 +537,266 @@ class _ViewModuleState extends State<ViewModule> {
     );
   }
 
-  Widget _buildButton(String text, String imagePath, VoidCallback ontap) {
-    return GestureDetector(
-      onTap: ontap,
-      child: Container(
-        width: 170,
-        margin: EdgeInsets.symmetric(horizontal: 6),
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-        decoration: BoxDecoration(
-          color: Mycolors.cardColor1,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                textAlign: TextAlign.right,
-                text,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontFamily: 'Cairo',
-                  color: Colors.white,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            SizedBox(width: 8),
-            Image.asset(imagePath, width: 20, height: 20),
-          ],
-        ),
+  List<VideoQuestion> _parseQuestionsFromResponse(
+    LessonDetailsResponse response,
+  ) {
+    List<VideoQuestion> questions = [];
+
+    try {
+      // التعامل مع groupedQuestions كـ Map<String, dynamic>
+      response.groupedQuestions.forEach((timestampKey, questionsList) {
+        final timestamp = int.tryParse(timestampKey);
+        if (timestamp != null && questionsList is List) {
+          for (var questionData in questionsList) {
+            if (questionData is Map<String, dynamic>) {
+              try {
+                final question = VideoQuestion.fromJson(questionData);
+                questions.add(question);
+              } catch (e) {
+                print('Error parsing question: $e');
+                print('Question data: $questionData');
+              }
+            }
+          }
+        }
+      });
+
+      // ترتيب الأسئلة حسب الوقت
+      questions.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    } catch (e) {
+      print('Error parsing questions from response: $e');
+    }
+
+    return questions;
+  }
+
+  // تحديث التحقق من الأسئلة
+  void _checkForQuestionsAtTime(int currentSeconds) {
+    if (_lessonQuestions.isEmpty) return;
+
+    // البحث عن أسئلة في هذا الوقت
+    for (VideoQuestion question in _lessonQuestions) {
+      if (!_askedQuestionTimestamps.contains(question.timestamp) &&
+          currentSeconds >= question.timestamp &&
+          currentSeconds <= question.timestamp + 2) {
+        _askedQuestionTimestamps.add(question.timestamp);
+        _showQuestionDialog(question);
+        break;
+      }
+    }
+  }
+
+  // تحديث عرض dialog السؤال
+  void _showQuestionDialog(VideoQuestion question) {
+    if (!mounted || _isDisposing || _isQuestionDialogOpen) return;
+
+    _isQuestionDialogOpen = true;
+
+    // إيقاف الفيديو مؤقتاً
+    if (_controller != null && _controller!.value.isPlaying) {
+      _controller!.pause();
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => QuestionDialog(
+        question: question,
+        onAnswerSubmitted: (answer) {
+          _isQuestionDialogOpen = false;
+          Navigator.of(context).pop();
+
+          // إعادة تشغيل الفيديو
+          if (_controller != null && mounted && !_isDisposing) {
+            _controller!.play();
+          }
+
+          _handleQuestionAnswer(question, answer);
+        },
+        onSkip: () {
+          _isQuestionDialogOpen = false;
+          Navigator.of(context).pop();
+
+          if (_controller != null && mounted && !_isDisposing) {
+            _controller!.play();
+          }
+        },
       ),
     );
   }
+
+  // تحديث معالجة الإجابة
+  void _handleQuestionAnswer(VideoQuestion question, String answer) {
+    print('Question: ${question.title}');
+    print('Answer: $answer');
+
+    final isCorrect = _isAnswerCorrect(question, answer);
+
+    if (isCorrect) {
+      _showFeedback("إجابة صحيحة!", true);
+    } else {
+      final correctAnswer = question.correctAnswers.isNotEmpty
+          ? question.correctAnswers.first.title
+          : "غير متوفرة";
+      _showFeedback("إجابة خاطئة. الإجابة الصحيحة: $correctAnswer", false);
+    }
+
+    // يمكن إرسال الإجابة للسيرفر هنا
+    _submitAnswerToServer(question, answer, isCorrect);
+  }
+
+  void _showFeedback(String message, bool isCorrect) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(fontFamily: 'Cairo')),
+        backgroundColor: isCorrect ? Colors.green : Colors.red,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  // التحقق من صحة الإجابة
+  bool _isAnswerCorrect(VideoQuestion question, String userAnswer) {
+    if (question.correctAnswers.isEmpty) return false;
+
+    final cleanUserAnswer = userAnswer.trim().toLowerCase();
+
+    return question.correctAnswers.any((correctAnswer) {
+      final cleanCorrectAnswer = correctAnswer.title.trim().toLowerCase();
+
+      // مقارنة مباشرة
+      if (cleanUserAnswer == cleanCorrectAnswer) return true;
+
+      // مقارنة الكلمات المفتاحية
+      final userWords = cleanUserAnswer.split(' ');
+      final correctWords = cleanCorrectAnswer.split(' ');
+
+      // التحقق من وجود معظم الكلمات الصحيحة في إجابة المستخدم
+      int matchCount = 0;
+      for (String correctWord in correctWords) {
+        if (userWords.any(
+          (userWord) =>
+              userWord.contains(correctWord) || correctWord.contains(userWord),
+        )) {
+          matchCount++;
+        }
+      }
+
+      // إذا كان أكثر من 60% من الكلمات متطابقة
+      return (matchCount / correctWords.length) >= 0.6;
+    });
+  }
+
+  // إرسال الإجابة للسيرفر (اختياري)
+  Future<void> _submitAnswerToServer(
+    VideoQuestion question,
+    String answer,
+    bool isCorrect,
+  ) async {
+    try {
+      // هنا يمكن إرسال البيانات للـ API
+      final data = {
+        'question_id': question.id,
+        'lesson_id': question.lessonId,
+        'user_answer': answer,
+        'is_correct': isCorrect,
+        'timestamp': question.timestamp,
+        'answered_at': DateTime.now().toIso8601String(),
+      };
+
+      print('Submitting answer to server: $data');
+      // await apiService.submitAnswer(data);
+    } catch (e) {
+      print('Error submitting answer: $e');
+    }
+  }
+
+  // عرض معلومات إحصائية
+  void _showQuestionStats() {
+    final totalQuestions = _lessonQuestions.length;
+    final answeredQuestions = _askedQuestionTimestamps.length;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Mycolors.darkblue,
+        title: Text(
+          "إحصائيات الأسئلة",
+          style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildStatRow("إجمالي الأسئلة", totalQuestions.toString()),
+            _buildStatRow("الأسئلة المجابة", answeredQuestions.toString()),
+            _buildStatRow(
+              "المتبقي",
+              (totalQuestions - answeredQuestions).toString(),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "موافق",
+              style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            value,
+            style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+          ),
+          Text(
+            label,
+            style: TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+Widget _buildButton(String text, String imagePath, VoidCallback ontap) {
+  return GestureDetector(
+    onTap: ontap,
+    child: Container(
+      width: 170,
+      margin: EdgeInsets.symmetric(horizontal: 6),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      decoration: BoxDecoration(
+        color: Mycolors.cardColor1,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              textAlign: TextAlign.right,
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                fontFamily: 'Cairo',
+                color: Colors.white,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          SizedBox(width: 8),
+          Image.asset(imagePath, width: 20, height: 20),
+        ],
+      ),
+    ),
+  );
 }

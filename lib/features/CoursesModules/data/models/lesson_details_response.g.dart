@@ -60,3 +60,47 @@ Ranges _$RangesFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$RangesToJson(Ranges instance) => <String, dynamic>{
   'watched_ranges': instance.watchedRanges,
 };
+
+VideoQuestion _$VideoQuestionFromJson(Map<String, dynamic> json) =>
+    VideoQuestion(
+      id: (json['id'] as num).toInt(),
+      title: json['title'] as String,
+      lessonId: (json['lesson_id'] as num).toInt(),
+      timestamp: (json['timestamp'] as num).toInt(),
+      type: json['type'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      correctAnswers: (json['correct_answers'] as List<dynamic>)
+          .map((e) => CorrectAnswer.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$VideoQuestionToJson(VideoQuestion instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'lesson_id': instance.lessonId,
+      'timestamp': instance.timestamp,
+      'type': instance.type,
+      'created_at': instance.createdAt.toIso8601String(),
+      'updated_at': instance.updatedAt.toIso8601String(),
+      'correct_answers': instance.correctAnswers,
+    };
+
+CorrectAnswer _$CorrectAnswerFromJson(Map<String, dynamic> json) =>
+    CorrectAnswer(
+      id: (json['id'] as num).toInt(),
+      questionId: (json['question_id'] as num).toInt(),
+      title: json['title'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+    );
+
+Map<String, dynamic> _$CorrectAnswerToJson(CorrectAnswer instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'question_id': instance.questionId,
+      'title': instance.title,
+      'created_at': instance.createdAt.toIso8601String(),
+      'updated_at': instance.updatedAt.toIso8601String(),
+    };
