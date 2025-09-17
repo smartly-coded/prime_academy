@@ -6,10 +6,14 @@ import 'package:prime_academy/features/CoursesModules/logic/lesson_details_cubit
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_state.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/essay_question_dialog.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/fill_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
-import 'package:prime_academy/presentation/widgets/modulesWidgets/question_dialog.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/choose_question_dialog.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/match_question_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'dart:async';
 
 class ViewModule extends StatefulWidget {
   final int moduleId;
@@ -30,16 +34,19 @@ class ViewModule extends StatefulWidget {
 class _ViewModuleState extends State<ViewModule> {
   YoutubePlayerController? _controller;
   int? _currentSelectedItemId;
-  String? _currentVideoId; // لتتبع الفيديو الحالي
-  bool _isDisposing = false; // فلاج لمنع العمليات أثناء التدمير
-  LessonDetailsResponse? _currentLessonDetails;
-  List<VideoQuestion> _lessonQuestions = [];
-  List<int> _askedQuestionTimestamps = [];
-  bool _isQuestionDialogOpen = false;
+  String? _currentVideoId;
+  bool _isDisposing = false;
+  List<LessonQuestion> _lessonQuestions = [];
+  Set<int> _shownQuestions = {};
+  Timer? _questionCheckTimer;
+  bool _isPlayerReady = false;
+
   @override
   void initState() {
     super.initState();
     _currentSelectedItemId = widget.itemId;
+
+    // تحميل قائمة الدروس
     context.read<ModuleLessonsCubit>().emitModuleLessonsStates(
       widget.moduleId,
       widget.courseId,
@@ -53,6 +60,7 @@ class _ViewModuleState extends State<ViewModule> {
     final videoId = YoutubePlayer.convertUrlToId(url);
     if (videoId != null && _currentVideoId != videoId) {
       _currentVideoId = videoId;
+      _isPlayerReady = false;
 
       _controller = YoutubePlayerController(
         initialVideoId: videoId,
@@ -69,10 +77,78 @@ class _ViewModuleState extends State<ViewModule> {
           hideThumbnail: false,
         ),
       );
+
+      // إضافة listener للتحقق من الأسئلة
+      _controller!.addListener(_onPlayerStateChange);
     }
   }
 
-  // الحل الأفضل والأبسط - استخدام load method:
+  Widget _buildQuestionDialog(LessonQuestion question) {
+    switch (question.type) {
+      case QuestionType.mcq:
+        return FullScreenMcqDialog(
+          question: question,
+          onAnswerSubmitted: (bool isCorrect) {
+            Navigator.of(context).pop();
+            _controller?.play();
+            print('Answer result: ${isCorrect ? "Correct" : "Incorrect"}');
+          },
+          onSkip: () {
+            Navigator.of(context).pop();
+            _controller?.play();
+            print('Question skipped');
+          },
+        );
+      case QuestionType.essay:
+        return EssayQuestionDialog(
+          question: question,
+          onAnswerSubmitted: (String answer, bool isCorrect) {
+            Navigator.of(context).pop();
+            _controller?.play();
+            print('Essay answer: $answer, Correct: $isCorrect');
+          },
+          onSkip: () {
+            Navigator.of(context).pop();
+            _controller?.play();
+          },
+        );
+      case QuestionType.fillBlank:
+        int expectedLength = question.correctAnswers.isNotEmpty
+            ? question.correctAnswers.first.title!.length
+            : 5; // قيمة افتراضية
+        return FillInBlanksDialog(
+          question: question,
+          onAnswerSubmitted: (String answer, bool isCorrect) {
+            Navigator.of(context).pop();
+            _controller?.play();
+            print('Fill answer: $answer, Correct: $isCorrect');
+          },
+          onSkip: () {
+            Navigator.of(context).pop();
+            _controller?.play();
+          },
+          expectedLength: expectedLength,
+        );
+
+      case QuestionType.match:
+        return MatchQuestionDialog(
+          question: question,
+          onAnswerSubmitted: (bool isCorrect) {
+            Navigator.of(context).pop();
+            _controller?.play();
+            print('Match result: ${isCorrect ? "Correct" : "Incorrect"}');
+          },
+          onSkip: () {
+            Navigator.of(context).pop();
+            _controller?.play();
+          },
+        );
+
+      default:
+        return Container(child: Text("not supported type"));
+    }
+  }
+
   void _changeVideo(String url) {
     if (_isDisposing || !mounted) return;
 
@@ -81,26 +157,39 @@ class _ViewModuleState extends State<ViewModule> {
       print('Loading new video: $videoId');
 
       if (_controller != null) {
-        // استخدام load method لتغيير الفيديو بدون إعادة إنشاء الcontroller
         setState(() {
           _currentVideoId = videoId;
+          _isPlayerReady = false;
+          _shownQuestions.clear(); // مسح الأسئلة المعروضة للفيديو الجديد
         });
         _controller!.load(videoId);
       } else {
-        // إنشاء controller جديد لو مش موجود
         _initializePlayer(url);
       }
     }
   }
 
+  void _onPlayerStateChange() {
+    if (_controller == null || !_isPlayerReady || _isDisposing || !mounted) {
+      return;
+    }
+
+    final currentSeconds = _controller!.value.position.inSeconds;
+    _checkForQuestions(currentSeconds);
+  }
+
   void _safeDisposeController() {
+    _questionCheckTimer?.cancel();
+    _questionCheckTimer = null;
+
     if (_controller != null) {
       try {
+        _controller!.removeListener(_onPlayerStateChange);
         final tempController = _controller!;
         _controller = null;
         _currentVideoId = null;
+        _isPlayerReady = false;
 
-        // تدمير الكنترولر في الـ frame التالي
         WidgetsBinding.instance.addPostFrameCallback((_) {
           try {
             tempController.dispose();
@@ -119,6 +208,146 @@ class _ViewModuleState extends State<ViewModule> {
     _isDisposing = true;
     _safeDisposeController();
     super.dispose();
+  }
+
+  void _checkForQuestions(int currentSeconds) {
+    if (_lessonQuestions.isEmpty) {
+      return; // لا توجد أسئلة
+    }
+
+    print('=== CHECKING QUESTIONS ===');
+    print('Current time: ${currentSeconds}s');
+    print('Total questions: ${_lessonQuestions.length}');
+    print('Already shown: ${_shownQuestions.toList()}');
+
+    for (final question in _lessonQuestions) {
+      print(
+        'Question ${question.id}: timestamp=${question.timestamp}, title="${question.title}"',
+      );
+
+      // تحقق من وقت السؤال مع هامش تسامح ±2 ثانية
+      bool timeMatch =
+          (currentSeconds >= question.timestamp &&
+          currentSeconds <= question.timestamp + 2);
+      bool notShownYet = !_shownQuestions.contains(question.id);
+
+      print(
+        '  - Time match: $timeMatch (${question.timestamp} <= $currentSeconds <= ${question.timestamp + 2})',
+      );
+      print('  - Not shown yet: $notShownYet');
+
+      if (timeMatch && notShownYet) {
+        print('🎯 SHOWING QUESTION ${question.id} at time $currentSeconds');
+        _shownQuestions.add(question.id);
+
+        // وقف الفيديو
+        _controller?.pause();
+        print('Video paused for question');
+
+        Navigator.of(context).push(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                _buildQuestionDialog(question),
+            transitionDuration: const Duration(milliseconds: 300),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+                        CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeOut,
+                        ),
+                      ),
+                      child: child,
+                    ),
+                  );
+                },
+          ),
+        );
+
+        break; // إظهار سؤال واحد فقط في كل مرة
+      }
+    }
+    print('=== END CHECKING ===');
+  }
+
+  void _updateLessonQuestions(LessonDetailsResponse lessonDetails) {
+    List<LessonQuestion> allQuestions = [];
+
+    try {
+      print('Raw groupedQuestions: ${lessonDetails.groupedQuestions}');
+
+      // البيانات مُجمعة حسب timestamp، لذا نحتاج لاستخراجها من كل timestamp
+      lessonDetails.groupedQuestions.forEach((timestampKey, questionsData) {
+        print('Processing timestamp: $timestampKey with data: $questionsData');
+
+        // تحويل timestamp من String إلى int
+        int timestamp;
+        try {
+          timestamp = int.parse(timestampKey);
+        } catch (e) {
+          print('Error parsing timestamp $timestampKey: $e');
+          return; // تخطي هذا الـ timestamp
+        }
+
+        if (questionsData is List) {
+          for (var questionData in questionsData) {
+            try {
+              print('Processing question data: $questionData');
+
+              // تأكد من أن questionData هو Map
+              if (questionData is Map<String, dynamic>) {
+                // إضافة timestamp للبيانات إذا لم تكن موجودة
+                if (!questionData.containsKey('timestamp')) {
+                  questionData['timestamp'] = timestamp;
+                }
+
+                final question = LessonQuestion.fromJson(questionData);
+                allQuestions.add(question);
+                print(
+                  '✅ Added question: ${question.title} at ${question.timestamp}s',
+                );
+              } else {
+                print('❌ Question data is not a Map: $questionData');
+              }
+            } catch (e) {
+              print('❌ Error parsing individual question: $e');
+              print('Question data: $questionData');
+            }
+          }
+        } else {
+          print('❌ Questions data is not a List: $questionsData');
+        }
+      });
+
+      // ترتيب الأسئلة حسب الوقت
+      allQuestions.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+      setState(() {
+        _lessonQuestions = allQuestions;
+        _shownQuestions.clear(); // مسح الأسئلة المعروضة السابقة
+      });
+
+      print(
+        '✅ Updated lesson questions: ${_lessonQuestions.length} questions total',
+      );
+
+      // طباعة تفاصيل كل سؤال للـ debugging
+      for (var question in _lessonQuestions) {
+        print(
+          'Question ${question.id}: "${question.title}" at ${question.timestamp}s - ${question.answers.length} answers',
+        );
+      }
+    } catch (e) {
+      print('❌ Error processing grouped questions: $e');
+      print('Stack trace: ${StackTrace.current}');
+      setState(() {
+        _lessonQuestions = [];
+        _shownQuestions.clear();
+      });
+    }
   }
 
   @override
@@ -148,17 +377,9 @@ class _ViewModuleState extends State<ViewModule> {
               print('LessonDetailsState changed: $state');
               state.whenOrNull(
                 success: (lessonDetails) {
-                  _currentLessonDetails = lessonDetails;
+                  // تحديث الأسئلة أولاً
+                  _updateLessonQuestions(lessonDetails);
 
-                  // معالجة الأسئلة
-                  _lessonQuestions = _parseQuestionsFromResponse(lessonDetails);
-                  _askedQuestionTimestamps.clear();
-
-                  print(
-                    'Loaded ${_lessonQuestions.length} questions for this lesson',
-                  );
-
-                  print('Success: URL = ${lessonDetails.externalUrl}');
                   final url = lessonDetails.externalUrl;
                   if (url != null && url.isNotEmpty) {
                     final videoId = YoutubePlayer.convertUrlToId(url);
@@ -179,6 +400,25 @@ class _ViewModuleState extends State<ViewModule> {
                   print('Error loading lesson: $msg');
                   if (mounted && !_isDisposing) {
                     _showErrorDialog("فشل تحميل تفاصيل الدرس: $msg");
+                  }
+                },
+              );
+            },
+          ),
+          // إضافة listener للـ ModuleLessons للتحديد التلقائي
+          BlocListener<ModuleLessonsCubit, ModuleLessonsState>(
+            listener: (context, state) {
+              state.whenOrNull(
+                success: (module) {
+                  // التحقق إذا لم يتم تحميل تفاصيل العنصر المحدد مسبقاً
+                  if (_currentSelectedItemId == widget.itemId &&
+                      _controller == null) {
+                    print(
+                      'Auto-loading initial lesson details for item: ${widget.itemId}',
+                    );
+                    context.read<LessonDetailsCubit>().emitLessonDetailsStates(
+                      widget.itemId,
+                    );
                   }
                 },
               );
@@ -239,13 +479,32 @@ class _ViewModuleState extends State<ViewModule> {
                               handleColor: Colors.redAccent,
                             ),
                             onReady: () {
+                              print('YouTube player is ready');
                               if (mounted && !_isDisposing) {
-                                print('Player is ready.');
+                                setState(() {
+                                  _isPlayerReady = true;
+                                });
+
+                                // بدء timer للتحقق من الأسئلة كل ثانية
+                                _questionCheckTimer?.cancel();
+                                _questionCheckTimer = Timer.periodic(
+                                  Duration(seconds: 1),
+                                  (timer) {
+                                    if (_controller != null &&
+                                        _isPlayerReady &&
+                                        mounted) {
+                                      final currentSeconds =
+                                          _controller!.value.position.inSeconds;
+                                      _checkForQuestions(currentSeconds);
+                                    }
+                                  },
+                                );
                               }
                             },
                             onEnded: (data) {
                               if (mounted && !_isDisposing) {
                                 print('Video ended: ${data.videoId}');
+                                _questionCheckTimer?.cancel();
                               }
                             },
                           ),
@@ -350,6 +609,9 @@ class _ViewModuleState extends State<ViewModule> {
                                         setState(() {
                                           _currentSelectedItemId = item.id;
                                         });
+
+                                        // إيقاف الـ timer الحالي
+                                        _questionCheckTimer?.cancel();
 
                                         // تحميل تفاصيل الدرس
                                         context
@@ -537,266 +799,36 @@ class _ViewModuleState extends State<ViewModule> {
     );
   }
 
-  List<VideoQuestion> _parseQuestionsFromResponse(
-    LessonDetailsResponse response,
-  ) {
-    List<VideoQuestion> questions = [];
-
-    try {
-      // التعامل مع groupedQuestions كـ Map<String, dynamic>
-      response.groupedQuestions.forEach((timestampKey, questionsList) {
-        final timestamp = int.tryParse(timestampKey);
-        if (timestamp != null && questionsList is List) {
-          for (var questionData in questionsList) {
-            if (questionData is Map<String, dynamic>) {
-              try {
-                final question = VideoQuestion.fromJson(questionData);
-                questions.add(question);
-              } catch (e) {
-                print('Error parsing question: $e');
-                print('Question data: $questionData');
-              }
-            }
-          }
-        }
-      });
-
-      // ترتيب الأسئلة حسب الوقت
-      questions.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    } catch (e) {
-      print('Error parsing questions from response: $e');
-    }
-
-    return questions;
-  }
-
-  // تحديث التحقق من الأسئلة
-  void _checkForQuestionsAtTime(int currentSeconds) {
-    if (_lessonQuestions.isEmpty) return;
-
-    // البحث عن أسئلة في هذا الوقت
-    for (VideoQuestion question in _lessonQuestions) {
-      if (!_askedQuestionTimestamps.contains(question.timestamp) &&
-          currentSeconds >= question.timestamp &&
-          currentSeconds <= question.timestamp + 2) {
-        _askedQuestionTimestamps.add(question.timestamp);
-        _showQuestionDialog(question);
-        break;
-      }
-    }
-  }
-
-  // تحديث عرض dialog السؤال
-  void _showQuestionDialog(VideoQuestion question) {
-    if (!mounted || _isDisposing || _isQuestionDialogOpen) return;
-
-    _isQuestionDialogOpen = true;
-
-    // إيقاف الفيديو مؤقتاً
-    if (_controller != null && _controller!.value.isPlaying) {
-      _controller!.pause();
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => QuestionDialog(
-        question: question,
-        onAnswerSubmitted: (answer) {
-          _isQuestionDialogOpen = false;
-          Navigator.of(context).pop();
-
-          // إعادة تشغيل الفيديو
-          if (_controller != null && mounted && !_isDisposing) {
-            _controller!.play();
-          }
-
-          _handleQuestionAnswer(question, answer);
-        },
-        onSkip: () {
-          _isQuestionDialogOpen = false;
-          Navigator.of(context).pop();
-
-          if (_controller != null && mounted && !_isDisposing) {
-            _controller!.play();
-          }
-        },
-      ),
-    );
-  }
-
-  // تحديث معالجة الإجابة
-  void _handleQuestionAnswer(VideoQuestion question, String answer) {
-    print('Question: ${question.title}');
-    print('Answer: $answer');
-
-    final isCorrect = _isAnswerCorrect(question, answer);
-
-    if (isCorrect) {
-      _showFeedback("إجابة صحيحة!", true);
-    } else {
-      final correctAnswer = question.correctAnswers.isNotEmpty
-          ? question.correctAnswers.first.title
-          : "غير متوفرة";
-      _showFeedback("إجابة خاطئة. الإجابة الصحيحة: $correctAnswer", false);
-    }
-
-    // يمكن إرسال الإجابة للسيرفر هنا
-    _submitAnswerToServer(question, answer, isCorrect);
-  }
-
-  void _showFeedback(String message, bool isCorrect) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message, style: TextStyle(fontFamily: 'Cairo')),
-        backgroundColor: isCorrect ? Colors.green : Colors.red,
-        duration: Duration(seconds: 3),
-      ),
-    );
-  }
-
-  // التحقق من صحة الإجابة
-  bool _isAnswerCorrect(VideoQuestion question, String userAnswer) {
-    if (question.correctAnswers.isEmpty) return false;
-
-    final cleanUserAnswer = userAnswer.trim().toLowerCase();
-
-    return question.correctAnswers.any((correctAnswer) {
-      final cleanCorrectAnswer = correctAnswer.title.trim().toLowerCase();
-
-      // مقارنة مباشرة
-      if (cleanUserAnswer == cleanCorrectAnswer) return true;
-
-      // مقارنة الكلمات المفتاحية
-      final userWords = cleanUserAnswer.split(' ');
-      final correctWords = cleanCorrectAnswer.split(' ');
-
-      // التحقق من وجود معظم الكلمات الصحيحة في إجابة المستخدم
-      int matchCount = 0;
-      for (String correctWord in correctWords) {
-        if (userWords.any(
-          (userWord) =>
-              userWord.contains(correctWord) || correctWord.contains(userWord),
-        )) {
-          matchCount++;
-        }
-      }
-
-      // إذا كان أكثر من 60% من الكلمات متطابقة
-      return (matchCount / correctWords.length) >= 0.6;
-    });
-  }
-
-  // إرسال الإجابة للسيرفر (اختياري)
-  Future<void> _submitAnswerToServer(
-    VideoQuestion question,
-    String answer,
-    bool isCorrect,
-  ) async {
-    try {
-      // هنا يمكن إرسال البيانات للـ API
-      final data = {
-        'question_id': question.id,
-        'lesson_id': question.lessonId,
-        'user_answer': answer,
-        'is_correct': isCorrect,
-        'timestamp': question.timestamp,
-        'answered_at': DateTime.now().toIso8601String(),
-      };
-
-      print('Submitting answer to server: $data');
-      // await apiService.submitAnswer(data);
-    } catch (e) {
-      print('Error submitting answer: $e');
-    }
-  }
-
-  // عرض معلومات إحصائية
-  void _showQuestionStats() {
-    final totalQuestions = _lessonQuestions.length;
-    final answeredQuestions = _askedQuestionTimestamps.length;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Mycolors.darkblue,
-        title: Text(
-          "إحصائيات الأسئلة",
-          style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+  Widget _buildButton(String text, String imagePath, VoidCallback ontap) {
+    return GestureDetector(
+      onTap: ontap,
+      child: Container(
+        width: 170,
+        margin: EdgeInsets.symmetric(horizontal: 6),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        decoration: BoxDecoration(
+          color: Mycolors.cardColor1,
+          borderRadius: BorderRadius.circular(12),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
           children: [
-            _buildStatRow("إجمالي الأسئلة", totalQuestions.toString()),
-            _buildStatRow("الأسئلة المجابة", answeredQuestions.toString()),
-            _buildStatRow(
-              "المتبقي",
-              (totalQuestions - answeredQuestions).toString(),
+            Expanded(
+              child: Text(
+                textAlign: TextAlign.right,
+                text,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontFamily: 'Cairo',
+                  color: Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
+            SizedBox(width: 8),
+            Image.asset(imagePath, width: 20, height: 20),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "موافق",
-              style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
-            ),
-          ),
-        ],
       ),
     );
   }
-
-  Widget _buildStatRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            value,
-            style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
-          ),
-          Text(
-            label,
-            style: TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-Widget _buildButton(String text, String imagePath, VoidCallback ontap) {
-  return GestureDetector(
-    onTap: ontap,
-    child: Container(
-      width: 170,
-      margin: EdgeInsets.symmetric(horizontal: 6),
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-      decoration: BoxDecoration(
-        color: Mycolors.cardColor1,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              textAlign: TextAlign.right,
-              text,
-              style: TextStyle(
-                fontSize: 13,
-                fontFamily: 'Cairo',
-                color: Colors.white,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          SizedBox(width: 8),
-          Image.asset(imagePath, width: 20, height: 20),
-        ],
-      ),
-    ),
-  );
 }
