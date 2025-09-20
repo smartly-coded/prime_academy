@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String apiBaseUrl = "http://192.168.0.105:4005/api/";
+  static const String apiBaseUrl = "http://192.168.1.9:4005/api/";
   static const String login = "auth/login";
   static const String studentsPreview = "students/preview";
   static const String certificates = "exhibitions/certificates";

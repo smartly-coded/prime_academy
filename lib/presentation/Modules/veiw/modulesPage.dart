@@ -3,16 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/CoursesModules/data/repo/modules_repository.dart';
 import 'package:prime_academy/features/CoursesModules/logic/modules_cubit.dart';
+import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/module_tile.dart';
 
 class ModulesPage extends StatelessWidget {
   final int courseId;
   final String courseName;
+    final LoginResponse user;
 
   const ModulesPage({
     super.key,
     required this.courseId,
-    required this.courseName,
+    required this.courseName,required this.user,
   });
 
   @override
@@ -92,7 +94,7 @@ class ModulesPage extends StatelessWidget {
                     ...course.modules.map(
                       (module) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: ModuleTile(module: module, courseId: courseId),
+                        child: ModuleTile(module: module, courseId: courseId, user: user, ),
                       ),
                     ),
                   ],

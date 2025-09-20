@@ -37,6 +37,7 @@ class AppRoutes {
             child: HomePage(user: loginResponse),
           ),
         );
+        
 
       case login:
         return MaterialPageRoute(
@@ -57,6 +58,8 @@ class AppRoutes {
         final args = settings.arguments as Map<String, dynamic>;
         final moduleId = args['moduleId'] as int;
         final courseId = args['courseId'] as int;
+        final videoUrl = args['externalUrl'] as String?;
+         final loginResponse = args['user'] as LoginResponse;
         final itemId = args['itemId'] as int;
         return MaterialPageRoute(
           builder: (_) => MultiBlocProvider(
@@ -67,10 +70,13 @@ class AppRoutes {
             child: ViewModule(
               moduleId: moduleId,
               courseId: courseId,
+              selectedVideoUrl: videoUrl, user: loginResponse,
               itemId: itemId,
             ),
           ),
         );
+
+      
 
       default:
         return MaterialPageRoute(

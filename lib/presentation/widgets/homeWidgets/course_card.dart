@@ -1,13 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/presentation/Modules/veiw/modulesPage.dart';
+
 
 class CourseCard extends StatelessWidget {
   final String courseName;
   final int courseId;
   final bool isMobile;
   final String? image;
+    final LoginResponse user;
 
   const CourseCard({
     Key? key,
@@ -15,6 +18,7 @@ class CourseCard extends StatelessWidget {
     required this.isMobile,
     this.image,
     required this.courseId,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -156,7 +160,8 @@ class CourseCard extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => ModulesPage(
                               courseId: courseId,
-                              courseName: courseName,
+                              courseName: courseName, user: user,
+                              
                             ),
                           ),
                         );
@@ -199,6 +204,7 @@ class CourseCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                 
                   ],
                 ),
               ),
