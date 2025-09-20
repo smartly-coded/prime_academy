@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/header_title.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/question_title.dart';
 
 class EssayQuestionDialog extends StatefulWidget {
   final LessonQuestion question;
@@ -109,16 +111,13 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false, // منع تغيير حجم الشاشة مع الكيبورد
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1565C0), // أزرق غامق من أعلى
-              Color(0xFF1976D2), // أزرق متوسط في الوسط
-              Color(0xFF1E88E5), // أزرق فاتح من أسفل
-            ],
+            colors: [Color(0xFF4A148C), Color(0xFF7B1FA2), Color(0xFF9C27B0)],
           ),
         ),
         child: SafeArea(
@@ -144,395 +143,305 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
       return _buildResultScreen();
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(24),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.edit, color: Colors.white, size: 20),
-                      const SizedBox(width: 8),
-                      const Text(
-                        "سؤال مقالي",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Cairo',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: widget.onSkip,
-                  icon: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+    // معلومات الشاشة للاستجابة
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
+    return SizedBox(
+      height: screenHeight, // استخدام كامل ارتفاع الشاشة
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isLandscape ? 40 : 20,
+            vertical: isLandscape ? 15 : 20,
           ),
-
-          // Question Content
-          Expanded(
-            child: Column(
-              children: [
-                // Question Title
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 30,
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
+          child: Column(
+            children: [
+              // Header - responsive
+              if (!isLandscape) HeaderTitle(),
+              if (isLandscape)
+                SizedBox(
+                  height: 50,
+                  child: Center(
+                    child: Text(
+                      "السؤال المقالي",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Cairo',
                       ),
-                    ],
-                  ),
-                  child: Text(
-                    _cleanHtmlText(widget.question.title),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Cairo',
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      height: 1.4,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                // Answer Text Field
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "اكتب إجابتك هنا:",
-                          style: TextStyle(
-                            color: Color(0xFF1565C0),
-                            fontFamily: 'Cairo',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        Expanded(
-                          child: TextField(
-                            controller: _answerController,
-                            maxLines: null,
-                            expands: true,
-                            textAlignVertical: TextAlignVertical.top,
-                            style: const TextStyle(
-                              color: Colors.black87,
-                              fontFamily: 'Cairo',
-                              fontSize: 16,
-                              height: 1.5,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: "ابدأ الكتابة...",
-                              hintStyle: TextStyle(
-                                color: Colors.grey[400],
-                                fontFamily: 'Cairo',
-                                fontSize: 16,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[300]!,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[300]!,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF1565C0),
-                                  width: 2,
-                                ),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey[50],
-                              contentPadding: const EdgeInsets.all(15),
-                            ),
-                            textAlign: TextAlign.right,
-                          ),
-                        ),
-
-                        // Character count
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          alignment: Alignment.centerLeft,
-                          child: ValueListenableBuilder<TextEditingValue>(
-                            valueListenable: _answerController,
-                            builder: (context, value, child) {
-                              return Text(
-                                "${value.text.length} حرف",
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontFamily: 'Cairo',
-                                  fontSize: 12,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+
+              SizedBox(height: isLandscape ? 15 : 30),
+
+              // Question Title
+              _buildQuestionSection(isLandscape),
+
+              SizedBox(height: isLandscape ? 15 : 30),
+
+              // Answer Text Field
+              _buildAnswerSection(isLandscape, screenHeight),
+
+              SizedBox(height: isLandscape ? 15 : 20),
+
+              // Submit Button
+              _buildSubmitButton(isLandscape),
+
+              // إضافة مساحة إضافية في الأسفل لتجنب تداخل الكيبورد
+              SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 50),
+            ],
           ),
+        ),
+      ),
+    );
+  }
 
-          // Bottom Actions
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.5),
-                        width: 2,
-                      ),
-                    ),
-                    child: TextButton(
-                      onPressed: widget.onSkip,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: const Text(
-                        "تخطي",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Cairo',
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  flex: 2,
-                  child: ValueListenableBuilder<TextEditingValue>(
-                    valueListenable: _answerController,
-                    builder: (context, value, child) {
-                      final hasText = value.text.trim().isNotEmpty;
-                      return ElevatedButton(
-                        onPressed: hasText ? _submitAnswer : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: hasText
-                              ? Colors.white
-                              : Colors.grey.withOpacity(0.3),
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          elevation: 8,
-                        ),
-                        child: Text(
-                          "إرسال الإجابة",
-                          style: TextStyle(
-                            color: hasText
-                                ? const Color(0xFF1565C0)
-                                : Colors.white.withOpacity(0.5),
-                            fontFamily: 'Cairo',
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+  Widget _buildQuestionSection(bool isLandscape) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: isLandscape ? 20 : 32,
+        vertical: isLandscape ? 15 : 20,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
+      ),
+      child: Text(
+        _cleanHtmlText(widget.question.title),
+        style: TextStyle(
+          color: Colors.white,
+          fontFamily: 'Cairo',
+          fontSize: isLandscape ? 18 : 26,
+          fontWeight: FontWeight.bold,
+          height: 1.4,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildAnswerSection(bool isLandscape, double screenHeight) {
+    // حساب ارتفاع ثابت ومناسب للـ TextField
+    final textFieldHeight = isLandscape ? 140.0 : 220.0;
+
+    return Container(
+      height: textFieldHeight,
+      child: TextField(
+        controller: _answerController,
+        maxLines: null,
+        expands: true,
+        textAlignVertical: TextAlignVertical.top,
+        style: TextStyle(
+          color: Colors.white,
+          fontFamily: 'Cairo',
+          fontSize: isLandscape ? 14 : 16,
+          height: 1.5,
+        ),
+        decoration: InputDecoration(
+          hintText: "اكتب إجابتك هنا...",
+          hintStyle: TextStyle(
+            color: Colors.white.withOpacity(0.6),
+            fontFamily: 'Cairo',
+            fontSize: isLandscape ? 14 : 16,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide(
+              color: Colors.white.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide(
+              color: Colors.white.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(color: Colors.white, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.black.withOpacity(0.3),
+          contentPadding: EdgeInsets.all(isLandscape ? 12 : 15),
+        ),
+        textAlign: TextAlign.right,
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton(bool isLandscape) {
+    return SizedBox(
+      width: double.infinity,
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: _answerController,
+        builder: (context, value, child) {
+          final hasText = value.text.trim().isNotEmpty;
+          return ElevatedButton(
+            onPressed: hasText ? _submitAnswer : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: hasText
+                  ? Colors.white
+                  : Colors.grey.withOpacity(0.3),
+              padding: EdgeInsets.symmetric(vertical: isLandscape ? 14 : 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 8,
+            ),
+            child: Text(
+              "إرسال الإجابة",
+              style: TextStyle(
+                color: hasText
+                    ? const Color.fromARGB(255, 98, 4, 115)
+                    : Colors.white.withOpacity(0.5),
+                fontFamily: 'Cairo',
+                fontSize: isLandscape ? 18 : 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildResultScreen() {
-    return Center(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.elasticOut,
-        child: Container(
-          margin: const EdgeInsets.all(40),
-          padding: const EdgeInsets.all(40),
-          decoration: BoxDecoration(
-            color: _isCorrect
-                ? Colors.green.withOpacity(0.9)
-                : Colors.orange.withOpacity(
-                    0.9,
-                  ), // برتقالي للأسئلة المقالية بدلاً من أحمر
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: (_isCorrect ? Colors.green : Colors.orange).withOpacity(
-                  0.3,
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
+    return SingleChildScrollView(
+      child: Center(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.elasticOut,
+          child: Container(
+            margin: EdgeInsets.all(isLandscape ? 30 : 40),
+            padding: EdgeInsets.all(isLandscape ? 25 : 40),
+            decoration: BoxDecoration(
+              color: _isCorrect
+                  ? Colors.green.withOpacity(0.9)
+                  : Colors.orange.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: (_isCorrect ? Colors.green : Colors.orange)
+                      .withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Result Icon with animation
-              TweenAnimationBuilder(
-                duration: const Duration(milliseconds: 800),
-                tween: Tween<double>(begin: 0, end: 1),
-                builder: (context, double value, child) {
-                  return Transform.scale(
-                    scale: value,
-                    child: Icon(
-                      _isCorrect
-                          ? Icons.check_circle
-                          : Icons.assignment_turned_in,
-                      color: Colors.white,
-                      size: 120,
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 30),
-
-              // Result Text
-              Text(
-                _isCorrect ? "إجابة ممتازة!" : "تم إرسال إجابتك!",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Cairo',
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 20),
-
-              // Subtitle
-              Text(
-                _isCorrect
-                    ? "إجابتك صحيحة ومميزة"
-                    : "سيتم مراجعة إجابتك من قبل المعلم",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Cairo',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 30),
-
-              // Show user answer
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      "إجابتك:",
-                      style: TextStyle(
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Result Icon
+                TweenAnimationBuilder(
+                  duration: const Duration(milliseconds: 800),
+                  tween: Tween<double>(begin: 0, end: 1),
+                  builder: (context, double value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: Icon(
+                        _isCorrect
+                            ? Icons.check_circle
+                            : Icons.assignment_turned_in,
                         color: Colors.white,
-                        fontFamily: 'Cairo',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        size: isLandscape ? 80 : 120,
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      constraints: const BoxConstraints(maxHeight: 100),
-                      child: SingleChildScrollView(
-                        child: Text(
-                          _userAnswer,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Cairo',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
+                    );
+                  },
+                ),
+
+                SizedBox(height: isLandscape ? 15 : 30),
+
+                // Result Text
+                Text(
+                  _isCorrect ? "إجابة ممتازة!" : "تم إرسال إجابتك!",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Cairo',
+                    fontSize: isLandscape ? 28 : 36,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                SizedBox(height: isLandscape ? 10 : 20),
+
+                // Subtitle
+                Text(
+                  _isCorrect
+                      ? "إجابتك صحيحة ومميزة"
+                      : "سيتم مراجعة إجابتك من قبل المعلم",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Cairo',
+                    fontSize: isLandscape ? 14 : 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                SizedBox(height: isLandscape ? 15 : 30),
+
+                // User answer
+                Container(
+                  padding: EdgeInsets.all(isLandscape ? 15 : 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "إجابتك:",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Cairo',
+                          fontSize: isLandscape ? 14 : 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 10),
+                      Container(
+                        constraints: BoxConstraints(
+                          maxHeight: isLandscape ? 80 : 120,
+                        ),
+                        child: SingleChildScrollView(
+                          child: Text(
+                            _userAnswer,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Cairo',
+                              fontSize: isLandscape ? 13 : 16,
+                              fontWeight: FontWeight.w500,
+                              height: 1.4,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

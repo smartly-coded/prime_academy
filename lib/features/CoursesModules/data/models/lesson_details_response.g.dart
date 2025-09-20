@@ -122,11 +122,38 @@ const _$SortDirectionEnumMap = {
   SortDirection.desc: 'desc',
 };
 
+AnswerImage _$AnswerImageFromJson(Map<String, dynamic> json) => AnswerImage(
+  id: (json['id'] as num?)?.toInt(),
+  filename: json['filename'] as String?,
+  url: json['url'] as String?,
+  mimeType: json['mime_type'] as String?,
+  size: (json['size'] as num?)?.toInt(),
+  createdAt: json['created_at'] == null
+      ? null
+      : DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
+      ? null
+      : DateTime.parse(json['updated_at'] as String),
+);
+
+Map<String, dynamic> _$AnswerImageToJson(AnswerImage instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'filename': instance.filename,
+      'url': instance.url,
+      'mime_type': instance.mimeType,
+      'size': instance.size,
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
+    };
+
 Answer _$AnswerFromJson(Map<String, dynamic> json) => Answer(
   id: (json['id'] as num).toInt(),
   questionId: (json['question_id'] as num).toInt(),
   title: json['title'] as String,
-  image: json['image'] as String?,
+  image: json['image'] == null
+      ? null
+      : AnswerImage.fromJson(json['image'] as Map<String, dynamic>),
   createdAt: DateTime.parse(json['created_at'] as String),
   updatedAt: DateTime.parse(json['updated_at'] as String),
 );

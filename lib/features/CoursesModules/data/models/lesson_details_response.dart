@@ -151,6 +151,35 @@ class LessonQuestion {
 }
 
 @JsonSerializable()
+class AnswerImage {
+  int? id;
+  String? filename;
+  String? url;
+  @JsonKey(name: "mime_type")
+  String? mimeType;
+  int? size;
+  @JsonKey(name: "created_at")
+  DateTime? createdAt;
+  @JsonKey(name: "updated_at")
+  DateTime? updatedAt;
+
+  AnswerImage({
+    this.id,
+    this.filename,
+    this.url,
+    this.mimeType,
+    this.size,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory AnswerImage.fromJson(Map<String, dynamic> json) =>
+      _$AnswerImageFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AnswerImageToJson(this);
+}
+
+@JsonSerializable()
 class Answer {
   final int id;
   @JsonKey(name: 'question_id')
@@ -161,7 +190,7 @@ class Answer {
 
   @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
-  final String? image;
+  final AnswerImage? image;
 
   Answer({
     required this.id,
