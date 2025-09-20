@@ -10,6 +10,7 @@ class ModulesPage extends StatelessWidget {
   final int courseId;
   final String courseName;
     final LoginResponse user;
+
   const ModulesPage({
     super.key,
     required this.courseId,

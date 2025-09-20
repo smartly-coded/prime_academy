@@ -45,7 +45,7 @@ Map<String, dynamic> _$ModuleLessonsResponseToJson(
 Item _$ItemFromJson(Map<String, dynamic> json) => Item(
   id: (json['id'] as num).toInt(),
   moduleId: (json['module_id'] as num).toInt(),
-  itemType: json['item_type'] as String,
+  itemType: $enumDecode(_$LessonTypeEnumMap, json['item_type']),
   lessonId: (json['lesson_id'] as num?)?.toInt(),
   externalSourceId: (json['external_source_id'] as num?)?.toInt(),
   order: (json['order'] as num).toInt(),
@@ -64,7 +64,7 @@ Item _$ItemFromJson(Map<String, dynamic> json) => Item(
 Map<String, dynamic> _$ItemToJson(Item instance) => <String, dynamic>{
   'id': instance.id,
   'module_id': instance.moduleId,
-  'item_type': instance.itemType,
+  'item_type': _$LessonTypeEnumMap[instance.itemType]!,
   'lesson_id': instance.lessonId,
   'external_source_id': instance.externalSourceId,
   'order': instance.order,
@@ -72,6 +72,11 @@ Map<String, dynamic> _$ItemToJson(Item instance) => <String, dynamic>{
   'updated_at': instance.updatedAt.toIso8601String(),
   'external_source': instance.externalSource,
   'lesson': instance.lesson,
+};
+
+const _$LessonTypeEnumMap = {
+  LessonType.video: 'lesson',
+  LessonType.link: 'external_source',
 };
 
 Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(

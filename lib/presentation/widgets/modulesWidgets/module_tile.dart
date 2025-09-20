@@ -96,7 +96,7 @@ class _ModuleTileState extends State<ModuleTile> {
                     (item) => LessonItem(
                       title: item.title,
                       time: item.time,
-                      type: item.title,
+                      type: item.type,
                       onTap: () {
                         Navigator.pushNamed(
                           context,
@@ -105,6 +105,7 @@ class _ModuleTileState extends State<ModuleTile> {
                             'moduleId': widget.module.id,
                             'courseId': widget.courseId,
                             'user': widget.user, 
+                            "itemId": item.id,
                           },
                         );
                       },
