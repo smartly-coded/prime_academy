@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: isMobile ? 20 : 30),
               LogoutButton(isMobile: isMobile),
               SizedBox(height: isMobile ? 20 : 30),
-
+               
               CategoryTabs(
                 isMobile: isMobile,
                 selectedIndex: selectedIndex,
@@ -141,6 +141,8 @@ class _HomePageState extends State<HomePage> {
                               courseName: course.title ?? '',
                               isMobile: isMobile,
                               courseId: course.id ?? 0,
+                               user: widget.user,
+                              
                             );
                           },
                         );

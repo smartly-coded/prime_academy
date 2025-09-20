@@ -84,6 +84,7 @@ Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(
   accessWithoutEnrollment: json['access_without_enrollment'] as bool,
   externalUrl: json['external_url'] as String?,
   watched: json['watched'] as bool,
+  thumbnail: json['thumbnail'] as String?,
 );
 
 Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
@@ -96,6 +97,7 @@ Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
   'access_without_enrollment': instance.accessWithoutEnrollment,
   'external_url': instance.externalUrl,
   'watched': instance.watched,
+  'thumbnail': instance.thumbnail,
 };
 
 ExternalSource _$ExternalSourceFromJson(Map<String, dynamic> json) =>

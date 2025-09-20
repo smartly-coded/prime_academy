@@ -36,6 +36,7 @@ class AppRoutes {
             child: HomePage(user: loginResponse),
           ),
         );
+        
 
       case login:
         return MaterialPageRoute(
@@ -57,16 +58,19 @@ class AppRoutes {
         final moduleId = args['moduleId'] as int;
         final courseId = args['courseId'] as int;
         final videoUrl = args['externalUrl'] as String?;
+         final loginResponse = args['user'] as LoginResponse;
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => getIt<ModuleLessonsCubit>(),
             child: ViewModule(
               moduleId: moduleId,
               courseId: courseId,
-              selectedVideoUrl: videoUrl,
+              selectedVideoUrl: videoUrl, user: loginResponse,
             ),
           ),
         );
+
+      
 
       default:
         return MaterialPageRoute(

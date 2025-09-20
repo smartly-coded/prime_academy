@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
+import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
+import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:prime_academy/presentation/Chat/chatPage.dart';
 
 class ViewModule extends StatefulWidget {
   final int moduleId;
   final int courseId;
   final String? selectedVideoUrl;
+  final LoginResponse user;
 
   const ViewModule({
     super.key,
     required this.moduleId,
     required this.courseId,
     this.selectedVideoUrl,
+    required this.user,
   });
 
   @override
@@ -170,7 +176,7 @@ class _ViewModuleState extends State<ViewModule> {
                         ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 16),
-                        height: 80, // ارتفاع مناسب للأزرار
+                        height: 80,
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
@@ -185,7 +191,28 @@ class _ViewModuleState extends State<ViewModule> {
                               _buildButton(
                                 "اسأل المعلم",
                                 "assets/icons/message.png",
-                                () {},
+                                () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => BlocProvider(
+                                        create: (context) => ChatCubit(
+                                          context
+                                              .read<
+                                                ChatRepo
+                                              >(), // ✅ بجيب الـ repo من الـ main
+                                          1, // رقم الشات
+                                          widget
+                                              .user, // اليوزر اللى جه من loginResponse
+                                        )..loadChat(),
+                                        child: ChatScreen(
+                                          chatId: 1,
+                                          user: widget.user,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                               _buildButton(
                                 "الملازم الالكترونيه",

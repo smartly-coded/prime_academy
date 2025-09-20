@@ -18,29 +18,25 @@ class _VideoWithBackgroundState extends State<VideoWithBackground> {
       width: double.infinity,
       child: Stack(
         children: [
-         
           Positioned.fill(
             child: _hasError
-                ? Image.asset(
-                    "assets/images/background.jpg", 
-                    fit: BoxFit.cover,
-                  )
+                ? Image.asset("assets/images/background.jpg", fit: BoxFit.cover)
                 : Image.asset(
                     "assets/Gifs/line-mobile.gif",
                     fit: BoxFit.cover,
-                    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                      if (frame == null) {
-                        return Container(
-                          color: Colors.grey[300],
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-                      return child;
-                    },
+                    frameBuilder:
+                        (context, child, frame, wasSynchronouslyLoaded) {
+                          if (frame == null) {
+                            return Container(
+                              color: Colors.grey[300],
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+                          return child;
+                        },
                     errorBuilder: (context, error, stackTrace) {
-                    
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (mounted) {
                           setState(() {
@@ -56,7 +52,6 @@ class _VideoWithBackgroundState extends State<VideoWithBackground> {
                   ),
           ),
 
-          
           Positioned(
             bottom: 10,
             right: 10,

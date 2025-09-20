@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_model.dart';
+import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 
 import 'lesson_item.dart';
 
 class ModuleTile extends StatefulWidget {
   final ModuleModel module;
   final int courseId;
+    final LoginResponse user;
 
-  const ModuleTile({super.key, required this.module, required this.courseId});
+  const ModuleTile({super.key, required this.module, required this.courseId,required this.user});
 
   @override
   State<ModuleTile> createState() => _ModuleTileState();
@@ -102,6 +104,7 @@ class _ModuleTileState extends State<ModuleTile> {
                           arguments: {
                             'moduleId': widget.module.id,
                             'courseId': widget.courseId,
+                            'user': widget.user, 
                           },
                         );
                       },
