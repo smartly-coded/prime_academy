@@ -11,6 +11,7 @@ import 'package:prime_academy/presentation/widgets/modulesWidgets/fill_question_
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/choose_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/match_question_dialog.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/reorder_question_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'dart:async';
@@ -131,7 +132,7 @@ class _ViewModuleState extends State<ViewModule> {
         );
 
       case QuestionType.match:
-        return MatchQuestionDialog(
+        return ResponsiveMatchDialog(
           question: question,
           onAnswerSubmitted: (bool isCorrect) {
             Navigator.of(context).pop();
@@ -143,7 +144,12 @@ class _ViewModuleState extends State<ViewModule> {
             _controller?.play();
           },
         );
-
+      case QuestionType.reOrder:
+        return ReorderQuestionDialog(
+          question: question,
+          onAnswerSubmitted: (bool isCorrect) {},
+          onSkip: () {},
+        );
       default:
         return Container(child: Text("not supported type"));
     }
