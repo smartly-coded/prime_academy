@@ -8,6 +8,7 @@ class ApiConstants {
   static const String studentPreview = "students/preview";
   static const String inquiries = "comm-requests/inquiries";
   static const String commRequests = "comm-requests";
+  static const String testimonals = "/students/testimonials";
 }
 
 class ApiErrors {

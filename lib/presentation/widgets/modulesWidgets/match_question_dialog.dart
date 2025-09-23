@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/question_title.dart';
 
 class ResponsiveMatchDialog extends StatefulWidget {
   final LessonQuestion question;
@@ -100,13 +101,6 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     });
   }
 
-  void _handlePromptTap(int promptIndex) {
-    // إلغاء الربط بالضغط على السؤال
-    setState(() {
-      _matches.remove(promptIndex);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,43 +176,13 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
             color: Colors.black.withOpacity(0.3),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.drag_indicator, color: Colors.white, size: 18),
-              const SizedBox(width: 8),
-              const Text(
-                "اسحب وأسقط للربط",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Cairo',
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Spacer(),
-        IconButton(
-          onPressed: widget.onSkip,
-          icon: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.close, color: Colors.white, size: 20),
-          ),
+          child: questionTitle(widget.question.title),
         ),
       ],
     );
   }
 
   Widget _buildGridContent(bool isLandscape, bool isTablet) {
-    int crossAxisCount = isTablet ? 3 : 2;
-    if (isLandscape && !isTablet) crossAxisCount = 3;
-
     return SingleChildScrollView(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,9 +198,8 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: isMatched
-                      ? SizedBox(
-                          height: 60, // يخلي مكان السؤال فاضي بنفس المساحة
-                        )
+                      ? // 🔥 حل المشكلة الأولى: إظهار مربع فارغ بدلاً من SizedBox
+                        _buildEmptyQuestionSlot(index, isTablet)
                       : Draggable<int>(
                           data: index,
                           feedback: _buildQuestionCard(
@@ -247,9 +210,9 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                             isTablet,
                             isDragging: true,
                           ),
-                          childWhenDragging: SizedBox(
-                            height: 60, // مكان فاضي برضه لما يتسحب
-                          ),
+                          childWhenDragging:
+                              // 🔥 حل المشكلة الأولى: إظهار مربع فارغ أثناء السحب
+                              _buildEmptyQuestionSlot(index, isTablet),
                           child: _buildQuestionCard(
                             prompt,
                             index,
@@ -257,6 +220,14 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                             null,
                             isTablet,
                           ),
+                          // 🔥 حل المشكلة الأولى: إرجاع السؤال لمكانه الأصلي عند الإلغاء
+                          onDragEnd: (details) {
+                            // إذا لم يتم إسقاط السؤال في مكان صحيح، يرجع لمكانه
+                            if (!details.wasAccepted) {
+                              // لا نحتاج لفعل شيء لأن الـ state لن يتغير
+                              setState(() {}); // فقط لإعادة البناء
+                            }
+                          },
                         ),
                 );
               }),
@@ -284,38 +255,43 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                           color: Color(0xff3f0627),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isHovered
+                            color: candidateData.isNotEmpty
+                                ? Colors.green
+                                : isHovered
                                 ? Colors.green
                                 : Colors.white.withOpacity(0.3),
-                            width: isHovered ? 3 : 2,
+                            width: candidateData.isNotEmpty || isHovered
+                                ? 3
+                                : 2,
                           ),
                         ),
                         child: isUsed
-                            ? _buildQuestionCard(
-                                // نعرض السؤال اللي اتعمله drop بنفس لونه
+                            ? _buildDraggableQuestionInResponse(
+                                // نعرض السؤال اللي اتعمله drop بنفس لونه ولكن قابل للسحب
                                 _prompts[_matches.entries
                                     .firstWhere((entry) => entry.value == index)
                                     .key],
+                                _matches.entries
+                                    .firstWhere((entry) => entry.value == index)
+                                    .key,
                                 index,
-                                false,
-                                null,
                                 isTablet,
                               )
-                            : Text(
-                                response.title,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Cairo',
-                                  fontSize: isTablet ? 14 : 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                            : _buildResponseCard(response, isTablet),
                       );
                     },
-                    onWillAccept: (promptIndex) => true, // يقبل أي سؤال
+                    // 🔥 حل المشكلة الثانية: منع وضع أكثر من سؤال في نفس المكان
+                    onWillAccept: (promptIndex) {
+                      return !_matches.containsValue(
+                        index,
+                      ); // يرفض إذا كان المكان مُستخدم
+                    },
                     onAccept: (promptIndex) {
+                      _handleQuestionDrop(promptIndex, index);
+                    },
+                    onMove: (details) {
                       setState(() {
-                        _matches[promptIndex] = index;
+                        _responseHovered[index] = true;
                       });
                     },
                     onLeave: (promptIndex) {
@@ -333,6 +309,89 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     );
   }
 
+  // 🔥 ويدجت جديد للمربع الفارغ
+  Widget _buildEmptyQuestionSlot(int index, bool isTablet) {
+    return Container(
+      height: 80, // نفس ارتفاع السؤال الأصلي
+      padding: EdgeInsets.all(isTablet ? 12 : 8),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 2,
+          style: BorderStyle.solid, // خط متقطع ليوضح أنه مكان فارغ
+        ),
+      ),
+    );
+  }
+
+  // 🔥 ويدجت جديد للسؤال القابل للسحب من داخل الإجابة
+  Widget _buildDraggableQuestionInResponse(
+    Prompt prompt,
+    int promptIndex,
+    int responseIndex,
+    bool isTablet,
+  ) {
+    return Draggable<String>(
+      // استخدام String بدلاً من int للتمييز عن الـ drag الأصلي
+      data: "remove_$promptIndex",
+      feedback: _buildQuestionCard(
+        prompt,
+        promptIndex,
+        false,
+        null,
+        isTablet,
+        isDragging: true,
+      ),
+      childWhenDragging: Container(
+        height: 80,
+        child: Center(
+          child: Icon(
+            Icons.remove_circle_outline,
+            color: Colors.white.withOpacity(0.3),
+            size: isTablet ? 40 : 35,
+          ),
+        ),
+      ),
+      child: _buildQuestionCard(
+        prompt,
+        promptIndex,
+        false,
+        null,
+        isTablet,
+        showDragHint: true, // إضافة hint للسحب
+      ),
+      onDragEnd: (details) {
+        // إذا تم سحب السؤال خارج منطقة الإجابة، أرجعه لمكانه الأصلي
+        if (!details.wasAccepted) {
+          setState(() {
+            _matches.remove(promptIndex);
+          });
+        }
+      },
+    );
+  }
+
+  // ويدجت منفصل لعرض الإجابات
+  Widget _buildResponseCard(ResponseModel response, bool isTablet) {
+    return Container(
+      height: 60,
+      child: Center(
+        child: Text(
+          response.title,
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Cairo',
+            fontSize: isTablet ? 14 : 12,
+            fontWeight: FontWeight.w600,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
   Widget _buildQuestionCard(
     Prompt prompt,
     int index,
@@ -341,6 +400,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     bool isTablet, {
     bool isDragging = false,
     bool isDraggedAway = false,
+    bool showDragHint = false,
   }) {
     // ألوان ثابتة حسب الترتيب
     final List<Color> cardColors = [
@@ -356,23 +416,35 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     Color baseColor = cardColors[index % cardColors.length];
 
     return Material(
-      elevation: isDragging ? 8 : 0,
+      elevation: 0, // هنستغنى عن الـ Material shadow ونستخدم BoxShadow
       borderRadius: BorderRadius.circular(12),
       child: Container(
+        height: 80,
         padding: EdgeInsets.all(isTablet ? 12 : 8),
         decoration: BoxDecoration(
-          color: isMatched
-              ? Color.fromARGB(142, 63, 6, 39) // ✅ لون فاضي أخضر عند الماتش
-              : isDraggedAway
-              ? Color.fromARGB(81, 63, 6, 39)
-              : baseColor.withOpacity(0.8), // ✅ اللون الأساسي لكل مربع
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.center,
+            colors: [
+              Colors.white.withOpacity(0.4), // لمعة بسيطة جدًا من فوق
+              baseColor, // اللون الأصلي للكارت
+            ],
+            stops: const [0.0, 0.15],
+          ),
           borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 6, // قوة الضبابية
+              offset: const Offset(0, 4), // اتجاه الظل (نازل لتحت)
+            ),
+          ],
           border: Border.all(
             color: isMatched
-                ? const Color.fromARGB(255, 114, 104, 104)
+                ? Colors.green[900]!
                 : isDraggedAway
                 ? Colors.grey
-                : baseColor, // نفس لون الخلفية كبوردر
+                : baseColor,
             width: 2,
           ),
         ),
@@ -385,43 +457,27 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                 borderRadius: BorderRadius.circular(6),
                 child: Image.network(
                   prompt.image!.url,
-                  width: isTablet ? 40 : 30,
-                  height: isTablet ? 40 : 30,
+                  width: isTablet ? 30 : 25,
+                  height: isTablet ? 30 : 25,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: isTablet ? 40 : 30,
-                      height: isTablet ? 40 : 30,
-                      color: Colors.grey[300],
-                      child: Icon(Icons.image, size: isTablet ? 20 : 15),
-                    );
-                  },
                 ),
               ),
-              SizedBox(height: isTablet ? 6 : 4),
+              SizedBox(height: isTablet ? 4 : 2),
             ],
             if (!isMatched && !isDraggedAway)
               Flexible(
                 child: Text(
                   _cleanHtmlText(prompt.title),
                   style: TextStyle(
-                    color: isMatched
-                        ? Colors.green[900] // ✅ النص يبقى أخضر غامق عند الماتش
-                        : Colors.white, // النص أبيض على الخلفية الملونة
+                    color: Colors.white,
                     fontFamily: 'Cairo',
-                    fontSize: isTablet ? 12 : 10,
+                    fontSize: isTablet ? 14 : 12,
                     fontWeight: FontWeight.w600,
                   ),
                   textAlign: TextAlign.center,
-                  maxLines: 3,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            if (!isMatched && !isDraggedAway)
-              Icon(
-                Icons.drag_indicator,
-                color: Colors.white,
-                size: isTablet ? 20 : 16,
               ),
           ],
         ),
@@ -450,7 +506,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                   elevation: 6,
                 ),
                 child: Text(
-                  "تحقق من الإجابة",
+                  "تقديم",
                   style: TextStyle(
                     color: _isAnswerComplete
                         ? const Color(0xFFD32F2F)

@@ -125,6 +125,7 @@ class _ViewModuleState extends State<ViewModule> {
     }
   }
 
+  late int _currentChatId;
   Widget _buildQuestionDialog(LessonQuestion question) {
     switch (question.type) {
       case QuestionType.mcq:
@@ -597,10 +598,13 @@ class _ViewModuleState extends State<ViewModule> {
                   builder: (_) => BlocProvider(
                     create: (context) => ChatCubit(
                       context.read<ChatRepo>(), // ✅ بجيب الـ repo من الـ main
-                      1, // رقم الشات
+                      _currentChatId!, // رقم الشات
                       widget.user, // اليوزر اللى جه من loginResponse
                     )..loadChat(),
-                    child: ChatScreen(chatId: 1, user: widget.user),
+                    child: ChatScreen(
+                      chatId: _currentChatId!,
+                      user: widget.user,
+                    ),
                   ),
                 ),
               );
@@ -746,7 +750,7 @@ class _ViewModuleState extends State<ViewModule> {
     final deviceType = _getDeviceType(context);
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-
+    int _currentChatId;
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
       appBar: AppBar(
@@ -797,6 +801,41 @@ class _ViewModuleState extends State<ViewModule> {
 
                   _updateLessonQuestions(lessonDetails);
 
+                  final url = lessonDetails.externalUrl;
+                  if (url != null && url.isNotEmpty) {
+                    final videoId = YoutubePlayer.convertUrlToId(url);
+                    if (videoId != null) {
+                      print('Changing video to: $videoId');
+                      _changeVideo(url);
+                    } else {
+                      print('Invalid YouTube URL: $url');
+                    }
+                  } else {
+                    print('No URL found in lesson details');
+                  }
+                },
+                loading: () {
+                  print('Loading lesson details...');
+                },
+                error: (msg) {
+                  print('Error loading lesson: $msg');
+                  if (mounted && !_isDisposing) {
+                    _showErrorDialog("فشل تحميل تفاصيل الدرس: $msg");
+                  }
+                },
+              );
+            },
+          ),
+          BlocListener<LessonDetailsCubit, LessonDetailsState>(
+            listener: (context, state) {
+              if (!mounted || _isDisposing) return;
+
+              print('LessonDetailsState changed: $state');
+              state.whenOrNull(
+                success: (lessonDetails) {
+                  // تحديث الأسئلة أولاً
+                  _updateLessonQuestions(lessonDetails);
+                  _currentChatId = lessonDetails.chatId;
                   final url = lessonDetails.externalUrl;
                   if (url != null && url.isNotEmpty) {
                     final videoId = YoutubePlayer.convertUrlToId(url);

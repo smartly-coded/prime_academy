@@ -21,7 +21,7 @@ Widget questionTitle(String questionTitle) {
       style: const TextStyle(
         color: Colors.white,
         fontFamily: 'Cairo',
-        fontSize: 28,
+        fontSize: 22,
         fontWeight: FontWeight.bold,
         height: 1.4,
       ),
