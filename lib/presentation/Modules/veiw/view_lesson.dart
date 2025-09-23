@@ -146,7 +146,6 @@ late int _currentChatId;
           onAnswerSubmitted: (bool isCorrect) {
             Navigator.of(context).pop();
             _controller?.play();
-            print('Match result: ${isCorrect ? "Correct" : "Incorrect"}');
           },
           onSkip: () {
             Navigator.of(context).pop();
@@ -156,11 +155,15 @@ late int _currentChatId;
       case QuestionType.reOrder:
         return ReorderQuestionDialog(
           question: question,
-          onAnswerSubmitted: (bool isCorrect) {},
-          onSkip: () {},
+          onAnswerSubmitted: (bool isCorrect) {
+            Navigator.of(context).pop();
+            _controller?.play();
+          },
+          onSkip: () {
+            Navigator.of(context).pop();
+            _controller?.play();
+          },
         );
-      default:
-        return Container(child: Text("not supported type"));
     }
   }
 

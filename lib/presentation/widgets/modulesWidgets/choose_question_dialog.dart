@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/helpers/constants.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/header_title.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/question_title.dart';
 
 class FullScreenMcqDialog extends StatefulWidget {
   final LessonQuestion question;
@@ -19,7 +22,7 @@ class FullScreenMcqDialog extends StatefulWidget {
 
 class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
     with TickerProviderStateMixin {
-  int? _selectedAnswerId;
+  Set<int> _selectedAnswerIds = {};
   bool _showResult = false;
   bool _isCorrect = false;
   late AnimationController _scaleController;
@@ -61,16 +64,30 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
     super.dispose();
   }
 
-  void _submitAnswer() {
-    if (_selectedAnswerId == null) return;
+  // دالة لبناء رابط الصورة
+  String buildImageUrl(String? imagePath) {
+    if (imagePath == null || imagePath.isEmpty) return "";
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    return imagePath.startsWith('/')
+        ? Constants.baseUrl + imagePath
+        : Constants.baseUrl + '/' + imagePath;
+  }
 
-    // تحقق من الإجابة الصحيحة
+  void _submitAnswer() {
+    if (_selectedAnswerIds.isEmpty) return;
+
+    // الحصول على جميع الإجابات الصحيحة
     final correctAnswerIds = widget.question.correctAnswers
         .map((ca) => ca.answerId)
-        .toList();
+        .toSet();
 
     setState(() {
-      _isCorrect = correctAnswerIds.contains(_selectedAnswerId);
+      // التحقق من أن الإجابات المختارة تطابق الإجابات الصحيحة تماماً
+      _isCorrect =
+          _selectedAnswerIds.length == correctAnswerIds.length &&
+          _selectedAnswerIds.every((id) => correctAnswerIds.contains(id));
       _showResult = true;
     });
 
@@ -125,92 +142,39 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
       child: Column(
         children: [
           // Header
-          Container(
-            padding: const EdgeInsets.all(24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    "سؤال على غفلة",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Cairo',
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: widget.onSkip,
-                  icon: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          HeaderTitle(),
 
           // Question Content
           Expanded(
             child: Column(
               children: [
                 // Question Title
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 40,
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    _cleanHtmlText(widget.question.title),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Cairo',
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      height: 1.4,
+                questionTitle(widget.question.title),
+
+                if (widget.question.allowMultipleAnswers) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
-                    textAlign: TextAlign.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      "يمكنك اختيار أكثر من إجابة",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Cairo',
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-
-                const SizedBox(height: 40),
-
-                // Answers in colored boxes like the image
+                ],
+                const SizedBox(height: 10),
+                // Answers in colored boxes with images
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -224,18 +188,24 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                       ) {
                         int index = entry.key;
                         var answer = entry.value;
-                        final isSelected = _selectedAnswerId == answer.id;
+                        final isSelected = _selectedAnswerIds.contains(
+                          answer.id,
+                        );
 
                         // ألوان مختلفة لكل اختيار مثل الصورة
                         List<Color> answerColors = [
-                          const Color(0xFF8BC34A), // أخضر للأول
-                          const Color(0xFF9C27B0), // موف للثاني
-                          const Color(0xFFFF9800), // برتقالي للثالث
-                          const Color(0xFF00BCD4), // تركوازي للرابع
+                          const Color.fromARGB(255, 178, 188, 3),
+                          const Color(0xFF9C27B0),
+                          const Color(0xFFFF9800),
+                          const Color(0xFF00BCD4),
                         ];
 
                         Color answerColor =
                             answerColors[index % answerColors.length];
+
+                        // التحقق من وجود صورة
+                        String imageUrl = buildImageUrl(answer.image?.url);
+                        bool hasImage = imageUrl.isNotEmpty;
 
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
@@ -243,7 +213,23 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                           child: InkWell(
                             onTap: () {
                               setState(() {
-                                _selectedAnswerId = answer.id;
+                                // التحقق من نوع السؤال
+                                if (widget.question.allowMultipleAnswers) {
+                                  // للأسئلة متعددة الإجابات
+                                  if (_selectedAnswerIds.contains(answer.id)) {
+                                    _selectedAnswerIds.remove(
+                                      answer.id,
+                                    ); // إلغاء التحديد
+                                  } else {
+                                    _selectedAnswerIds.add(
+                                      answer.id,
+                                    ); // إضافة التحديد
+                                  }
+                                } else {
+                                  // للأسئلة ذات الإجابة الواحدة
+                                  _selectedAnswerIds.clear();
+                                  _selectedAnswerIds.add(answer.id);
+                                }
                               });
                             },
                             borderRadius: BorderRadius.circular(25),
@@ -270,26 +256,13 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                               ),
                               child: Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Text(
-                                    answer.title,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: 'Cairo',
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black54,
-                                          offset: Offset(1, 1),
-                                          blurRadius: 3,
-                                        ),
-                                      ],
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                  padding: const EdgeInsets.all(16),
+                                  child: hasImage
+                                      ? _buildAnswerWithImage(
+                                          answer.title,
+                                          imageUrl,
+                                        )
+                                      : _buildAnswerTextOnly(answer.title),
                                 ),
                               ),
                             ),
@@ -309,41 +282,13 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.5),
-                        width: 2,
-                      ),
-                    ),
-                    child: TextButton(
-                      onPressed: widget.onSkip,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: const Text(
-                        "تخطي",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Cairo',
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: _selectedAnswerId != null ? _submitAnswer : null,
+                    onPressed: _selectedAnswerIds.isNotEmpty
+                        ? _submitAnswer
+                        : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _selectedAnswerId != null
+                      backgroundColor: _selectedAnswerIds.isNotEmpty
                           ? Colors.white
                           : Colors.grey.withOpacity(0.3),
                       padding: const EdgeInsets.symmetric(vertical: 18),
@@ -353,9 +298,9 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                       elevation: 8,
                     ),
                     child: Text(
-                      "إرسال الإجابة",
+                      "تقديم",
                       style: TextStyle(
-                        color: _selectedAnswerId != null
+                        color: _selectedAnswerIds != null
                             ? const Color(0xFF7B1FA2)
                             : Colors.white.withOpacity(0.5),
                         fontFamily: 'Cairo',
@@ -370,6 +315,99 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
           ),
         ],
       ),
+    );
+  }
+
+  // ويدجت للإجابة مع صورة (الصورة في الأعلى والنص في الأسفل)
+  Widget _buildAnswerWithImage(String title, String imageUrl) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // الصورة
+        Expanded(
+          flex: 3,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.contain,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2,
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // النص
+        Expanded(
+          flex: 2,
+          child: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontFamily: 'Cairo',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  color: Colors.black54,
+                  offset: Offset(1, 1),
+                  blurRadius: 3,
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ويدجت للإجابة النصية فقط (بدون صورة)
+  Widget _buildAnswerTextOnly(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        color: Colors.white,
+        fontFamily: 'Cairo',
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        shadows: [
+          Shadow(color: Colors.black54, offset: Offset(1, 1), blurRadius: 3),
+        ],
+      ),
+      textAlign: TextAlign.center,
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -493,25 +531,23 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
         .toList();
 
     if (correctAnswerIds.isNotEmpty) {
-      final correctAnswer = widget.question.answers.firstWhere(
-        (answer) => correctAnswerIds.contains(answer.id),
-      );
-      return correctAnswer.title;
+      // الحصول على جميع الإجابات الصحيحة
+      final correctAnswers = widget.question.answers
+          .where((answer) => correctAnswerIds.contains(answer.id))
+          .map((answer) => answer.title)
+          .toList();
+
+      // دمج الإجابات بفاصلة أو "و"
+      if (correctAnswers.length == 1) {
+        return correctAnswers.first;
+      } else if (correctAnswers.length == 2) {
+        return "${correctAnswers[0]} و ${correctAnswers[1]}";
+      } else {
+        final lastAnswer = correctAnswers.removeLast();
+        return "${correctAnswers.join('، ')} و $lastAnswer";
+      }
     }
 
     return "غير محدد";
-  }
-
-  String _cleanHtmlText(String htmlText) {
-    return htmlText
-        .replaceAll(RegExp(r'<[^>]*>'), '')
-        .replaceAll('&nbsp;', ' ')
-        .trim();
-  }
-
-  String _formatTime(int seconds) {
-    final minutes = seconds ~/ 60;
-    final secs = seconds % 60;
-    return "${minutes}:${secs.toString().padLeft(2, '0')}";
   }
 }
