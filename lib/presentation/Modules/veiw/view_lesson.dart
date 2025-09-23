@@ -55,7 +55,7 @@ class _ViewModuleState extends State<ViewModule> {
   void initState() {
     super.initState();
     _currentSelectedItemId = widget.itemId;
-
+  
     // تحميل قائمة الدروس
     context.read<ModuleLessonsCubit>().emitModuleLessonsStates(
       widget.moduleId,
@@ -92,7 +92,7 @@ class _ViewModuleState extends State<ViewModule> {
       _controller!.addListener(_onPlayerStateChange);
     }
   }
-
+late int _currentChatId;
   Widget _buildQuestionDialog(LessonQuestion question) {
     switch (question.type) {
       case QuestionType.mcq:
@@ -125,7 +125,7 @@ class _ViewModuleState extends State<ViewModule> {
       case QuestionType.fillBlank:
         int expectedLength = question.correctAnswers.isNotEmpty
             ? question.correctAnswers.first.title!.length
-            : 5; // قيمة افتراضية
+            : 5; 
         return FillInBlanksDialog(
           question: question,
           onAnswerSubmitted: (String answer, bool isCorrect) {
@@ -383,8 +383,10 @@ class _ViewModuleState extends State<ViewModule> {
         ),
         iconTheme: IconThemeData(color: Colors.white),
       ),
+      
       body: MultiBlocListener(
         listeners: [
+          
           BlocListener<LessonDetailsCubit, LessonDetailsState>(
             listener: (context, state) {
               if (!mounted || _isDisposing) return;
@@ -394,7 +396,7 @@ class _ViewModuleState extends State<ViewModule> {
                 success: (lessonDetails) {
                   // تحديث الأسئلة أولاً
                   _updateLessonQuestions(lessonDetails);
-
+                 _currentChatId = lessonDetails.chatId;
                   final url = lessonDetails.externalUrl;
                   if (url != null && url.isNotEmpty) {
                     final videoId = YoutubePlayer.convertUrlToId(url);
@@ -553,12 +555,12 @@ class _ViewModuleState extends State<ViewModule> {
                                               .read<
                                                 ChatRepo
                                               >(), // ✅ بجيب الـ repo من الـ main
-                                          1, // رقم الشات
+                                         _currentChatId!, // رقم الشات
                                           widget
                                               .user, // اليوزر اللى جه من loginResponse
                                         )..loadChat(),
                                         child: ChatScreen(
-                                          chatId: 1,
+                                          chatId: _currentChatId!, 
                                           user: widget.user,
                                         ),
                                       ),

@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/services/notification_eventsource.dart';
-import 'package:prime_academy/features/Notigication/data/repos/notification_repo.dart';
+import 'package:prime_academy/features/Notification/data/repos/notification_repo.dart';
 import '../data/models/notification_model.dart';
 
 part 'notification_state.dart';
@@ -13,7 +13,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   StreamSubscription<NotificationModel>? _sseSubscription;
 
   NotificationCubit(this.repository, this.sseService) : super(NotificationInitial()) {
-    // ✅ أول ما الكيوبت يتبني، يجيب الإشعارات ويفتح قناة SSE
+  
     fetchNotifications();
    sseService.connect(this);
   }

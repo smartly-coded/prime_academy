@@ -70,8 +70,10 @@ class AppRoutes {
             child: ViewModule(
               moduleId: moduleId,
               courseId: courseId,
-              selectedVideoUrl: videoUrl, user: loginResponse,
+              //selectedVideoUrl: videoUrl, 
+              user: loginResponse,
               itemId: itemId,
+              
             ),
           ),
         );

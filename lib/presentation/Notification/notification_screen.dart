@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
-import 'package:prime_academy/features/Notigication/logic/notification_cubit.dart';
-import 'package:prime_academy/features/Notigication/data/models/notification_model.dart';
+import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
+import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
+import 'package:prime_academy/features/Notification/data/models/notification_model.dart';
+import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
+import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
+import 'package:prime_academy/presentation/Chat/chatPage.dart';
 
 enum DeviceType { mobile, tablet }
 
@@ -15,7 +19,7 @@ DeviceType getDeviceType(BuildContext context) {
   }
 }
 
-void showNotificationsDialog(BuildContext context) {
+void showNotificationsDialog(BuildContext context, LoginResponse user) {
   final size = MediaQuery.of(context).size;
   final deviceType = getDeviceType(context);
 
@@ -93,11 +97,40 @@ void showNotificationsDialog(BuildContext context) {
                                   : Icons.notifications;
 
                               return GestureDetector(
+                                // onTap: () {
+                                //   context
+                                //       .read<NotificationCubit>()
+                                //       .markNotificationAsRead(noti.id!);
+                                // },
                                 onTap: () {
                                   context
                                       .read<NotificationCubit>()
                                       .markNotificationAsRead(noti.id!);
+
+                                  if (noti.type.toLowerCase() == 'chat') {
+                                    final chatId = noti.data?['chatId'];
+                                    if (chatId != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => BlocProvider(
+                                            create: (context) => ChatCubit(
+                                              context
+                                                  .read<ChatRepo>(), // ✅ repo
+                                              chatId,
+                                              user,
+                                            )..loadChat(),
+                                            child: ChatScreen(
+                                              chatId: chatId,
+                                              user: user,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }
                                 },
+
                                 child: Stack(
                                   children: [
                                     Padding(

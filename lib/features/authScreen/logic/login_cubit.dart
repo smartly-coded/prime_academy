@@ -3,12 +3,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/networking/api_result.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
+import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/authScreen/data/repos/login_repo.dart';
 import 'package:prime_academy/features/authScreen/logic/login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   final LoginRepo _loginRepo;
-
+LoginResponse? currentUser;
   LoginCubit(this._loginRepo) : super(LoginState.initial());
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -23,6 +24,7 @@ class LoginCubit extends Cubit<LoginState> {
     );
     response.when(
       success: (loginResponse) async {
+         currentUser = loginResponse;
         emit(LoginState.success(loginResponse));
       },
       failure: (error) {

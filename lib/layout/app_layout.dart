@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
-import 'package:prime_academy/features/Notigication/logic/notification_cubit.dart';
+import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
+import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/startScreen/data/repos/start_screen_repo.dart';
 import 'package:prime_academy/features/startScreen/logic/certificate_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/start_screen_cubit.dart';
@@ -13,8 +14,8 @@ import 'package:prime_academy/presentation/about/about.dart';
 import 'nav_items.dart';
 
 class AppLayout extends StatefulWidget {
-  const AppLayout({super.key});
-
+  const AppLayout({super.key, this.user});
+ final LoginResponse? user;
   @override
   State<AppLayout> createState() => _AppLayoutState();
 }
@@ -122,9 +123,16 @@ class _AppLayoutState extends State<AppLayout> {
                             color: Colors.white,
                             size: 20,
                           ),
-                          onPressed: () {
-                            showNotificationsDialog(context);
-                          },
+                                                      onPressed: () {
+                              if (widget.user == null) {
+                               
+                                Navigator.pushNamed(context, AppRoutes.login);
+                              } else {
+                               
+                                showNotificationsDialog(context, widget.user!);
+                              }
+                            },
+
                         ),
                       ),
                     ),
