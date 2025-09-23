@@ -117,7 +117,7 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF4A148C), Color(0xFF7B1FA2), Color(0xFF9C27B0)],
+            colors: [Color(0xFF5d0b39), Color(0xff3f0627), Color(0xff270419)],
           ),
         ),
         child: SafeArea(
@@ -161,22 +161,7 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
           child: Column(
             children: [
               // Header - responsive
-              if (!isLandscape) HeaderTitle(),
-              if (isLandscape)
-                SizedBox(
-                  height: 50,
-                  child: Center(
-                    child: Text(
-                      "السؤال المقالي",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
-                      ),
-                    ),
-                  ),
-                ),
+              HeaderTitle(),
 
               SizedBox(height: isLandscape ? 15 : 30),
 
@@ -210,7 +195,7 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
         vertical: isLandscape ? 15 : 20,
       ),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.4),
+        color: Color(0xff2a091c),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -277,7 +262,7 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
             borderSide: const BorderSide(color: Colors.white, width: 2),
           ),
           filled: true,
-          fillColor: Colors.black.withOpacity(0.3),
+          fillColor: Color(0xff654256),
           contentPadding: EdgeInsets.all(isLandscape ? 12 : 15),
         ),
         textAlign: TextAlign.right,

@@ -6,7 +6,8 @@ import 'package:prime_academy/presentation/widgets/modulesWidgets/question_title
 
 class FullScreenMcqDialog extends StatefulWidget {
   final LessonQuestion question;
-  final Function(bool isCorrect) onAnswerSubmitted;
+  final Function(List<int> selectedChoices, bool isCorrect)
+  onAnswerSubmitted; // تغيير النوع
   final VoidCallback onSkip;
 
   const FullScreenMcqDialog({
@@ -83,6 +84,9 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
         .map((ca) => ca.answerId)
         .toSet();
 
+    // تحويل الإجابات المختارة إلى قائمة
+    final selectedChoices = _selectedAnswerIds.toList();
+
     setState(() {
       // التحقق من أن الإجابات المختارة تطابق الإجابات الصحيحة تماماً
       _isCorrect =
@@ -94,7 +98,10 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
     // إرسال النتيجة بعد 3 ثوانِ
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        widget.onAnswerSubmitted(_isCorrect);
+        widget.onAnswerSubmitted(
+          selectedChoices,
+          _isCorrect,
+        ); // تمرير الإجابات المختارة
       }
     });
   }
@@ -107,11 +114,7 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF4A148C), // موف غامق من أعلى
-              Color(0xFF7B1FA2), // موف متوسط في الوسط
-              Color(0xFF9C27B0), // موف فاتح من أسفل
-            ],
+            colors: [Color(0xFF5d0b39), Color(0xff3f0627), Color(0xff270419)],
           ),
         ),
         child: SafeArea(
@@ -134,7 +137,7 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
 
   Widget _buildQuestionContent() {
     if (_showResult) {
-      return _buildResultScreen();
+      return buildResultScreen();
     }
 
     return Padding(
@@ -300,7 +303,7 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                     child: Text(
                       "تقديم",
                       style: TextStyle(
-                        color: _selectedAnswerIds != null
+                        color: _selectedAnswerIds.isNotEmpty
                             ? const Color(0xFF7B1FA2)
                             : Colors.white.withOpacity(0.5),
                         fontFamily: 'Cairo',
@@ -411,7 +414,7 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
     );
   }
 
-  Widget _buildResultScreen() {
+  Widget buildResultScreen() {
     return Center(
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 500),

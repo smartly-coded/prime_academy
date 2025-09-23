@@ -8,16 +8,21 @@ import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_state.dart';
+import 'package:prime_academy/features/CoursesModules/logic/mark_answered_cubit.dart';
+import 'package:prime_academy/features/CoursesModules/logic/mark_answered_state.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/presentation/Chat/chatPage.dart';
+import 'package:prime_academy/presentation/Modules/veiw/video_header.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/essay_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/fill_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/choose_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/match_question_dialog.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/recorded_lesson_items.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/reorder_question_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'dart:async';
@@ -26,7 +31,7 @@ class ViewModule extends StatefulWidget {
   final int moduleId;
   final int courseId;
   final int itemId;
-    final LoginResponse user;
+  final LoginResponse user;
 
   const ViewModule({
     super.key,
@@ -34,7 +39,6 @@ class ViewModule extends StatefulWidget {
     required this.courseId,
     required this.itemId,
     required this.user,
-
   });
 
   @override
@@ -50,6 +54,16 @@ class _ViewModuleState extends State<ViewModule> {
   Set<int> _shownQuestions = {};
   Timer? _questionCheckTimer;
   bool _isPlayerReady = false;
+  String _currentLessonTitle = ""; // متغير لحفظ عنوان الدرس الحالي
+  Set<int> _rewardedLessons = {};
+
+  Set<String> _shownQuestionsGlobally = {};
+  // تحديث العنوان عند تغيير الدرس
+  void _updateCurrentLessonTitle(String title) {
+    setState(() {
+      _currentLessonTitle = title;
+    });
+  }
 
   @override
   void initState() {
@@ -62,6 +76,25 @@ class _ViewModuleState extends State<ViewModule> {
       widget.courseId,
     );
     context.read<LessonDetailsCubit>().emitLessonDetailsStates(widget.itemId);
+    _loadRewardedLessons();
+    _loadShownQuestions();
+  }
+
+  // دالة للحصول على نوع الجهاز
+  DeviceType _getDeviceType(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final orientation = MediaQuery.of(context).orientation;
+
+    if (screenWidth > 1200) {
+      return DeviceType.desktop;
+    } else if (screenWidth > 600) {
+      return DeviceType.tablet;
+    } else if (orientation == Orientation.landscape) {
+      return DeviceType.mobileLandscape;
+    } else {
+      return DeviceType.mobilePortrait;
+    }
   }
 
   void _initializePlayer(String url) {
@@ -88,7 +121,6 @@ class _ViewModuleState extends State<ViewModule> {
         ),
       );
 
-      // إضافة listener للتحقق من الأسئلة
       _controller!.addListener(_onPlayerStateChange);
     }
   }
@@ -98,10 +130,18 @@ class _ViewModuleState extends State<ViewModule> {
       case QuestionType.mcq:
         return FullScreenMcqDialog(
           question: question,
-          onAnswerSubmitted: (bool isCorrect) {
+          onAnswerSubmitted: (List<int> selectedChoices, bool isCorrect) {
             Navigator.of(context).pop();
-            _controller?.play();
-            print('Answer result: ${isCorrect ? "Correct" : "Incorrect"}');
+
+            // استخدام الطريقة الجديدة
+            context.read<MarkAnsweredCubit>().submitChoiceAnswer(
+              question.id!, // questionId
+              question.lessonId!, // lessonId
+              selectedChoices, // List<int> للاختيارات
+            );
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _resumeVideo();
+            });
           },
           onSkip: () {
             Navigator.of(context).pop();
@@ -109,29 +149,47 @@ class _ViewModuleState extends State<ViewModule> {
             print('Question skipped');
           },
         );
+
       case QuestionType.essay:
         return EssayQuestionDialog(
           question: question,
           onAnswerSubmitted: (String answer, bool isCorrect) {
             Navigator.of(context).pop();
-            _controller?.play();
-            print('Essay answer: $answer, Correct: $isCorrect');
+
+            // استخدام الطريقة الجديدة
+            context.read<MarkAnsweredCubit>().submitEssayAnswer(
+              question.id!, // questionId
+              question.lessonId!, // lessonId
+              answer, // الإجابة النصية
+            );
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _resumeVideo();
+            });
           },
           onSkip: () {
             Navigator.of(context).pop();
             _controller?.play();
           },
         );
+
       case QuestionType.fillBlank:
         int expectedLength = question.correctAnswers.isNotEmpty
             ? question.correctAnswers.first.title!.length
-            : 5; // قيمة افتراضية
+            : 5;
         return FillInBlanksDialog(
           question: question,
           onAnswerSubmitted: (String answer, bool isCorrect) {
             Navigator.of(context).pop();
-            _controller?.play();
-            print('Fill answer: $answer, Correct: $isCorrect');
+
+            // استخدام الطريقة الجديدة
+            context.read<MarkAnsweredCubit>().submitFillAnswer(
+              question.id!, // questionId
+              question.lessonId!, // lessonId
+              answer, // الإجابة النصية
+            );
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _resumeVideo();
+            });
           },
           onSkip: () {
             Navigator.of(context).pop();
@@ -143,21 +201,42 @@ class _ViewModuleState extends State<ViewModule> {
       case QuestionType.match:
         return ResponsiveMatchDialog(
           question: question,
-          onAnswerSubmitted: (bool isCorrect) {
+          onAnswerSubmitted: (Map<int, int> matchAnswers, bool isCorrect) {
+            // تعديل النوع
             Navigator.of(context).pop();
-            _controller?.play();
+
+            // استخدام الطريقة الجديدة
+            context.read<MarkAnsweredCubit>().submitMatchAnswer(
+              question.id!, // questionId
+              question.lessonId!, // lessonId
+              matchAnswers, // Map<int, int> للمطابقة
+            );
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _resumeVideo();
+            });
           },
           onSkip: () {
             Navigator.of(context).pop();
             _controller?.play();
           },
         );
+
       case QuestionType.reOrder:
         return ReorderQuestionDialog(
           question: question,
-          onAnswerSubmitted: (bool isCorrect) {
+          onAnswerSubmitted: (Map<int, int> orderAnswers, bool isCorrect) {
+            // تعديل النوع
             Navigator.of(context).pop();
-            _controller?.play();
+
+            // استخدام الطريقة الجديدة
+            context.read<MarkAnsweredCubit>().submitReOrderAnswer(
+              question.id!, // questionId
+              question.lessonId!, // lessonId
+              orderAnswers, // Map<int, int> للترتيب
+            );
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _resumeVideo();
+            });
           },
           onSkip: () {
             Navigator.of(context).pop();
@@ -178,7 +257,8 @@ class _ViewModuleState extends State<ViewModule> {
         setState(() {
           _currentVideoId = videoId;
           _isPlayerReady = false;
-          _shownQuestions.clear(); // مسح الأسئلة المعروضة للفيديو الجديد
+          _shownQuestions.clear(); // تنضيف الأسئلة المحلية بس
+          // _shownQuestionsGlobally متتمسحش عشان تفضل محفوظة
         });
         _controller!.load(videoId);
       } else {
@@ -227,68 +307,90 @@ class _ViewModuleState extends State<ViewModule> {
     _safeDisposeController();
     super.dispose();
   }
+  // أسئلة اتعرضت خلاص
+
+  Future<void> _loadShownQuestions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final shownList =
+        prefs.getStringList('shown_questions_${widget.moduleId}') ?? [];
+    setState(() {
+      _shownQuestionsGlobally = shownList.toSet();
+    });
+    print('Loaded shown questions: $_shownQuestionsGlobally');
+  }
+
+  Future<void> _saveShownQuestions() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      'shown_questions_${widget.moduleId}',
+      _shownQuestionsGlobally.toList(),
+    );
+  }
+
+  Future<void> _saveRewardedLessons() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rewardedList = _rewardedLessons.map((e) => e.toString()).toList();
+    await prefs.setStringList(
+      'rewarded_lessons_${widget.moduleId}',
+      rewardedList,
+    );
+    print('Saved rewarded lessons: $_rewardedLessons');
+  }
+
+  Future<void> _loadRewardedLessons() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rewardedList =
+        prefs.getStringList('rewarded_lessons_${widget.moduleId}') ?? [];
+    setState(() {
+      _rewardedLessons = rewardedList.map((e) => int.parse(e)).toSet();
+    });
+    print('Loaded rewarded lessons: $_rewardedLessons');
+  }
 
   void _checkForQuestions(int currentSeconds) {
     if (_lessonQuestions.isEmpty) {
-      return; // لا توجد أسئلة
+      return;
     }
 
-    print('=== CHECKING QUESTIONS ===');
-    print('Current time: ${currentSeconds}s');
-    print('Total questions: ${_lessonQuestions.length}');
-    print('Already shown: ${_shownQuestions.toList()}');
+    // التأكد من تحميل الـ rewarded lessons
+    final lessonNotRewarded = !_rewardedLessons.contains(
+      _currentSelectedItemId,
+    );
+
+    if (!lessonNotRewarded) {
+      print(
+        'Lesson $_currentSelectedItemId is already rewarded - skipping questions',
+      );
+      return;
+    }
 
     for (final question in _lessonQuestions) {
-      print(
-        'Question ${question.id}: timestamp=${question.timestamp}, title="${question.title}"',
-      );
-
-      // تحقق من وقت السؤال مع هامش تسامح ±2 ثانية
       bool timeMatch =
           (currentSeconds >= question.timestamp &&
           currentSeconds <= question.timestamp + 2);
-      bool notShownYet = !_shownQuestions.contains(question.id);
 
-      print(
-        '  - Time match: $timeMatch (${question.timestamp} <= $currentSeconds <= ${question.timestamp + 2})',
-      );
-      print('  - Not shown yet: $notShownYet');
+      // تحقق من الأسئلة المعروضة محلياً وعالمياً
+      final questionKey = '${_currentSelectedItemId}_${question.id}';
+      bool notShownYet =
+          !_shownQuestions.contains(question.id) &&
+          !_shownQuestionsGlobally.contains(questionKey);
 
       if (timeMatch && notShownYet) {
-        print('🎯 SHOWING QUESTION ${question.id} at time $currentSeconds');
         _shownQuestions.add(question.id);
+        _shownQuestionsGlobally.add(questionKey);
+        _saveShownQuestions(); // حفظ في التخزين
 
-        // وقف الفيديو
         _controller?.pause();
-        print('Video paused for question');
-
         Navigator.of(context).push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
                 _buildQuestionDialog(question),
-            transitionDuration: const Duration(milliseconds: 300),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: ScaleTransition(
-                      scale: Tween<double>(begin: 0.8, end: 1.0).animate(
-                        CurvedAnimation(
-                          parent: animation,
-                          curve: Curves.easeOut,
-                        ),
-                      ),
-                      child: child,
-                    ),
-                  );
-                },
+            // باقي الكود...
           ),
         );
-
-        break; // إظهار سؤال واحد فقط في كل مرة
+        break;
       }
     }
-    print('=== END CHECKING ===');
   }
 
   void _updateLessonQuestions(LessonDetailsResponse lessonDetails) {
@@ -297,17 +399,15 @@ class _ViewModuleState extends State<ViewModule> {
     try {
       print('Raw groupedQuestions: ${lessonDetails.groupedQuestions}');
 
-      // البيانات مُجمعة حسب timestamp، لذا نحتاج لاستخراجها من كل timestamp
       lessonDetails.groupedQuestions.forEach((timestampKey, questionsData) {
         print('Processing timestamp: $timestampKey with data: $questionsData');
 
-        // تحويل timestamp من String إلى int
         int timestamp;
         try {
           timestamp = int.parse(timestampKey);
         } catch (e) {
           print('Error parsing timestamp $timestampKey: $e');
-          return; // تخطي هذا الـ timestamp
+          return;
         }
 
         if (questionsData is List) {
@@ -315,9 +415,7 @@ class _ViewModuleState extends State<ViewModule> {
             try {
               print('Processing question data: $questionData');
 
-              // تأكد من أن questionData هو Map
               if (questionData is Map<String, dynamic>) {
-                // إضافة timestamp للبيانات إذا لم تكن موجودة
                 if (!questionData.containsKey('timestamp')) {
                   questionData['timestamp'] = timestamp;
                 }
@@ -340,24 +438,11 @@ class _ViewModuleState extends State<ViewModule> {
         }
       });
 
-      // ترتيب الأسئلة حسب الوقت
       allQuestions.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
       setState(() {
         _lessonQuestions = allQuestions;
-        _shownQuestions.clear(); // مسح الأسئلة المعروضة السابقة
       });
-
-      print(
-        '✅ Updated lesson questions: ${_lessonQuestions.length} questions total',
-      );
-
-      // طباعة تفاصيل كل سؤال للـ debugging
-      for (var question in _lessonQuestions) {
-        print(
-          'Question ${question.id}: "${question.title}" at ${question.timestamp}s - ${question.answers.length} answers',
-        );
-      }
     } catch (e) {
       print('❌ Error processing grouped questions: $e');
       print('Stack trace: ${StackTrace.current}');
@@ -368,23 +453,336 @@ class _ViewModuleState extends State<ViewModule> {
     }
   }
 
+  // بناء الفيديو مع أحجام responsive
+  Widget _buildVideoPlayer(DeviceType deviceType) {
+    if (_controller == null) return const SizedBox.shrink();
+
+    double videoHeight;
+    EdgeInsets margin;
+
+    switch (deviceType) {
+      case DeviceType.mobilePortrait:
+        videoHeight = 220;
+        margin = const EdgeInsets.all(16);
+        break;
+      case DeviceType.mobileLandscape:
+        videoHeight = MediaQuery.of(context).size.height * 0.6;
+        margin = const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+        break;
+      case DeviceType.tablet:
+        videoHeight = 300;
+        margin = const EdgeInsets.all(20);
+        break;
+      case DeviceType.desktop:
+        videoHeight = 400;
+        margin = const EdgeInsets.all(24);
+        break;
+    }
+
+    return Container(
+      height: videoHeight,
+      margin: margin,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: YoutubePlayer(
+          controller: _controller!,
+          showVideoProgressIndicator: true,
+          progressIndicatorColor: Colors.red,
+          progressColors: const ProgressBarColors(
+            playedColor: Colors.red,
+            handleColor: Colors.redAccent,
+          ),
+          onReady: () {
+            print('YouTube player is ready');
+            if (mounted && !_isDisposing) {
+              setState(() {
+                _isPlayerReady = true;
+              });
+
+              _questionCheckTimer?.cancel();
+              _questionCheckTimer = Timer.periodic(const Duration(seconds: 1), (
+                timer,
+              ) {
+                if (_controller != null && _isPlayerReady && mounted) {
+                  final currentSeconds = _controller!.value.position.inSeconds;
+                  _checkForQuestions(currentSeconds);
+                }
+              });
+            }
+          },
+          onEnded: (data) {
+            if (mounted && !_isDisposing) {
+              print('Video ended: ${data.videoId}');
+              _questionCheckTimer?.cancel();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  void _resumeVideo() {
+    if (_controller != null && _isPlayerReady && mounted && !_isDisposing) {
+      try {
+        _controller!.play();
+        print('Video resumed successfully');
+      } catch (e) {
+        print('Error resuming video: $e');
+        // إعادة تهيئة الفيديو إذا فشل
+        if (_currentVideoId != null) {
+          _controller!.load(_currentVideoId!);
+        }
+      }
+    }
+  }
+
+  // بناء الأزرار مع responsive design
+  Widget _buildActionButtons(DeviceType deviceType) {
+    double fontSize;
+    EdgeInsets padding;
+    double spacing;
+    double buttonHeight;
+
+    switch (deviceType) {
+      case DeviceType.mobilePortrait:
+        fontSize = 12;
+        padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+        spacing = 8;
+        buttonHeight = 60;
+        break;
+      case DeviceType.mobileLandscape:
+        fontSize = 11;
+        padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 6);
+        spacing = 6;
+        buttonHeight = 50;
+        break;
+      case DeviceType.tablet:
+        fontSize = 14;
+        padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 10);
+        spacing = 10;
+        buttonHeight = 70;
+        break;
+      case DeviceType.desktop:
+        fontSize = 15;
+        padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 12);
+        spacing = 12;
+        buttonHeight = 80;
+        break;
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      height: 80,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildButton("اسأل الذكاء الاصطناعي", "assets/icons/bot.png", () {
+              _openExternalLink("https://chatgpt.com/");
+            }),
+            _buildButton("اسأل المعلم", "assets/icons/message.png", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider(
+                    create: (context) => ChatCubit(
+                      context.read<ChatRepo>(), // ✅ بجيب الـ repo من الـ main
+                      1, // رقم الشات
+                      widget.user, // اليوزر اللى جه من loginResponse
+                    )..loadChat(),
+                    child: ChatScreen(chatId: 1, user: widget.user),
+                  ),
+                ),
+              );
+            }),
+            _buildButton(
+              "الملازم الالكترونيه",
+              "assets/icons/open-book.png",
+              () {},
+            ),
+            _buildButton("الفيديوهات", "assets/icons/play.png", () {}),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // بناء قائمة الدروس مع responsive design
+  Widget _buildLessonsList(
+    List<dynamic> lessons,
+    List<dynamic> externalSources,
+    DeviceType deviceType,
+  ) {
+    double borderRadius;
+    EdgeInsets contentPadding;
+    double fontSize;
+
+    switch (deviceType) {
+      case DeviceType.mobilePortrait:
+        borderRadius = 20;
+        contentPadding = const EdgeInsets.all(16);
+        fontSize = 16;
+        break;
+      case DeviceType.mobileLandscape:
+        borderRadius = 16;
+        contentPadding = const EdgeInsets.all(12);
+        fontSize = 14;
+        break;
+      case DeviceType.tablet:
+        borderRadius = 24;
+        contentPadding = const EdgeInsets.all(20);
+        fontSize = 18;
+        break;
+      case DeviceType.desktop:
+        borderRadius = 28;
+        contentPadding = const EdgeInsets.all(24);
+        fontSize = 20;
+        break;
+    }
+
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Mycolors.darkblue,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(borderRadius),
+            topRight: Radius.circular(borderRadius),
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: contentPadding,
+              child: Center(
+                child: Text(
+                  "الحصص المسجله",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Cairo',
+                  ),
+                ),
+              ),
+            ),
+            const Divider(color: Colors.white12, height: 1),
+            Expanded(
+              child: BlocBuilder<MarkAnsweredCubit, MarkAnsweredState>(
+                builder: (context, state) {
+                  return ListView.builder(
+                    itemCount: (lessons.length + externalSources.length),
+                    itemBuilder: (context, index) {
+                      if (index < lessons.length) {
+                        final item = lessons[index];
+                        final lesson = item.lesson!;
+                        final isSelected = _currentSelectedItemId == item.id;
+                        final isRewarded = _rewardedLessons.contains(item.id);
+
+                        return RecordedLessonItem(
+                          title: lesson.title,
+                          type: item.itemType,
+                          isSelected: isSelected,
+                          lessonRewarded: isRewarded, // تمرير حالة المكافأة
+                          onTap: () {
+                            if (!mounted || _isDisposing) return;
+
+                            print('Tapping on lesson: ${item.id}');
+                            setState(() {
+                              _currentSelectedItemId = item.id;
+                              _currentLessonTitle = lesson.title;
+                            });
+
+                            _questionCheckTimer?.cancel();
+                            context
+                                .read<LessonDetailsCubit>()
+                                .emitLessonDetailsStates(item.id);
+                          },
+                        );
+                      } else {
+                        final sourceIndex = index - lessons.length;
+                        final item = externalSources[sourceIndex];
+                        final externalSource = item.externalSource!;
+                        final isSelected = _currentSelectedItemId == item.id;
+
+                        return RecordedLessonItem(
+                          title: externalSource.title,
+                          type: item.itemType,
+                          isSelected: isSelected,
+                          lessonRewarded:
+                              false, // المصادر الخارجية مافيهاش مكافآت
+                          onTap: () {
+                            if (!mounted || _isDisposing) return;
+
+                            setState(() {
+                              _currentSelectedItemId = item.id;
+                            });
+                            _openExternalLink(externalSource.url);
+                          },
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final deviceType = _getDeviceType(context);
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
       appBar: AppBar(
         backgroundColor: Mycolors.backgroundColor,
         elevation: 0,
-        title: Text(
-          "دروس الوحدة",
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Cairo',
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+        title: Image.asset("assets/images/footer-logo.webp", height: 40),
+        actions: [
+          Container(
+            padding: const EdgeInsets.all(2),
+            width: 70,
+            height: 40,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xff4f2349), Color(0xffa76433)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0XFF0f1217),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: TextButton(
+                onPressed: () {},
+                child: const Text(
+                  "حسابي",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
           ),
-        ),
-        iconTheme: IconThemeData(color: Colors.white),
+          IconButton(
+            icon: const Icon(Icons.notifications_none, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: MultiBlocListener(
         listeners: [
@@ -395,7 +793,8 @@ class _ViewModuleState extends State<ViewModule> {
               print('LessonDetailsState changed: $state');
               state.whenOrNull(
                 success: (lessonDetails) {
-                  // تحديث الأسئلة أولاً
+                  _updateCurrentLessonTitle(lessonDetails.title ?? "");
+
                   _updateLessonQuestions(lessonDetails);
 
                   final url = lessonDetails.externalUrl;
@@ -423,12 +822,38 @@ class _ViewModuleState extends State<ViewModule> {
               );
             },
           ),
-          // إضافة listener للـ ModuleLessons للتحديد التلقائي
+          BlocListener<MarkAnsweredCubit, MarkAnsweredState>(
+            listener: (context, state) {
+              state.when(
+                success: (data) {
+                  final isLastReward = data.lessonRewarded ?? false;
+                  print(
+                    'LastReward received: $isLastReward for lesson: $_currentSelectedItemId',
+                  );
+
+                  if (isLastReward && _currentSelectedItemId != null) {
+                    print(
+                      'Adding lesson $_currentSelectedItemId to rewarded lessons',
+                    );
+                    setState(() {
+                      _rewardedLessons.add(_currentSelectedItemId!);
+                    });
+                    _saveRewardedLessons();
+                    print('Current rewarded lessons: $_rewardedLessons');
+                  }
+                },
+                error: (error) {
+                  _showErrorDialog("خطأ في إرسال الإجابة: $error");
+                },
+                loading: () {},
+                initial: () {},
+              );
+            },
+          ),
           BlocListener<ModuleLessonsCubit, ModuleLessonsState>(
             listener: (context, state) {
               state.whenOrNull(
                 success: (module) {
-                  // التحقق إذا لم يتم تحميل تفاصيل العنصر المحدد مسبقاً
                   if (_currentSelectedItemId == widget.itemId &&
                       _controller == null) {
                     print(
@@ -470,233 +895,59 @@ class _ViewModuleState extends State<ViewModule> {
                         .toList() ??
                     [];
 
-                return Column(
-                  children: [
-                    // عرض الفيديو
-                    if (_controller != null)
-                      Container(
-                        margin: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: YoutubePlayer(
-                            controller: _controller!,
-                            showVideoProgressIndicator: true,
-                            progressIndicatorColor: Colors.red,
-                            progressColors: const ProgressBarColors(
-                              playedColor: Colors.red,
-                              handleColor: Colors.redAccent,
-                            ),
-                            onReady: () {
-                              print('YouTube player is ready');
-                              if (mounted && !_isDisposing) {
-                                setState(() {
-                                  _isPlayerReady = true;
-                                });
-
-                                // بدء timer للتحقق من الأسئلة كل ثانية
-                                _questionCheckTimer?.cancel();
-                                _questionCheckTimer = Timer.periodic(
-                                  Duration(seconds: 1),
-                                  (timer) {
-                                    if (_controller != null &&
-                                        _isPlayerReady &&
-                                        mounted) {
-                                      final currentSeconds =
-                                          _controller!.value.position.inSeconds;
-                                      _checkForQuestions(currentSeconds);
-                                    }
-                                  },
-                                );
-                              }
-                            },
-                            onEnded: (data) {
-                              if (mounted && !_isDisposing) {
-                                print('Video ended: ${data.videoId}');
-                                _questionCheckTimer?.cancel();
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-
-                    // الأزرار
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      height: 80,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            _buildButton(
-                              "اسأل الذكاء الاصطناعي",
-                              "assets/icons/bot.png",
-                              () {
-                                _openExternalLink("https://chatgpt.com/");
-                              },
-                            ),
-                            _buildButton(
-                              "اسأل المعلم",
-                              "assets/icons/message.png",
-                              () {Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => BlocProvider(
-                                        create: (context) => ChatCubit(
-                                          context
-                                              .read<
-                                                ChatRepo
-                                              >(), // ✅ بجيب الـ repo من الـ main
-                                          1, // رقم الشات
-                                          widget
-                                              .user, // اليوزر اللى جه من loginResponse
-                                        )..loadChat(),
-                                        child: ChatScreen(
-                                          chatId: 1,
-                                          user: widget.user,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                            ),
-                            _buildButton(
-                              "الملازم الالكترونيه",
-                              "assets/icons/open-book.png",
-                              () {},
-                            ),
-                            _buildButton(
-                              "الفيديوهات",
-                              "assets/icons/play.png",
-                              () {},
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // قائمة الدروس
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Mycolors.darkblue,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                          ),
-                        ),
+                // تخطيط مختلف للـ landscape والـ tablet
+                if (isLandscape && deviceType != DeviceType.mobilePortrait) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
                         child: Column(
                           children: [
-                            // Header للقائمة
-                            Container(
-                              padding: EdgeInsets.all(16),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.playlist_play,
-                                    color: Colors.white,
-                                    size: 24,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    "محتويات الوحدة (${lessons.length + externalSources.length})",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Cairo',
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            videoHeader(
+                              _currentLessonTitle,
+                              context,
+                              deviceType,
                             ),
-
-                            Divider(color: Colors.white12, height: 1),
-
-                            // قائمة العناصر
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount:
-                                    (lessons.length + externalSources.length),
-                                itemBuilder: (context, index) {
-                                  if (index < lessons.length) {
-                                    // عرض الدروس
-                                    final item = lessons[index];
-                                    final lesson = item.lesson!;
-                                    final isSelected =
-                                        _currentSelectedItemId == item.id;
-
-                                    return LessonItem(
-                                      title: lesson.title,
-                                      time: _formatDuration(lesson.videoLength),
-                                      type: item.itemType,
-                                      isSelected: isSelected,
-                                      onTap: () {
-                                        if (!mounted || _isDisposing) return;
-
-                                        print('Tapping on lesson: ${item.id}');
-                                        setState(() {
-                                          _currentSelectedItemId = item.id;
-                                        });
-
-                                        // إيقاف الـ timer الحالي
-                                        _questionCheckTimer?.cancel();
-
-                                        // تحميل تفاصيل الدرس
-                                        context
-                                            .read<LessonDetailsCubit>()
-                                            .emitLessonDetailsStates(item.id);
-                                      },
-                                    );
-                                  } else {
-                                    // عرض المصادر الخارجية
-                                    final sourceIndex = index - lessons.length;
-                                    final item = externalSources[sourceIndex];
-                                    final externalSource = item.externalSource!;
-                                    final isSelected =
-                                        _currentSelectedItemId == item.id;
-
-                                    return LessonItem(
-                                      title: externalSource.title,
-                                      time: null,
-                                      type: item.itemType,
-                                      isSelected: isSelected,
-                                      onTap: () {
-                                        if (!mounted || _isDisposing) return;
-
-                                        setState(() {
-                                          _currentSelectedItemId = item.id;
-                                        });
-                                        _openExternalLink(externalSource.url);
-                                      },
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
+                            _buildVideoPlayer(deviceType),
+                            _buildActionButtons(deviceType),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                );
+                      // الجانب الأيمن - قائمة الدروس
+                      Expanded(
+                        flex: 2,
+                        child: _buildLessonsList(
+                          lessons,
+                          externalSources,
+                          deviceType,
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  // التخطيط العمودي للـ portrait
+                  return Column(
+                    children: [
+                      videoHeader(_currentLessonTitle, context, deviceType),
+
+                      _buildVideoPlayer(deviceType),
+                      _buildActionButtons(deviceType),
+                      _buildLessonsList(lessons, externalSources, deviceType),
+                    ],
+                  );
+                }
               },
               error: (error) => Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, color: Colors.red, size: 48),
-                    SizedBox(height: 16),
-                    Text(
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
                       "خطأ في تحميل البيانات",
                       style: TextStyle(
                         color: Colors.red,
@@ -705,7 +956,7 @@ class _ViewModuleState extends State<ViewModule> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       error,
                       style: TextStyle(
@@ -715,7 +966,7 @@ class _ViewModuleState extends State<ViewModule> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
                         context
@@ -728,7 +979,7 @@ class _ViewModuleState extends State<ViewModule> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                       ),
-                      child: Text(
+                      child: const Text(
                         "إعادة المحاولة",
                         style: TextStyle(
                           color: Colors.white,
@@ -765,18 +1016,18 @@ class _ViewModuleState extends State<ViewModule> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Mycolors.darkblue,
-        title: Text(
+        title: const Text(
           "فتح رابط خارجي",
           style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
         ),
         content: Text(
           "هل تريد فتح هذا الرابط؟\n$url",
-          style: TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
+          style: const TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               "إلغاء",
               style: TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
             ),
@@ -786,7 +1037,7 @@ class _ViewModuleState extends State<ViewModule> {
               Navigator.pop(context);
               await _launchUrl(url);
             },
-            child: Text(
+            child: const Text(
               "فتح",
               style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
             ),
@@ -816,18 +1067,18 @@ class _ViewModuleState extends State<ViewModule> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Mycolors.darkblue,
-        title: Text(
+        title: const Text(
           "خطأ",
           style: TextStyle(color: Colors.red, fontFamily: 'Cairo'),
         ),
         content: Text(
           message,
-          style: TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
+          style: const TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               "موافق",
               style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
             ),
@@ -870,3 +1121,6 @@ class _ViewModuleState extends State<ViewModule> {
     );
   }
 }
+
+// enum لتحديد نوع الجهاز
+enum DeviceType { mobilePortrait, mobileLandscape, tablet, desktop }

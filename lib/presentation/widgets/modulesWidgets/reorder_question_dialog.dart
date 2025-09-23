@@ -5,7 +5,8 @@ import 'package:prime_academy/presentation/Home/veiw/home_screen.dart';
 
 class ReorderQuestionDialog extends StatefulWidget {
   final LessonQuestion question;
-  final Function(bool isCorrect) onAnswerSubmitted;
+  final Function(Map<int, int> orderAnswers, bool isCorrect)
+  onAnswerSubmitted; // تغيير النوع
   final VoidCallback onSkip;
 
   const ReorderQuestionDialog({
@@ -101,6 +102,15 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
       }
     }
 
+    // إنشاء خريطة الإجابات للإرسال
+    Map<int, int> orderAnswers = {};
+    for (int i = 0; i < _orderedAnswers.length; i++) {
+      Answer? answer = _orderedAnswers[i];
+      if (answer != null) {
+        orderAnswers[i] = answer.id!; // position -> answerId
+      }
+    }
+
     setState(() {
       _isCorrect = allCorrect;
       _showResult = true;
@@ -108,7 +118,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        widget.onAnswerSubmitted(_isCorrect);
+        widget.onAnswerSubmitted(orderAnswers, _isCorrect); // تمرير الخريطة
       }
     });
   }
@@ -129,11 +139,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF6A1B9A), // موف غامق
-              Color(0xFF8E24AA), // موف متوسط
-              Color(0xFFAB47BC), // موف فاتح
-            ],
+            colors: [Color(0xFF5d0b39), Color(0xff3f0627), Color(0xff270419)],
           ),
         ),
         child: SafeArea(
@@ -297,9 +303,15 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
             itemCount: _orderedAnswers.length,
             itemBuilder: (context, index) {
               Answer? answer = _orderedAnswers[index];
-              String imageUrl = buildImageUrl(answer!.image!.url);
-              bool isCorrectPosition =
-                  answer != null && _correctOrder[answer.id] == index;
+              bool isCorrectPosition = false;
+              String? imageUrl;
+
+              if (answer != null) {
+                isCorrectPosition = _correctOrder[answer.id] == index;
+                imageUrl = answer.image != null
+                    ? buildImageUrl(answer.image!.url)
+                    : null;
+              }
 
               return InkWell(
                 onTap: () {
@@ -363,7 +375,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
                         SizedBox(height: isTablet ? 6 : 4),
 
                         // Image if available
-                        if (answer.image != null) ...[
+                        if (imageUrl != null) ...[
                           ClipRRect(
                             borderRadius: BorderRadius.circular(4),
                             child: Image.network(
@@ -430,7 +442,9 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
             children: _shuffledAnswers.asMap().entries.map((entry) {
               int index = entry.key;
               Answer answer = entry.value;
-              String imageUrl = buildImageUrl(answer.image!.url);
+              String? imageUrl = answer.image != null
+                  ? buildImageUrl(answer.image!.url)
+                  : null;
               bool isSelected = _selectedAnswerIndex == index;
               bool isUsed = _isAnswerUsed(answer);
 
@@ -458,7 +472,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Image if available
-                      if (answer.image != null) ...[
+                      if (imageUrl != null) ...[
                         ClipRRect(
                           borderRadius: BorderRadius.circular(6),
                           child: Image.network(

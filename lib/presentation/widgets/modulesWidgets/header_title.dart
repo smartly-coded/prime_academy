@@ -13,7 +13,7 @@ class HeaderTitle extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
+              color: Color(0xff360b24),
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Text(

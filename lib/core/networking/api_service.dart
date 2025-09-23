@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:prime_academy/core/networking/api_constants.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/mark_answerd_request_body.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/mark_answered_response_model.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_request_body.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
@@ -35,4 +37,9 @@ abstract class ApiService {
   );
   @GET("module-items/lesson/{itemId}/user")
   Future<LessonDetailsResponse> getLessonDetails(@Path("itemId") int itemId);
+  @POST("/lesson-questions/{questionId}/mark-answered")
+  Future<MarkAnsweredResponseModel> getLessonRewardStatus(
+    @Path("questionId") int questionId,
+    @Body() MarkAnsweredRequestBody markAnsweredRequestBody,
+  );
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
+import 'package:prime_academy/features/CoursesModules/data/repo/mark_answered_repo.dart';
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_cubit.dart';
+import 'package:prime_academy/features/CoursesModules/logic/mark_answered_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
@@ -37,7 +39,6 @@ class AppRoutes {
             child: HomePage(user: loginResponse),
           ),
         );
-        
 
       case login:
         return MaterialPageRoute(
@@ -59,24 +60,23 @@ class AppRoutes {
         final moduleId = args['moduleId'] as int;
         final courseId = args['courseId'] as int;
         final videoUrl = args['externalUrl'] as String?;
-         final loginResponse = args['user'] as LoginResponse;
+        final loginResponse = args['user'] as LoginResponse;
         final itemId = args['itemId'] as int;
         return MaterialPageRoute(
           builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider(create: (context) => getIt<ModuleLessonsCubit>()),
               BlocProvider(create: (context) => getIt<LessonDetailsCubit>()),
+              BlocProvider(create: (context) => getIt<MarkAnsweredCubit>()),
             ],
             child: ViewModule(
               moduleId: moduleId,
               courseId: courseId,
-              selectedVideoUrl: videoUrl, user: loginResponse,
+              user: loginResponse,
               itemId: itemId,
             ),
           ),
         );
-
-      
 
       default:
         return MaterialPageRoute(

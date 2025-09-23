@@ -136,7 +136,7 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF4A148C), Color(0xFF7B1FA2), Color(0xFF9C27B0)],
+            colors: [Color(0xFF5d0b39), Color(0xff3f0627), Color(0xff270419)],
           ),
         ),
         child: SafeArea(
