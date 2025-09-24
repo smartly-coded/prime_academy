@@ -7,7 +7,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:prime_academy/core/networking/api_constants.dart';
 import 'package:prime_academy/features/Chat/data/models/chatModel.dart';
 import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
-import 'package:prime_academy/features/Notigication/data/models/notification_model.dart';
 
 class SSEService {
   EventSource? _eventSource;

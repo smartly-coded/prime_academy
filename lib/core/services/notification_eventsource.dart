@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:eventsource/eventsource.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:prime_academy/core/networking/api_constants.dart';
-import 'package:prime_academy/features/Notigication/data/models/notification_model.dart';
-import 'package:prime_academy/features/Notigication/logic/notification_cubit.dart';
+import 'package:prime_academy/features/Notification/data/models/notification_model.dart';
+import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
 
 class NotificationSSEService {
   EventSource? _eventSource;

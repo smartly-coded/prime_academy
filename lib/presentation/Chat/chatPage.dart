@@ -372,44 +372,77 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
+Widget _buildMedia(MessageModel msg) {
+  final url = msg.mediaUrl ?? "";
 
-  Widget _buildMedia(MessageModel msg) {
-    if (msg.mediaType == "audio") {
-      return Row(
-        children: [
-          const Icon(Icons.mic, color: Colors.orange),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextButton(
-              onPressed: () => playAudio(msg.mediaUrl!),
-              child: const Text(
-                "تشغيل التسجيل",
-                style: TextStyle(color: Colors.white),
+  if (msg.mediaType == "audio") {
+    return Row(
+      children: [
+        const Icon(Icons.mic, color: Colors.orange),
+        const SizedBox(width: 8),
+        Expanded(
+          child: TextButton(
+            onPressed: () => playAudio(url),
+            child: const Text(
+              "تشغيل التسجيل",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  } else if (msg.mediaType == "file") {
+    return Row(
+      children: [
+        const Icon(Icons.attach_file, color: Colors.orange),
+        const SizedBox(width: 8),
+        Expanded(
+          child: TextButton(
+            onPressed: () => openFile(url),
+            child: Text(
+              msg.filename ?? "فتح الملف",
+              style: const TextStyle(color: Colors.white),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ],
+    );
+  } else if (msg.mediaType == "image") {
+    return GestureDetector(
+      onTap: () {
+        // فتح الصورة بحجم كامل
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => Scaffold(
+              backgroundColor: Colors.black,
+              body: Center(
+                child: InteractiveViewer(
+                  child: Image.network(url),
+                ),
               ),
             ),
           ),
-        ],
-      );
-    } else if (msg.mediaType == "file") {
-      return Row(
-        children: [
-          const Icon(Icons.attach_file, color: Colors.orange),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextButton(
-              onPressed: () => openFile(msg.mediaUrl!),
-              child: const Text(
-                "فتح الملف",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      return Text(msg.message, style: const TextStyle(color: Colors.white));
-    }
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.network(
+          url,
+          height: 150,
+          width: 200,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) =>
+              const Icon(Icons.broken_image, color: Colors.red, size: 50),
+        ),
+      ),
+    );
+  } else {
+    return const SizedBox.shrink();
   }
+}
+
 
   void openFile(String url) async {
     try {
