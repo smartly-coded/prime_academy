@@ -12,7 +12,7 @@ part of 'api_service.dart';
 
 class _ApiService implements ApiService {
   _ApiService(this._dio, {this.baseUrl, this.errorLogger}) {
-    baseUrl ??= 'http://192.168.0.101:4005/api/';
+    baseUrl ??= 'http://192.168.0.105:4005/api/';
   }
 
   final Dio _dio;
@@ -244,6 +244,60 @@ class _ApiService implements ApiService {
     late MarkAnsweredResponseModel _value;
     try {
       _value = MarkAnsweredResponseModel.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<void> sendTestimonals(
+    StudentsTestimonalsRequest studentTestimonalRequest,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(studentTestimonalRequest.toJson());
+    final _options = _setStreamType<void>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/students/testimonials',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
+  Future<List<StudentTestimonalsResponse>> getStudentsTestimonals() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<List<StudentTestimonalsResponse>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/students/testimonials',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<StudentTestimonalsResponse> _value;
+    try {
+      _value = _result.data!
+          .map(
+            (dynamic i) =>
+                StudentTestimonalsResponse.fromJson(i as Map<String, dynamic>),
+          )
+          .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

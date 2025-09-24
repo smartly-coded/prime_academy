@@ -13,8 +13,11 @@ import 'package:prime_academy/features/CoursesModules/logic/mark_answered_state.
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
+import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubit.dart';
+import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_state.dart';
 import 'package:prime_academy/presentation/Chat/chatPage.dart';
 import 'package:prime_academy/presentation/Modules/veiw/video_header.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/course_rating_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/essay_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/fill_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
@@ -56,13 +59,29 @@ class _ViewModuleState extends State<ViewModule> {
   bool _isPlayerReady = false;
   String _currentLessonTitle = ""; // متغير لحفظ عنوان الدرس الحالي
   Set<int> _rewardedLessons = {};
-
+  bool _isFirstVideo = false;
+  bool _hasShownRatingPopup = false;
+  Set<String> _shownRatingForCourses = {};
   Set<String> _shownQuestionsGlobally = {};
   // تحديث العنوان عند تغيير الدرس
   void _updateCurrentLessonTitle(String title) {
     setState(() {
       _currentLessonTitle = title;
     });
+  }
+
+  Future<void> _loadShownRatings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final shownList = prefs.getStringList('shown_ratings') ?? [];
+    setState(() {
+      _shownRatingForCourses = shownList.toSet();
+    });
+    print('Loaded shown ratings for courses: $_shownRatingForCourses');
+  }
+
+  Future<void> _saveShownRatings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('shown_ratings', _shownRatingForCourses.toList());
   }
 
   @override
@@ -78,6 +97,73 @@ class _ViewModuleState extends State<ViewModule> {
     context.read<LessonDetailsCubit>().emitLessonDetailsStates(widget.itemId);
     _loadRewardedLessons();
     _loadShownQuestions();
+    _loadShownRatings();
+  }
+
+  void _checkIfFirstVideo(List<dynamic> lessons) {
+    if (lessons.isEmpty || _currentSelectedItemId == null) {
+      _isFirstVideo = false;
+      return;
+    }
+
+    // ترتيب الدروس حسب الـ ID (أو أي معيار ترتيب آخر)
+    lessons.sort((a, b) => a.id.compareTo(b.id));
+
+    // فحص إذا كان الدرس الحالي هو أول درس
+    final firstLesson = lessons.first;
+    _isFirstVideo = firstLesson.id == _currentSelectedItemId;
+
+    print(
+      'Current lesson: $_currentSelectedItemId, First lesson: ${firstLesson.id}, Is first: $_isFirstVideo',
+    );
+  }
+
+  void _showRatingPopupIfNeeded() {
+    final courseKey = widget.courseId.toString();
+
+    if (_isFirstVideo &&
+        !_hasShownRatingPopup &&
+        !_shownRatingForCourses.contains(courseKey)) {
+      _hasShownRatingPopup = true;
+      _shownRatingForCourses.add(courseKey);
+      _saveShownRatings();
+
+      // ✅ احفظي الـ cubit قبل الـ dialog
+      final testimonalCubit = context.read<TestimonalCubit>();
+
+      Future.delayed(Duration(seconds: 1), () {
+        if (mounted && !_isDisposing) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (dialogContext) => CourseRatingDialog(
+              courseId: widget.courseId,
+              onSubmitRating: (ratingRequest) {
+                // ✅ استخدمي الـ cubit المحفوظ
+                testimonalCubit.sendStudentTestimonal(ratingRequest);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'شكراً لك! تم إرسال تقييمك بنجاح',
+                      style: TextStyle(fontFamily: 'Cairo'),
+                    ),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
+              },
+              onCancel: () {
+                print('Rating popup cancelled');
+              },
+            ),
+          );
+        }
+      });
+    }
   }
 
   // دالة للحصول على نوع الجهاز
@@ -525,6 +611,9 @@ class _ViewModuleState extends State<ViewModule> {
             if (mounted && !_isDisposing) {
               print('Video ended: ${data.videoId}');
               _questionCheckTimer?.cancel();
+              if (_isFirstVideo && !_hasShownRatingPopup) {
+                _showRatingPopupIfNeeded();
+              }
             }
           },
         ),
@@ -889,6 +978,37 @@ class _ViewModuleState extends State<ViewModule> {
               );
             },
           ),
+          BlocListener<TestimonalCubit, TestimonalState>(
+            listener: (context, state) {
+              state.when(
+                success: (data) {
+                  if (data is String) {
+                    // رسالة نجاح من إرسال التقييم
+                    print('Rating submitted successfully: $data');
+                  }
+                },
+                error: (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'خطأ في إرسال التقييم: $error',
+                        style: TextStyle(fontFamily: 'Cairo'),
+                      ),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  );
+                },
+                loading: () {
+                  print('Submitting rating...');
+                },
+                initial: () {},
+              );
+            },
+          ),
           BlocListener<ModuleLessonsCubit, ModuleLessonsState>(
             listener: (context, state) {
               state.whenOrNull(
@@ -927,7 +1047,7 @@ class _ViewModuleState extends State<ViewModule> {
                         ?.where((item) => item.lesson != null)
                         .toList() ??
                     [];
-
+                _checkIfFirstVideo(lessons);
                 final externalSources =
                     module.items
                         ?.where((item) => item.externalSource != null)

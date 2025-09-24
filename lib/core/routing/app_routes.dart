@@ -10,6 +10,7 @@ import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_cubit.dart';
+import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubit.dart';
 import 'package:prime_academy/presentation/Home/veiw/home_screen.dart';
 import 'package:prime_academy/presentation/Modules/veiw/view_lesson.dart';
 import 'package:prime_academy/presentation/Start_homeScreen/student_detail_screen.dart';
@@ -68,6 +69,7 @@ class AppRoutes {
               BlocProvider(create: (context) => getIt<ModuleLessonsCubit>()),
               BlocProvider(create: (context) => getIt<LessonDetailsCubit>()),
               BlocProvider(create: (context) => getIt<MarkAnsweredCubit>()),
+              BlocProvider(create: (context) => getIt<TestimonalCubit>()),
             ],
             child: ViewModule(
               moduleId: moduleId,

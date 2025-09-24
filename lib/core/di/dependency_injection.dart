@@ -17,6 +17,8 @@ import 'package:prime_academy/features/startScreen/data/repos/student_preview_re
 import 'package:prime_academy/features/startScreen/logic/certificate_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/start_screen_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_cubit.dart';
+import 'package:prime_academy/features/studentsTestimonals/data/repos/student_testimonal_repo.dart';
+import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubit.dart';
 
 import '../networking/dio_factory.dart';
 
@@ -52,10 +54,14 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton<MarkAnsweredRepo>(
     () => MarkAnsweredRepo(getIt()),
   );
+  getIt.registerLazySingleton<StudentTestimonalRepo>(
+    () => StudentTestimonalRepo(getIt()),
+  );
   getIt.registerFactory<ModuleLessonsCubit>(() => ModuleLessonsCubit(getIt()));
   getIt.registerLazySingleton<LessonDetailsRepo>(
     () => LessonDetailsRepo(getIt()),
   );
   getIt.registerFactory<LessonDetailsCubit>(() => LessonDetailsCubit(getIt()));
   getIt.registerFactory<MarkAnsweredCubit>(() => MarkAnsweredCubit(getIt()));
+  getIt.registerFactory<TestimonalCubit>(() => TestimonalCubit(getIt()));
 }

@@ -11,6 +11,8 @@ import 'package:prime_academy/features/profileScreen/data/models/student_profile
 import 'package:prime_academy/features/startScreen/data/models/certificate_response.dart';
 import 'package:prime_academy/features/startScreen/data/models/student_preview_response.dart';
 import 'package:prime_academy/features/startScreen/data/models/student_response.dart';
+import 'package:prime_academy/features/studentsTestimonals/data/models/students_testimonals_request.dart';
+import 'package:prime_academy/features/studentsTestimonals/data/models/students_testimonals_response.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 
@@ -42,4 +44,10 @@ abstract class ApiService {
     @Path("questionId") int questionId,
     @Body() MarkAnsweredRequestBody markAnsweredRequestBody,
   );
+  @POST(ApiConstants.testimonals)
+  Future<void> sendTestimonals(
+    @Body() StudentsTestimonalsRequest studentTestimonalRequest,
+  );
+  @GET(ApiConstants.testimonals)
+  Future<List<StudentTestimonalsResponse>> getStudentsTestimonals();
 }

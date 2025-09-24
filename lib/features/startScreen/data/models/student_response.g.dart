@@ -8,8 +8,8 @@ part of 'student_response.dart';
 
 StudentsResponse _$StudentsResponseFromJson(Map<String, dynamic> json) =>
     StudentsResponse(
-      data: (json['data'] as List<dynamic>)
-          .map((e) => Student.fromJson(e as Map<String, dynamic>))
+      data: (json['data'] as List<dynamic>?)
+          ?.map((e) => Student.fromJson(e as Map<String, dynamic>))
           .toList(),
       meta: Meta.fromJson(json['meta'] as Map<String, dynamic>),
     );
@@ -25,7 +25,9 @@ Student _$StudentFromJson(Map<String, dynamic> json) => Student(
   username: json['username'] as String,
   points: (json['points'] as num).toInt(),
   createdAt: DateTime.parse(json['created_at'] as String),
-  image: UserImage.fromJson(json['image'] as Map<String, dynamic>),
+  image: json['image'] == null
+      ? null
+      : UserImage.fromJson(json['image'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$StudentToJson(Student instance) => <String, dynamic>{
@@ -52,8 +54,9 @@ Map<String, dynamic> _$MetaToJson(Meta instance) => <String, dynamic>{
 };
 
 UserImage _$UserImageFromJson(Map<String, dynamic> json) => UserImage(
-  url: json['url'] as String?,
+  id: (json['id'] as num?)?.toInt(),
   filename: json['filename'] as String?,
+  url: json['url'] as String?,
   mimeType: json['mime_type'] as String?,
   size: (json['size'] as num?)?.toInt(),
   createdAt: json['created_at'] == null
@@ -65,8 +68,9 @@ UserImage _$UserImageFromJson(Map<String, dynamic> json) => UserImage(
 );
 
 Map<String, dynamic> _$UserImageToJson(UserImage instance) => <String, dynamic>{
-  'url': instance.url,
+  'id': instance.id,
   'filename': instance.filename,
+  'url': instance.url,
   'mime_type': instance.mimeType,
   'size': instance.size,
   'created_at': instance.createdAt?.toIso8601String(),
