@@ -195,19 +195,15 @@ class ChatRepo {
     }
   }
 
-  /// 7- Send Media Message (Image/Video/Audio)
   Future<MessageModel> sendMedia(int chatId, File file, {String? message}) async {
   final mimeType = lookupMimeType(file.path) ?? "application/octet-stream";
 
-  // Step 1: Get presigned URL & key from backend
   final presigned = await getPresignedUrl(mimeType);
   final url = presigned['url'];
   final key = presigned['key'];
 
-  // Step 2: Upload file to R2
   await uploadToPresignedUrl(url, file, mimeType);
 
-  // Step 3: Build payload exactly as backend schema
   final response = await _dio.post(
     '${ApiConstants.apiBaseUrl}chats/$chatId',
     data: {
