@@ -681,6 +681,12 @@ class _ViewModuleState extends State<ViewModule> {
               _openExternalLink("https://chatgpt.com/");
             }),
             _buildButton("اسأل المعلم", "assets/icons/message.png", () {
+              if (_currentChatId == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('جاري تحميل بيانات الدرس...')),
+                );
+                return;
+              }
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -688,11 +694,13 @@ class _ViewModuleState extends State<ViewModule> {
                     create: (context) => ChatCubit(
                       context.read<ChatRepo>(), // ✅ بجيب الـ repo من الـ main
                       _currentChatId!, // رقم الشات
-                      widget.user, // اليوزر اللى جه من loginResponse
+                      widget.user,
+                      //    widget.courseId, // اليوزر اللى جه من loginResponse
                     )..loadChat(),
                     child: ChatScreen(
                       chatId: _currentChatId!,
                       user: widget.user,
+                      //  courseId: widget.courseId,
                     ),
                   ),
                 ),
@@ -839,7 +847,7 @@ class _ViewModuleState extends State<ViewModule> {
     final deviceType = _getDeviceType(context);
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    int _currentChatId;
+
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
       appBar: AppBar(
@@ -886,46 +894,15 @@ class _ViewModuleState extends State<ViewModule> {
               print('LessonDetailsState changed: $state');
               state.whenOrNull(
                 success: (lessonDetails) {
-                  _updateCurrentLessonTitle(lessonDetails.title ?? "");
-
-                  _updateLessonQuestions(lessonDetails);
-
-                  final url = lessonDetails.externalUrl;
-                  if (url != null && url.isNotEmpty) {
-                    final videoId = YoutubePlayer.convertUrlToId(url);
-                    if (videoId != null) {
-                      print('Changing video to: $videoId');
-                      _changeVideo(url);
-                    } else {
-                      print('Invalid YouTube URL: $url');
-                    }
-                  } else {
-                    print('No URL found in lesson details');
-                  }
-                },
-                loading: () {
-                  print('Loading lesson details...');
-                },
-                error: (msg) {
-                  print('Error loading lesson: $msg');
-                  if (mounted && !_isDisposing) {
-                    _showErrorDialog("فشل تحميل تفاصيل الدرس: $msg");
-                  }
-                },
-              );
-            },
-          ),
-          BlocListener<LessonDetailsCubit, LessonDetailsState>(
-            listener: (context, state) {
-              if (!mounted || _isDisposing) return;
-
-              print('LessonDetailsState changed: $state');
-              state.whenOrNull(
-                success: (lessonDetails) {
                   // تحديث الأسئلة أولاً
                   _updateLessonQuestions(lessonDetails);
                   _currentChatId = lessonDetails.chatId;
                   final url = lessonDetails.externalUrl;
+                  _updateCurrentLessonTitle(lessonDetails.title ?? "");
+
+                  _updateLessonQuestions(lessonDetails);
+                  _currentChatId = lessonDetails.chatId;
+
                   if (url != null && url.isNotEmpty) {
                     final videoId = YoutubePlayer.convertUrlToId(url);
                     if (videoId != null) {

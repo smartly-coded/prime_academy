@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/Utils/validators.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 import 'package:prime_academy/features/authScreen/logic/login_state.dart';
@@ -22,9 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final isTablet = size.width > 600;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Mycolors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Mycolors.backgroundColor,
         elevation: 0,
         leadingWidth: 180,
         leading: Padding(
@@ -64,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       filled: true,
-        
+
                       fillColor: const Color.fromARGB(255, 228, 230, 235),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
@@ -74,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     validator: Validators.validateEmail,
                   ),
                   const SizedBox(height: 20),
-        
+
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
@@ -115,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     validator: Validators.validatePassword,
                   ),
                   const SizedBox(height: 30),
-        
+
                   Center(
                     child: Container(
                       width: isTablet ? size.width * 0.4 : size.width * 0.6,

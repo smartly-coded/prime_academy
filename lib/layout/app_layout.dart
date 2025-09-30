@@ -15,7 +15,7 @@ import 'nav_items.dart';
 
 class AppLayout extends StatefulWidget {
   const AppLayout({super.key, this.user});
- final LoginResponse? user;
+  final LoginResponse? user;
   @override
   State<AppLayout> createState() => _AppLayoutState();
 }
@@ -123,16 +123,13 @@ class _AppLayoutState extends State<AppLayout> {
                             color: Colors.white,
                             size: 20,
                           ),
-                                                      onPressed: () {
-                              if (widget.user == null) {
-                               
-                                Navigator.pushNamed(context, AppRoutes.login);
-                              } else {
-                               
-                                showNotificationsDialog(context, widget.user!);
-                              }
-                            },
-
+                          onPressed: () {
+                            if (widget.user == null) {
+                              Navigator.pushNamed(context, AppRoutes.login);
+                            } else {
+                              showNotificationsDialog(context, widget.user!);
+                            }
+                          },
                         ),
                       ),
                     ),
