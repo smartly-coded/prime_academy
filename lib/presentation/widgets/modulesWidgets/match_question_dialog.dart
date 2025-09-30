@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/question_title.dart';
 
 class ResponsiveMatchDialog extends StatefulWidget {
   final LessonQuestion question;
-  final Function(bool isCorrect) onAnswerSubmitted;
+  final Function(Map<int, int> matchAnswers, bool isCorrect) onAnswerSubmitted;
   final VoidCallback onSkip;
 
   const ResponsiveMatchDialog({
@@ -22,6 +23,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
   late List<Prompt> _prompts;
   late List<ResponseModel> _responses;
   Map<int, int?> _matches = {}; // promptIndex -> responseIndex
+  Map<int, bool> _responseHovered = {}; // responseIndex -> isHovered
   bool _showResult = false;
   bool _isCorrect = false;
 
@@ -36,6 +38,11 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
 
     // خلط الإجابات بشكل عشوائي
     _responses.shuffle();
+
+    // تهيئة حالة الـ hover للإجابات
+    for (int i = 0; i < _responses.length; i++) {
+      _responseHovered[i] = false;
+    }
   }
 
   void _submitAnswer() {
@@ -51,6 +58,16 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
       }
     }
 
+    // إنشاء خريطة للإرسال للـ API
+    Map<int, int> matchAnswers = {};
+    for (int promptIndex = 0; promptIndex < _prompts.length; promptIndex++) {
+      int? responseIndex = _matches[promptIndex];
+      if (responseIndex != null) {
+        // promptId -> responseId
+        matchAnswers[_prompts[promptIndex].id!] = _responses[responseIndex].id!;
+      }
+    }
+
     setState(() {
       _isCorrect = allCorrect;
       _showResult = true;
@@ -58,7 +75,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        widget.onAnswerSubmitted(_isCorrect);
+        widget.onAnswerSubmitted(matchAnswers, _isCorrect);
       }
     });
   }
@@ -68,27 +85,19 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
         !_matches.values.contains(null);
   }
 
-  void _handleResponseTap(int responseIndex) {
-    // البحث عن أول سؤال غير مربوط
-    int? availablePromptIndex;
-    for (int i = 0; i < _prompts.length; i++) {
-      if (!_matches.containsKey(i)) {
-        availablePromptIndex = i;
-        break;
-      }
-    }
-
-    if (availablePromptIndex != null) {
-      setState(() {
-        _matches[availablePromptIndex!] = responseIndex;
-      });
-    }
-  }
-
-  void _handlePromptTap(int promptIndex) {
-    // إلغاء الربط
+  void _handleQuestionDrop(int promptIndex, int responseIndex) {
     setState(() {
+      // إزالة أي ربط سابق لهذا السؤال
       _matches.remove(promptIndex);
+
+      // إزالة أي ربط سابق لهذه الإجابة من أسئلة أخرى
+      _matches.removeWhere((key, value) => value == responseIndex);
+
+      // ربط جديد
+      _matches[promptIndex] = responseIndex;
+
+      // إزالة حالة الـ hover
+      _responseHovered[responseIndex] = false;
     });
   }
 
@@ -100,7 +109,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFD32F2F), Color(0xFFE53935), Color(0xFFEF5350)],
+            colors: [Color(0xFF5d0b39), Color(0xff3f0627), Color(0xff270419)],
           ),
         ),
         child: SafeArea(
@@ -133,7 +142,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  "اضغط على الإجابات لربطها بالأسئلة بالترتيب",
+                  "اسحب الأسئلة وأسقطها على الإجابات المناسبة",
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Cairo',
@@ -167,269 +176,132 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
             color: Colors.black.withOpacity(0.3),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.link, color: Colors.white, size: 18),
-              const SizedBox(width: 8),
-              const Text(
-                "وصل بالترتيب",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Cairo',
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Spacer(),
-        IconButton(
-          onPressed: widget.onSkip,
-          icon: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.close, color: Colors.white, size: 20),
-          ),
+          child: questionTitle(widget.question.title),
         ),
       ],
     );
   }
 
   Widget _buildGridContent(bool isLandscape, bool isTablet) {
-    int crossAxisCount = isTablet ? 3 : 2;
-    if (isLandscape && !isTablet) crossAxisCount = 3;
-
     return SingleChildScrollView(
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Questions Grid
-          Container(
-            padding: EdgeInsets.all(isTablet ? 16 : 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
-            ),
+          // العمود الأول: الأسئلة
+          Expanded(
             child: Column(
-              children: [
-                Text(
-                  "الأسئلة",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Cairo',
-                    fontSize: isTablet ? 20 : 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: isTablet ? 16 : 12),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: isTablet ? 1.5 : 1.3,
-                  ),
-                  itemCount: _prompts.length,
-                  itemBuilder: (context, index) {
-                    final prompt = _prompts[index];
-                    final isMatched = _matches.containsKey(index);
-                    final matchedResponseIndex = _matches[index];
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: List.generate(_prompts.length, (index) {
+                final prompt = _prompts[index];
+                final isMatched = _matches.containsKey(index);
 
-                    return GestureDetector(
-                      onTap: isMatched ? () => _handlePromptTap(index) : null,
-                      child: Container(
-                        padding: EdgeInsets.all(isTablet ? 12 : 8),
-                        decoration: BoxDecoration(
-                          color: isMatched
-                              ? Colors.green.withOpacity(0.8)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isMatched ? Colors.green : Colors.blue,
-                            width: 2,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: isMatched
+                      ? // 🔥 حل المشكلة الأولى: إظهار مربع فارغ بدلاً من SizedBox
+                        _buildEmptyQuestionSlot(index, isTablet)
+                      : Draggable<int>(
+                          data: index,
+                          feedback: _buildQuestionCard(
+                            prompt,
+                            index,
+                            false,
+                            null,
+                            isTablet,
+                            isDragging: true,
                           ),
+                          childWhenDragging:
+                              // 🔥 حل المشكلة الأولى: إظهار مربع فارغ أثناء السحب
+                              _buildEmptyQuestionSlot(index, isTablet),
+                          child: _buildQuestionCard(
+                            prompt,
+                            index,
+                            false,
+                            null,
+                            isTablet,
+                          ),
+                          // 🔥 حل المشكلة الأولى: إرجاع السؤال لمكانه الأصلي عند الإلغاء
+                          onDragEnd: (details) {
+                            // إذا لم يتم إسقاط السؤال في مكان صحيح، يرجع لمكانه
+                            if (!details.wasAccepted) {
+                              // لا نحتاج لفعل شيء لأن الـ state لن يتغير
+                              setState(() {}); // فقط لإعادة البناء
+                            }
+                          },
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Number
-                            Container(
-                              width: isTablet ? 35 : 30,
-                              height: isTablet ? 35 : 30,
-                              decoration: BoxDecoration(
-                                color: isMatched ? Colors.white : Colors.blue,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '${index + 1}',
-                                  style: TextStyle(
-                                    color: isMatched
-                                        ? Colors.green
-                                        : Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: isTablet ? 16 : 14,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: isTablet ? 8 : 6),
-
-                            // Image if available
-                            if (prompt.image != null) ...[
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(6),
-                                child: Image.network(
-                                  prompt.image!.url,
-                                  width: isTablet ? 40 : 30,
-                                  height: isTablet ? 40 : 30,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      width: isTablet ? 40 : 30,
-                                      height: isTablet ? 40 : 30,
-                                      color: Colors.grey[300],
-                                      child: Icon(
-                                        Icons.image,
-                                        size: isTablet ? 20 : 15,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              SizedBox(height: isTablet ? 6 : 4),
-                            ],
-
-                            // Question text
-                            Expanded(
-                              child: Text(
-                                _cleanHtmlText(prompt.title),
-                                style: TextStyle(
-                                  color: isMatched
-                                      ? Colors.white
-                                      : Colors.black87,
-                                  fontFamily: 'Cairo',
-                                  fontSize: isTablet ? 12 : 10,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-
-                            // Show matched response
-                            if (isMatched && matchedResponseIndex != null) ...[
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  _responses[matchedResponseIndex].title,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Cairo',
-                                    fontSize: isTablet ? 10 : 8,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                );
+              }),
             ),
           ),
 
-          SizedBox(height: isTablet ? 24 : 20),
+          SizedBox(width: 20),
 
-          // Responses Grid
-          Container(
-            padding: EdgeInsets.all(isTablet ? 16 : 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
-            ),
+          // العمود الثاني: الإجابات
+          Expanded(
             child: Column(
-              children: [
-                Text(
-                  "الإجابات - اضغط للربط",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Cairo',
-                    fontSize: isTablet ? 20 : 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: isTablet ? 16 : 12),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: isTablet ? 2.0 : 1.8,
-                  ),
-                  itemCount: _responses.length,
-                  itemBuilder: (context, index) {
-                    final response = _responses[index];
-                    final isUsed = _matches.containsValue(index);
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: List.generate(_responses.length, (index) {
+                final response = _responses[index];
+                final isUsed = _matches.containsValue(index);
+                final isHovered = _responseHovered[index] ?? false;
 
-                    return GestureDetector(
-                      onTap: isUsed ? null : () => _handleResponseTap(index),
-                      child: Container(
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: DragTarget<int>(
+                    builder: (context, candidateData, rejectedData) {
+                      return Container(
                         padding: EdgeInsets.all(isTablet ? 12 : 8),
                         decoration: BoxDecoration(
-                          color: isUsed
-                              ? Colors.grey.withOpacity(0.5)
-                              : Colors.white,
+                          color: Color(0xff3f0627),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isUsed ? Colors.grey : Colors.orange,
-                            width: 2,
+                            color: candidateData.isNotEmpty
+                                ? Colors.green
+                                : isHovered
+                                ? Colors.green
+                                : Colors.white.withOpacity(0.3),
+                            width: candidateData.isNotEmpty || isHovered
+                                ? 3
+                                : 2,
                           ),
                         ),
-                        child: Center(
-                          child: Text(
-                            response.title,
-                            style: TextStyle(
-                              color: isUsed ? Colors.grey[600] : Colors.black87,
-                              fontFamily: 'Cairo',
-                              fontSize: isTablet ? 14 : 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                        child: isUsed
+                            ? _buildDraggableQuestionInResponse(
+                                // نعرض السؤال اللي اتعمله drop بنفس لونه ولكن قابل للسحب
+                                _prompts[_matches.entries
+                                    .firstWhere((entry) => entry.value == index)
+                                    .key],
+                                _matches.entries
+                                    .firstWhere((entry) => entry.value == index)
+                                    .key,
+                                index,
+                                isTablet,
+                              )
+                            : _buildResponseCard(response, isTablet),
+                      );
+                    },
+                    // 🔥 حل المشكلة الثانية: منع وضع أكثر من سؤال في نفس المكان
+                    onWillAccept: (promptIndex) {
+                      return !_matches.containsValue(
+                        index,
+                      ); // يرفض إذا كان المكان مُستخدم
+                    },
+                    onAccept: (promptIndex) {
+                      _handleQuestionDrop(promptIndex, index);
+                    },
+                    onMove: (details) {
+                      setState(() {
+                        _responseHovered[index] = true;
+                      });
+                    },
+                    onLeave: (promptIndex) {
+                      setState(() {
+                        _responseHovered[index] = false;
+                      });
+                    },
+                  ),
+                );
+              }),
             ),
           ),
         ],
@@ -437,48 +309,188 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     );
   }
 
-  Widget _buildBottomSection(bool isTablet) {
-    return Column(
-      children: [
-        // Progress
-        Container(
-          margin: EdgeInsets.symmetric(vertical: isTablet ? 20 : 16),
-          child: Text(
-            "مربوط: ${_matches.length} من ${_prompts.length}",
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Cairo',
-              fontSize: isTablet ? 16 : 14,
-              fontWeight: FontWeight.w600,
-            ),
+  // 🔥 ويدجت جديد للمربع الفارغ
+  Widget _buildEmptyQuestionSlot(int index, bool isTablet) {
+    return Container(
+      height: 80, // نفس ارتفاع السؤال الأصلي
+      padding: EdgeInsets.all(isTablet ? 12 : 8),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 2,
+          style: BorderStyle.solid, // خط متقطع ليوضح أنه مكان فارغ
+        ),
+      ),
+    );
+  }
+
+  // 🔥 ويدجت جديد للسؤال القابل للسحب من داخل الإجابة
+  Widget _buildDraggableQuestionInResponse(
+    Prompt prompt,
+    int promptIndex,
+    int responseIndex,
+    bool isTablet,
+  ) {
+    return Draggable<String>(
+      // استخدام String بدلاً من int للتمييز عن الـ drag الأصلي
+      data: "remove_$promptIndex",
+      feedback: _buildQuestionCard(
+        prompt,
+        promptIndex,
+        false,
+        null,
+        isTablet,
+        isDragging: true,
+      ),
+      childWhenDragging: Container(
+        height: 80,
+        child: Center(
+          child: Icon(
+            Icons.remove_circle_outline,
+            color: Colors.white.withOpacity(0.3),
+            size: isTablet ? 40 : 35,
           ),
         ),
+      ),
+      child: _buildQuestionCard(
+        prompt,
+        promptIndex,
+        false,
+        null,
+        isTablet,
+        showDragHint: true, // إضافة hint للسحب
+      ),
+      onDragEnd: (details) {
+        // إذا تم سحب السؤال خارج منطقة الإجابة، أرجعه لمكانه الأصلي
+        if (!details.wasAccepted) {
+          setState(() {
+            _matches.remove(promptIndex);
+          });
+        }
+      },
+    );
+  }
 
-        // Actions
-        Row(
+  // ويدجت منفصل لعرض الإجابات
+  Widget _buildResponseCard(ResponseModel response, bool isTablet) {
+    return Container(
+      height: 60,
+      child: Center(
+        child: Text(
+          response.title,
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Cairo',
+            fontSize: isTablet ? 14 : 12,
+            fontWeight: FontWeight.w600,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuestionCard(
+    Prompt prompt,
+    int index,
+    bool isMatched,
+    int? matchedResponseIndex,
+    bool isTablet, {
+    bool isDragging = false,
+    bool isDraggedAway = false,
+    bool showDragHint = false,
+  }) {
+    // ألوان ثابتة حسب الترتيب
+    final List<Color> cardColors = [
+      Colors.red,
+      Colors.blue,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.amber,
+    ];
+
+    // حدد اللون حسب index
+    Color baseColor = cardColors[index % cardColors.length];
+
+    return Material(
+      elevation: 0, // هنستغنى عن الـ Material shadow ونستخدم BoxShadow
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 80,
+        padding: EdgeInsets.all(isTablet ? 12 : 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.center,
+            colors: [
+              Colors.white.withOpacity(0.4), // لمعة بسيطة جدًا من فوق
+              baseColor, // اللون الأصلي للكارت
+            ],
+            stops: const [0.0, 0.15],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 6, // قوة الضبابية
+              offset: const Offset(0, 4), // اتجاه الظل (نازل لتحت)
+            ),
+          ],
+          border: Border.all(
+            color: isMatched
+                ? Colors.green[900]!
+                : isDraggedAway
+                ? Colors.grey
+                : baseColor,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: widget.onSkip,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.white, width: 2),
-                  padding: EdgeInsets.symmetric(vertical: isTablet ? 18 : 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+            if (prompt.image != null) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.network(
+                  prompt.image!.url,
+                  width: isTablet ? 30 : 25,
+                  height: isTablet ? 30 : 25,
+                  fit: BoxFit.cover,
                 ),
+              ),
+              SizedBox(height: isTablet ? 4 : 2),
+            ],
+            if (!isMatched && !isDraggedAway)
+              Flexible(
                 child: Text(
-                  "تخطي",
+                  _cleanHtmlText(prompt.title),
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Cairo',
-                    fontSize: isTablet ? 18 : 16,
+                    fontSize: isTablet ? 14 : 12,
                     fontWeight: FontWeight.w600,
                   ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-            ),
-            const SizedBox(width: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomSection(bool isTablet) {
+    return Column(
+      children: [
+        // Actions
+        Row(
+          children: [
             Expanded(
               flex: 2,
               child: ElevatedButton(
@@ -494,7 +506,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                   elevation: 6,
                 ),
                 child: Text(
-                  "تحقق من الإجابة",
+                  "تقديم",
                   style: TextStyle(
                     color: _isAnswerComplete
                         ? const Color(0xFFD32F2F)

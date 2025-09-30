@@ -19,7 +19,7 @@ class SplashTwo extends StatelessWidget {
             final gifAsset = "assets/Gifs/onboarding.gif";
 
             final mainTitle = "في برايم اكاديمي ";
-            final subTitle = "دري شنو؟ النجاح صار مرررره سهل !";
+            final subTitle = "تدري شنو؟ النجاح صار مرررره سهل !";
             String image = "assets/icons/banner.jpg";
             return Padding(
               padding: EdgeInsets.symmetric(

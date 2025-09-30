@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
-import 'package:prime_academy/presentation/Home/veiw/home_screen.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/question_title.dart';
+import 'package:prime_academy/core/helpers/constants.dart';
 
 class ReorderQuestionDialog extends StatefulWidget {
   final LessonQuestion question;
-  final Function(bool isCorrect) onAnswerSubmitted;
+  final Function(Map<int, int> orderAnswers, bool isCorrect) onAnswerSubmitted;
   final VoidCallback onSkip;
 
   const ReorderQuestionDialog({
@@ -20,12 +21,12 @@ class ReorderQuestionDialog extends StatefulWidget {
 }
 
 class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
-  late List<Answer> _shuffledAnswers;
-  late List<Answer?> _orderedAnswers; // الترتيب الحالي
-  late Map<int, int> _correctOrder; // answerId -> order
+  List<Answer> _shuffledAnswers = [];
+  List<int> _orderSlots = []; // قائمة أرقام الترتيب
+  Map<int, int?> _matches = {}; // slotIndex -> answerIndex
+  Map<int, bool> _slotHovered = {}; // slotIndex -> isHovered
   bool _showResult = false;
   bool _isCorrect = false;
-  int? _selectedAnswerIndex; // الكلمة المختارة
 
   @override
   void initState() {
@@ -35,69 +36,51 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
     _shuffledAnswers = List.from(widget.question.answers);
     _shuffledAnswers.shuffle();
 
-    // إنشاء قائمة فارغة للترتيب
-    _orderedAnswers = List.filled(widget.question.answers.length, null);
+    // إنشاء قائمة أرقام الترتيب
+    _orderSlots = List.generate(
+      widget.question.answers.length,
+      (index) => index,
+    );
 
-    // إنشاء خريطة الترتيب الصحيح
-    _correctOrder = {};
-    for (var correctAnswer in widget.question.correctAnswers) {
-      if (correctAnswer.answerId != null && correctAnswer.order != null) {
-        _correctOrder[correctAnswer.answerId!] = correctAnswer.order!;
-      }
+    // تهيئة حالة الـ hover للأرقام
+    for (int i = 0; i < _orderSlots.length; i++) {
+      _slotHovered[i] = false;
     }
   }
 
-  void _selectAnswer(int index) {
-    print('Word selected: ${_shuffledAnswers[index].title} (index: $index)');
-    setState(() {
-      _selectedAnswerIndex = index;
-    });
-  }
-
-  void _placeAnswer(int position) {
-    print('Trying to place answer at position: $position');
-    print('Selected answer index: $_selectedAnswerIndex');
-
-    if (_selectedAnswerIndex != null) {
-      print(
-        'Placing ${_shuffledAnswers[_selectedAnswerIndex!].title} at position $position',
-      );
-
-      setState(() {
-        // إزالة الكلمة من موضعها السابق إن كانت موجودة
-        for (int i = 0; i < _orderedAnswers.length; i++) {
-          if (_orderedAnswers[i]?.id ==
-              _shuffledAnswers[_selectedAnswerIndex!].id) {
-            _orderedAnswers[i] = null;
-            break;
-          }
-        }
-
-        // وضع الكلمة في الموضع الجديد
-        _orderedAnswers[position] = _shuffledAnswers[_selectedAnswerIndex!];
-        _selectedAnswerIndex = null;
-      });
-    } else {
-      print('No answer selected');
+  // دالة لبناء رابط الصورة
+  String buildImageUrl(String? imagePath) {
+    if (imagePath == null || imagePath.isEmpty) return "";
+    if (imagePath.startsWith('http')) {
+      return imagePath;
     }
-  }
-
-  void _removeAnswer(int position) {
-    print('Removing answer from position: $position');
-    setState(() {
-      _orderedAnswers[position] = null;
-    });
+    return imagePath.startsWith('/')
+        ? Constants.baseUrl + imagePath
+        : Constants.baseUrl + '/' + imagePath;
   }
 
   void _submitAnswer() {
-    // تحقق من الترتيب الصحيح
+    // تحقق من صحة الإجابات
     bool allCorrect = true;
 
-    for (int i = 0; i < _orderedAnswers.length; i++) {
-      Answer? answer = _orderedAnswers[i];
-      if (answer == null || _correctOrder[answer.id] != i) {
+    // إنشاء خريطة للإرسال للـ API
+    Map<int, int> orderAnswers = {};
+
+    for (int i = 0; i < _orderSlots.length; i++) {
+      int? answerIndex = _matches[i];
+      if (answerIndex != null) {
+        int answerId = _shuffledAnswers[answerIndex].id!;
+        orderAnswers[i] = answerId; // position -> answerId
+
+        // تحقق من الترتيب الصحيح
+        int correctPosition = widget.question.correctAnswers
+            .firstWhere((ca) => ca.answerId == answerId)
+            .order!;
+        if (correctPosition != i) {
+          allCorrect = false;
+        }
+      } else {
         allCorrect = false;
-        break;
       }
     }
 
@@ -108,17 +91,27 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        widget.onAnswerSubmitted(_isCorrect);
+        widget.onAnswerSubmitted(orderAnswers, _isCorrect);
       }
     });
   }
 
   bool get _isAnswerComplete {
-    return !_orderedAnswers.contains(null);
+    return _matches.length == _orderSlots.length &&
+        !_matches.values.contains(null);
   }
 
-  bool _isAnswerUsed(Answer answer) {
-    return _orderedAnswers.any((a) => a?.id == answer.id);
+  void _handleAnswerDrop(int answerIndex, int slotIndex) {
+    setState(() {
+      // إزالة أي ربط سابق لهذه الإجابة
+      _matches.removeWhere((key, value) => value == answerIndex);
+
+      // ربط جديد
+      _matches[slotIndex] = answerIndex;
+
+      // إزالة حالة الـ hover
+      _slotHovered[slotIndex] = false;
+    });
   }
 
   @override
@@ -129,11 +122,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF6A1B9A), // موف غامق
-              Color(0xFF8E24AA), // موف متوسط
-              Color(0xFFAB47BC), // موف فاتح
-            ],
+            colors: [Color(0xFF5d0b39), Color(0xff3f0627), Color(0xff270419)],
           ),
         ),
         child: SafeArea(
@@ -146,6 +135,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
   Widget _buildReorderContent() {
     return LayoutBuilder(
       builder: (context, constraints) {
+        bool isLandscape = constraints.maxWidth > constraints.maxHeight;
         bool isTablet = constraints.maxWidth > 600;
 
         return Padding(
@@ -153,64 +143,15 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
           child: Column(
             children: [
               // Header
-              _buildHeader(),
-
               SizedBox(height: isTablet ? 20 : 16),
 
               // Instructions
-              Container(
-                padding: EdgeInsets.all(isTablet ? 20 : 16),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      _cleanHtmlText(widget.question.title),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Cairo',
-                        fontSize: isTablet ? 20 : 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: isTablet ? 12 : 8),
-                    Text(
-                      "اختر الكلمة ثم اضغط على الرقم المناسب لترتيبها",
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontFamily: 'Cairo',
-                        fontSize: isTablet ? 16 : 14,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+              questionTitle(widget.question.title),
 
               SizedBox(height: isTablet ? 24 : 20),
 
               // Content
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // Order slots (numbered boxes)
-                      _buildOrderSlots(isTablet),
-
-                      SizedBox(height: isTablet ? 32 : 24),
-
-                      // Available words
-                      _buildAvailableWords(isTablet),
-
-                      // Extra space to prevent overflow
-                      SizedBox(height: isTablet ? 32 : 24),
-                    ],
-                  ),
-                ),
-              ),
+              Expanded(child: _buildGridContent(isLandscape, isTablet)),
 
               // Bottom section
               _buildBottomSection(isTablet),
@@ -224,32 +165,25 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
   Widget _buildHeader() {
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.sort, color: Colors.white, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                widget.question.sortDirection == SortDirection.asc
-                    ? "رتب تصاعدياً"
-                    : "رتب تنازلياً",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Cairo',
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              _cleanHtmlText(widget.question.title),
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Cairo',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
-            ],
+            ),
           ),
         ),
-        const Spacer(),
+        const SizedBox(width: 8),
         IconButton(
           onPressed: widget.onSkip,
           icon: Container(
@@ -265,244 +199,277 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
     );
   }
 
-  Widget _buildOrderSlots(bool isTablet) {
-    return Container(
-      padding: EdgeInsets.all(isTablet ? 16 : 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
-      ),
-      child: Column(
+  Widget _buildGridContent(bool isLandscape, bool isTablet) {
+    return SingleChildScrollView(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "الترتيب الصحيح",
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Cairo',
-              fontSize: isTablet ? 20 : 18,
-              fontWeight: FontWeight.bold,
+          // العمود الأول: الكلمات
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: List.generate(_shuffledAnswers.length, (index) {
+                final answer = _shuffledAnswers[index];
+                final isMatched = _matches.containsValue(index);
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: isMatched
+                      ? _buildEmptyAnswerSlot(index, isTablet)
+                      : Draggable<int>(
+                          data: index,
+                          feedback: SizedBox(
+                            width: 150, // نفس العرض اللي بتحبيه
+                            height: 80, // نفس الطول
+                            child: _buildAnswerCard(
+                              answer,
+                              index,
+                              isTablet,
+                              isDragging: true,
+                            ),
+                          ),
+                          childWhenDragging: _buildEmptyAnswerSlot(
+                            index,
+                            isTablet,
+                          ),
+                          child: _buildAnswerCard(answer, index, isTablet),
+                          onDragEnd: (details) {
+                            if (!details.wasAccepted) {
+                              setState(() {});
+                            }
+                          },
+                        ),
+                );
+              }),
             ),
           ),
-          SizedBox(height: isTablet ? 16 : 12),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: isTablet ? 4 : 3,
-              crossAxisSpacing: isTablet ? 12 : 8,
-              mainAxisSpacing: isTablet ? 12 : 8,
-              childAspectRatio: 1.0,
-            ),
-            itemCount: _orderedAnswers.length,
-            itemBuilder: (context, index) {
-              Answer? answer = _orderedAnswers[index];
-              String imageUrl = buildImageUrl(answer!.image!.url);
-              bool isCorrectPosition =
-                  answer != null && _correctOrder[answer.id] == index;
 
-              return InkWell(
-                onTap: () {
-                  print('Order slot $index tapped');
-                  if (answer != null) {
-                    _removeAnswer(index);
-                  } else if (_selectedAnswerIndex != null) {
-                    _placeAnswer(index);
-                  }
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: answer != null
-                        ? (isCorrectPosition
-                              ? Colors.green.withOpacity(0.8)
-                              : Colors.orange.withOpacity(0.8))
-                        : Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: answer != null
-                          ? (isCorrectPosition ? Colors.green : Colors.orange)
-                          : (_selectedAnswerIndex != null
-                                ? Colors.yellow
-                                : Colors.white.withOpacity(0.5)),
-                      width: _selectedAnswerIndex != null && answer == null
-                          ? 3
-                          : 2,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Number
-                      Container(
-                        width: isTablet ? 28 : 24,
-                        height: isTablet ? 28 : 24,
+          SizedBox(width: 20),
+
+          // العمود الثاني: أرقام الترتيب
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: List.generate(_orderSlots.length, (index) {
+                final isUsed = _matches.containsKey(index);
+                final isHovered = _slotHovered[index] ?? false;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: DragTarget<int>(
+                    builder: (context, candidateData, rejectedData) {
+                      return Container(
+                        height: 80,
+                        padding: EdgeInsets.all(isTablet ? 12 : 8),
                         decoration: BoxDecoration(
-                          color: answer != null
-                              ? Colors.white
-                              : Colors.white.withOpacity(0.7),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${index + 1}',
-                            style: TextStyle(
-                              color: answer != null
-                                  ? (isCorrectPosition
-                                        ? Colors.green
-                                        : Colors.orange)
-                                  : Colors.grey[600],
-                              fontWeight: FontWeight.bold,
-                              fontSize: isTablet ? 14 : 12,
-                            ),
+                          color: Color(0xff3f0627),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: candidateData.isNotEmpty
+                                ? Colors.green
+                                : isHovered
+                                ? Colors.green
+                                : Colors.white.withOpacity(0.3),
+                            width: candidateData.isNotEmpty || isHovered
+                                ? 3
+                                : 2,
                           ),
                         ),
-                      ),
-
-                      if (answer != null) ...[
-                        SizedBox(height: isTablet ? 6 : 4),
-
-                        // Image if available
-                        if (answer.image != null) ...[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Image.network(
-                              imageUrl,
-                              width: isTablet ? 20 : 16,
-                              height: isTablet ? 20 : 16,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  width: isTablet ? 20 : 16,
-                                  height: isTablet ? 20 : 16,
-                                  color: Colors.grey[300],
-                                  child: Icon(
-                                    Icons.image,
-                                    size: isTablet ? 10 : 8,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          SizedBox(height: isTablet ? 2 : 1),
-                        ],
-
-                        // Text
-                        Flexible(
-                          child: Text(
-                            answer.title,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Cairo',
-                              fontSize: isTablet ? 10 : 8,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ],
+                        child: isUsed
+                            ? _buildDraggableAnswerInSlot(
+                                _shuffledAnswers[_matches[index]!],
+                                _matches[index]!,
+                                index,
+                                isTablet,
+                              )
+                            : _buildOrderSlot(index, isTablet),
+                      );
+                    },
+                    onWillAccept: (answerIndex) {
+                      return !_matches.containsKey(index);
+                    },
+                    onAccept: (answerIndex) {
+                      _handleAnswerDrop(answerIndex, index);
+                    },
+                    onMove: (details) {
+                      setState(() {
+                        _slotHovered[index] = true;
+                      });
+                    },
+                    onLeave: (answerIndex) {
+                      setState(() {
+                        _slotHovered[index] = false;
+                      });
+                    },
                   ),
-                ),
-              );
-            },
+                );
+              }),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAvailableWords(bool isTablet) {
+  Widget _buildEmptyAnswerSlot(int index, bool isTablet) {
     return Container(
-      padding: EdgeInsets.all(isTablet ? 16 : 12),
+      height: 80,
+      padding: EdgeInsets.all(isTablet ? 12 : 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 2,
+          style: BorderStyle.solid,
+        ),
       ),
+    );
+  }
+
+  Widget _buildDraggableAnswerInSlot(
+    Answer answer,
+    int answerIndex,
+    int slotIndex,
+    bool isTablet,
+  ) {
+    return Draggable<String>(
+      data: "remove_$answerIndex",
+      feedback: _buildAnswerCard(
+        answer,
+        answerIndex,
+        isTablet,
+        isDragging: true,
+      ),
+      childWhenDragging: Container(
+        height: 80,
+        child: Center(
+          child: Icon(
+            Icons.remove_circle_outline,
+            color: Colors.white.withOpacity(0.3),
+            size: isTablet ? 40 : 35,
+          ),
+        ),
+      ),
+      child: _buildAnswerCard(
+        answer,
+        answerIndex,
+        isTablet,
+        showDragHint: true,
+      ),
+      onDragEnd: (details) {
+        if (!details.wasAccepted) {
+          setState(() {
+            _matches.remove(slotIndex);
+          });
+        }
+      },
+    );
+  }
+
+  Widget _buildOrderSlot(int slotIndex, bool isTablet) {
+    return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Wrap(
-            spacing: isTablet ? 12 : 8,
-            runSpacing: isTablet ? 12 : 8,
-            children: _shuffledAnswers.asMap().entries.map((entry) {
-              int index = entry.key;
-              Answer answer = entry.value;
-              String imageUrl = buildImageUrl(answer.image!.url);
-              bool isSelected = _selectedAnswerIndex == index;
-              bool isUsed = _isAnswerUsed(answer);
-
-              return GestureDetector(
-                onTap: isUsed ? null : () => _selectAnswer(index),
-                child: Container(
-                  padding: EdgeInsets.all(isTablet ? 12 : 10),
-                  decoration: BoxDecoration(
-                    color: isUsed
-                        ? Colors.grey.withOpacity(0.3)
-                        : isSelected
-                        ? Colors.yellow.withOpacity(0.8)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isUsed
-                          ? Colors.grey
-                          : isSelected
-                          ? Colors.yellow
-                          : Colors.blue,
-                      width: isSelected ? 3 : 2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Image if available
-                      if (answer.image != null) ...[
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: Image.network(
-                            imageUrl,
-                            width: isTablet ? 40 : 32,
-                            height: isTablet ? 40 : 32,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                width: isTablet ? 40 : 32,
-                                height: isTablet ? 40 : 32,
-                                color: Colors.grey[300],
-                                child: Icon(
-                                  Icons.image,
-                                  size: isTablet ? 20 : 16,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(width: isTablet ? 8 : 6),
-                      ],
-
-                      // Text
-                      Text(
-                        answer.title,
-                        style: TextStyle(
-                          color: isUsed
-                              ? Colors.grey[600]
-                              : isSelected
-                              ? Colors.black
-                              : Colors.black87,
-                          fontFamily: 'Cairo',
-                          fontSize: isTablet ? 16 : 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+          Text(
+            "${slotIndex + 1}",
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Cairo',
+              fontSize: isTablet ? 12 : 10,
+              fontWeight: FontWeight.w400,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAnswerCard(
+    Answer answer,
+    int index,
+    bool isTablet, {
+    bool isDragging = false,
+    bool showDragHint = false,
+  }) {
+    final List<Color> cardColors = [
+      Colors.red,
+      Colors.blue,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.amber,
+    ];
+
+    Color baseColor = cardColors[index % cardColors.length];
+    String imageUrl = buildImageUrl(answer.image?.url);
+    bool hasImage = imageUrl.isNotEmpty;
+
+    return Material(
+      elevation: 0,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 80,
+        padding: EdgeInsets.all(isTablet ? 12 : 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.center,
+            colors: [Colors.white.withOpacity(0.4), baseColor],
+            stops: const [0.0, 0.15],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 6,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: baseColor, width: 2),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasImage) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.network(
+                  imageUrl,
+                  width: isTablet ? 30 : 25,
+                  height: isTablet ? 30 : 25,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: isTablet ? 30 : 25,
+                      height: isTablet ? 30 : 25,
+                      color: Colors.grey[300],
+                      child: Icon(Icons.image, size: isTablet ? 15 : 12),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: isTablet ? 4 : 2),
+            ],
+            Flexible(
+              child: Text(
+                answer.title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Cairo',
+                  fontSize: isTablet ? 14 : 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -510,45 +477,8 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
   Widget _buildBottomSection(bool isTablet) {
     return Column(
       children: [
-        // Progress
-        Container(
-          margin: EdgeInsets.symmetric(vertical: isTablet ? 20 : 16),
-          child: Text(
-            "مرتب: ${_orderedAnswers.where((a) => a != null).length} من ${_orderedAnswers.length}",
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Cairo',
-              fontSize: isTablet ? 16 : 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-
-        // Actions
         Row(
           children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: widget.onSkip,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.white, width: 2),
-                  padding: EdgeInsets.symmetric(vertical: isTablet ? 18 : 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  "تخطي",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Cairo',
-                    fontSize: isTablet ? 18 : 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
             Expanded(
               flex: 2,
               child: ElevatedButton(
@@ -567,7 +497,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
                   "تحقق من الترتيب",
                   style: TextStyle(
                     color: _isAnswerComplete
-                        ? const Color(0xFF6A1B9A)
+                        ? const Color(0xFFD32F2F)
                         : Colors.white,
                     fontFamily: 'Cairo',
                     fontSize: isTablet ? 18 : 16,

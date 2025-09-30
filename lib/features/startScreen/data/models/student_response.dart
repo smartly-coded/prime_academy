@@ -5,7 +5,7 @@ part 'student_response.g.dart';
 
 @JsonSerializable()
 class StudentsResponse {
-  List<Student> data;
+  List<Student>? data;
   Meta meta;
 
   StudentsResponse({required this.data, required this.meta});
@@ -24,7 +24,7 @@ class Student {
   int points;
   @JsonKey(name: "created_at")
   DateTime createdAt;
-  UserImage image;
+  UserImage? image;
 
   Student({
     required this.id,
@@ -34,7 +34,7 @@ class Student {
     required this.username,
     required this.points,
     required this.createdAt,
-    required this.image,
+    this.image,
   });
 
   factory Student.fromJson(Map<String, dynamic> json) =>
@@ -60,18 +60,21 @@ class Meta {
 
 @JsonSerializable()
 class UserImage {
+  int? id;
+  String? filename; // ✅ إضافة id field
   String? url;
-  String? filename;
+
   @JsonKey(name: "mime_type")
   String? mimeType;
-  int? size;
+  int? size; // ✅ خليها nullable عشان مش دايماً موجودة
   @JsonKey(name: "created_at")
   DateTime? createdAt;
   @JsonKey(name: "updated_at")
   DateTime? updatedAt;
   UserImage({
-    this.url,
+    this.id,
     this.filename,
+    this.url,
     this.mimeType,
     this.size,
     this.createdAt,
