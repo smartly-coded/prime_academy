@@ -30,83 +30,69 @@ void main() async {
   await setupGetIt();
   runApp(DevicePreview(enabled: true, builder: (context) => MyApp()));
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    
     return MultiRepositoryProvider(
-      providers: [
-        
-        RepositoryProvider<ChatRepo>(
-          create: (_) => ChatRepo(),
-        ),
-      ],
-    
-    child:  MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => SplashCubit()..start(),
-        ),
-        
-        BlocProvider(
-          create: (_) => RankCubit(
-            RankRepository(
-              
-            ),
-          )
-        ),
+      providers: [RepositoryProvider<ChatRepo>(create: (_) => ChatRepo())],
 
-            BlocProvider(
-      create: (context) => ModulesCubit(ModulesRepository(
-       
-      )),
-    ),
-    BlocProvider(
-  create: (_) => ContactUsCubit(ContactUsRepo()),
-  child: ContactUsPage(),
-),
-BlocProvider(
-  create: (_) => LoginCubit(getIt()) 
-),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => SplashCubit()..start()),
 
+          BlocProvider(create: (_) => RankCubit(RankRepository())),
 
-BlocProvider(
-  create: (_) => NotificationCubit(NotificationRepository(), NotificationSSEService(),)..fetchNotifications(),
-  child: AppLayout(),
-)
+          BlocProvider(create: (context) => ModulesCubit(ModulesRepository())),
+          BlocProvider(
+            create: (_) => ContactUsCubit(ContactUsRepo()),
+            child: ContactUsPage(),
+          ),
+          BlocProvider(create: (_) => LoginCubit(getIt())),
 
+          BlocProvider(
+            create: (_) => NotificationCubit(
+              NotificationRepository(),
+              NotificationSSEService(),
+            )..fetchNotifications(),
+            child: AppLayout(),
+          ),
+        ],
+        child: MaterialApp(
+          locale: DevicePreview.locale(context),
+          builder: DevicePreview.appBuilder,
+          onGenerateRoute: AppRoutes().generateRoute,
+          debugShowCheckedModeBanner: false,
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: BlocBuilder<SplashCubit, SplashState>(
+              builder: (context, state) {
+                if (state is SplashOneState) return SplashOne();
+                if (state is SplashTwoState) return SplashTwo();
+                if (state is SplashThreeState) return SplashThree();
+                //  if (state is SplashFinished) {
+                //     final loginCubit = context.read<LoginCubit>();
+                //     if (loginCubit.currentUser != null) {
+                //       return AppLayout(user: loginCubit.currentUser!);
+                //     } else {
 
-      ],
-      child: MaterialApp(
-        locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
-        onGenerateRoute: AppRoutes().generateRoute,
-        debugShowCheckedModeBanner: false,
-        home: Directionality(
-          textDirection: TextDirection.rtl,
-          child: BlocBuilder<SplashCubit, SplashState>(
-            builder: (context, state) {
-              if (state is SplashOneState) return SplashOne();
-              if (state is SplashTwoState) return SplashTwo();
-              if (state is SplashThreeState) return SplashThree();
-             if (state is SplashFinished) {
-                final loginCubit = context.read<LoginCubit>();
-                if (loginCubit.currentUser != null) {
-                  return AppLayout(user: loginCubit.currentUser!);
-                } else {
+                //       return const LoginScreen();
+                //     }
+                //   }
+                if (state is SplashFinished) {
+                  final loginCubit = context.read<LoginCubit>();
                   
-                  return const LoginScreen(); 
+                  return AppLayout(user: loginCubit.currentUser);
                 }
-              }
 
-
-              return const SizedBox();
-            },
+                return const SizedBox();
+              },
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 }

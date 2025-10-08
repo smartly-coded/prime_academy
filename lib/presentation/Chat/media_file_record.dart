@@ -22,7 +22,7 @@ class AudioRecorderManager {
       }
 
       if (microphoneStatus.isPermanentlyDenied) {
-        // توجيه المستخدم لفتح الإعدادات
+        
         await openAppSettings();
         return false;
       }

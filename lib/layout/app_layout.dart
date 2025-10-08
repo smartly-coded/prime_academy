@@ -53,106 +53,198 @@ class _AppLayoutState extends State<AppLayout> {
         backgroundColor: Colors.black,
         elevation: 0,
         title: Image.asset("assets/images/footer-logo.webp", height: 40),
-        actions: [
-          Container(
-            padding: EdgeInsets.all(2),
-            width: 70,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xff4f2349), Color(0xffa76433)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              width: 50,
-              height: 30,
+        // actions: [
+        //   Container(
+        //     padding: EdgeInsets.all(2),
+        //     width: 70,
+        //     height: 40,
+        //     decoration: BoxDecoration(
+        //       gradient: LinearGradient(
+        //         colors: [Color(0xff4f2349), Color(0xffa76433)],
+        //       ),
+        //       borderRadius: BorderRadius.circular(20),
+        //     ),
+        //     child: Container(
+        //       width: 50,
+        //       height: 30,
 
+        //       decoration: BoxDecoration(
+        //         color: Color(0XFF0f1217),
+        //         borderRadius: BorderRadius.circular(20),
+        //       ),
+        //       child: TextButton(
+        //         onPressed: () {
+        //           Navigator.pushNamed(context, AppRoutes.login);
+        //         },
+        //         child: const Text(
+        //           "حسابي",
+        //           style: TextStyle(color: Colors.white),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+
+        //   // IconButton(
+        //   //   icon: const Icon(Icons.notifications_none, color: Colors.white),
+        //   //   onPressed: () {
+        //   //     showNotificationsDialog(context);
+        //   //   },
+        //   // ),
+        //   BlocBuilder<NotificationCubit, NotificationState>(
+        //     builder: (context, state) {
+        //       bool hasUnread = false;
+
+        //       if (state is NotificationLoaded) {
+        //         hasUnread = state.notifications.any((n) => n.isRead == false);
+        //       }
+        //       return Stack(
+        //         clipBehavior:
+        //             Clip.none, // ✅ عشان يسمح للنقطة تطلع برا لو محتاجة
+        //         children: [
+        //           Container(
+        //             padding: EdgeInsets.all(2),
+        //             width: 40,
+        //             height: 40,
+        //             decoration: BoxDecoration(
+        //               gradient: LinearGradient(
+        //                 colors: [Color(0xff4f2349), Color(0xffa76433)],
+        //               ),
+        //               borderRadius: BorderRadius.circular(50),
+        //             ),
+        //             child: Container(
+        //               decoration: BoxDecoration(
+        //                 color: Color(0XFF0f1217),
+        //                 borderRadius: BorderRadius.circular(20),
+        //               ),
+        //               child: Center(
+        //                 child: IconButton(
+        //                   icon: const Icon(
+        //                     Icons.notifications_none,
+        //                     color: Colors.white,
+        //                     size: 20,
+        //                   ),
+        //                   onPressed: () {
+        //                     if (widget.user == null) {
+        //                       Navigator.pushNamed(context, AppRoutes.login);
+        //                     } else {
+        //                       showNotificationsDialog(context, widget.user!);
+        //                     }
+        //                   },
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+
+        //           if (hasUnread)
+        //             Positioned(
+        //               right: 4,
+        //               top: -1,
+        //               child: Container(
+        //                 width: 10,
+        //                 height: 10,
+        //                 decoration: BoxDecoration(
+        //                   color: Colors.red,
+        //                   shape: BoxShape.circle,
+        //                 ),
+        //               ),
+        //             ),
+        //         ],
+        //       );
+        //     },
+        //   ),
+        // ],
+        actions: [
+  Container(
+    padding: EdgeInsets.all(2),
+    width: 70,
+    height: 40,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Color(0xff4f2349), Color(0xffa76433)],
+      ),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Container(
+      width: 50,
+      height: 30,
+      decoration: BoxDecoration(
+        color: Color(0XFF0f1217),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: TextButton(
+        onPressed: () {
+          Navigator.pushNamed(context, AppRoutes.login);
+        },
+        child: const Text(
+          "حسابي",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    ),
+  ),
+
+  // ✅ هنا الشرط الجديد
+  if (widget.user != null)
+    BlocBuilder<NotificationCubit, NotificationState>(
+      builder: (context, state) {
+        bool hasUnread = false;
+
+        if (state is NotificationLoaded) {
+          hasUnread = state.notifications.any((n) => n.isRead == false);
+        }
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              padding: EdgeInsets.all(2),
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: Color(0XFF0f1217),
-                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  colors: [Color(0xff4f2349), Color(0xffa76433)],
+                ),
+                borderRadius: BorderRadius.circular(50),
               ),
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.login);
-                },
-                child: const Text(
-                  "حسابي",
-                  style: TextStyle(color: Colors.white),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0XFF0f1217),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.notifications_none,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      showNotificationsDialog(context, widget.user!);
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // IconButton(
-          //   icon: const Icon(Icons.notifications_none, color: Colors.white),
-          //   onPressed: () {
-          //     showNotificationsDialog(context);
-          //   },
-          // ),
-          BlocBuilder<NotificationCubit, NotificationState>(
-            builder: (context, state) {
-              bool hasUnread = false;
-
-              if (state is NotificationLoaded) {
-                hasUnread = state.notifications.any((n) => n.isRead == false);
-              }
-              return Stack(
-                clipBehavior:
-                    Clip.none, // ✅ عشان يسمح للنقطة تطلع برا لو محتاجة
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(2),
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xff4f2349), Color(0xffa76433)],
-                      ),
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Color(0XFF0f1217),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.notifications_none,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            if (widget.user == null) {
-                              Navigator.pushNamed(context, AppRoutes.login);
-                            } else {
-                              showNotificationsDialog(context, widget.user!);
-                            }
-                          },
-                        ),
-                      ),
-                    ),
+            if (hasUnread)
+              Positioned(
+                right: 4,
+                top: -1,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
                   ),
+                ),
+              ),
+          ],
+        );
+      },
+    ),
+],
 
-                  if (hasUnread)
-                    Positioned(
-                      right: 4,
-                      top: -1,
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
