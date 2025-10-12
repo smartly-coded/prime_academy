@@ -1,3 +1,63 @@
+// // ignore_for_file: public_member_api_docs, sort_constructors_first
+// import 'package:json_annotation/json_annotation.dart';
+
+// part 'login_response.g.dart';
+
+// @JsonSerializable()
+// class LoginResponse {
+//   int? id;
+//   String? firstname;
+//   String? lastname;
+//   String? username;
+//   String? email;
+//   int? role;
+//   @JsonKey(name: "updated_at")
+//   DateTime? updatedAt;
+//   @JsonKey(name: "created_at")
+//   DateTime? createdAt;
+//   UserImage? image;
+//   LoginResponse({
+//     this.id,
+//     this.firstname,
+//     this.lastname,
+//     this.username,
+//     this.email,
+//     this.role,
+//     this.updatedAt,
+//     this.createdAt,
+//     this.image,
+//   });
+
+//   factory LoginResponse.fromJson(Map<String, dynamic> json) =>
+//       _$LoginResponseFromJson(json);
+// }
+
+// @JsonSerializable()
+// class UserImage {
+//   String? url;
+//   String? filename;
+//   @JsonKey(name: "mime_type")
+//   String? mimeType;
+//   int? size;
+//   @JsonKey(name: "created_at")
+//   DateTime? createdAt;
+//   @JsonKey(name: "updated_at")
+//   DateTime? updatedAt;
+//   UserImage({
+//     this.url,
+//     this.filename,
+//     this.mimeType,
+//     this.size,
+//     this.createdAt,
+//     this.updatedAt,
+//   });
+
+//   factory UserImage.fromJson(Map<String, dynamic> json) =>
+//       _$UserImageFromJson(json);
+// }
+
+
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:json_annotation/json_annotation.dart';
 
@@ -16,6 +76,7 @@ class LoginResponse {
   @JsonKey(name: "created_at")
   DateTime? createdAt;
   UserImage? image;
+  
   LoginResponse({
     this.id,
     this.firstname,
@@ -30,6 +91,9 @@ class LoginResponse {
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) =>
       _$LoginResponseFromJson(json);
+
+  // 🔥 ده اللي كان ناقص - دالة تحويل الـ object لـ JSON
+  Map<String, dynamic> toJson() => _$LoginResponseToJson(this);
 }
 
 @JsonSerializable()
@@ -43,6 +107,7 @@ class UserImage {
   DateTime? createdAt;
   @JsonKey(name: "updated_at")
   DateTime? updatedAt;
+  
   UserImage({
     this.url,
     this.filename,
@@ -54,4 +119,7 @@ class UserImage {
 
   factory UserImage.fromJson(Map<String, dynamic> json) =>
       _$UserImageFromJson(json);
+
+  // 🔥 وده كمان
+  Map<String, dynamic> toJson() => _$UserImageToJson(this);
 }

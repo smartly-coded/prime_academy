@@ -132,6 +132,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               .read<LoginCubit>()
                               .formKey
                               .currentState!
+
+            
                               .validate()) {
                             context.read<LoginCubit>().emitLoginStates(
                               LoginRequestBody(

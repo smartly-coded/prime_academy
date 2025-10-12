@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/Utils/validators.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/start_CommRequest/logic/CommRequest_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FooterSection extends StatelessWidget {
   const FooterSection({super.key});
@@ -59,13 +60,14 @@ class FooterSection extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildSocialIcon(Icons.facebook, 'Facebook'),
+                  _buildSocialIcon(Icons.facebook, 'Facebook','https://www.facebook.com/primeacademy.co'),
                   const SizedBox(width: 15),
-                  _buildSocialIcon(Icons.chat, 'WhatsApp'),
-                  const SizedBox(width: 15),
-                  _buildSocialIcon(Icons.camera_alt, 'Instagram'),
-                  const SizedBox(width: 15),
-                  _buildSocialIcon(Icons.play_arrow, 'YouTube'),
+                  _buildSocialIcon(Icons.play_arrow, 'YouTube','https://www.youtube.com/channel/UCYvdLyU752m0ln637tW540Q'),
+
+                  // const SizedBox(width: 15),
+                  // _buildSocialIcon(Icons.chat, 'WhatsApp'),
+                  // const SizedBox(width: 15),
+                  // _buildSocialIcon(Icons.camera_alt, 'Instagram'),
                 ],
               ),
 
@@ -285,21 +287,29 @@ class FooterSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialIcon(IconData icon, String tooltip) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(0, 42, 45, 52),
-        shape: BoxShape.circle,
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: Colors.white, size: 24),
-        onPressed: () {},
-        tooltip: tooltip,
-      ),
-    );
-  }
+ Widget _buildSocialIcon(IconData icon, String tooltip, String url) {
+  return Container(
+    width: 50,
+    height: 50,
+    decoration: const BoxDecoration(
+      color: Color.fromARGB(0, 42, 45, 52),
+      shape: BoxShape.circle,
+    ),
+    child: IconButton(
+      icon: Icon(icon, color: Colors.white, size: 24),
+      tooltip: tooltip,
+      onPressed: () async {
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          debugPrint('Could not launch $url');
+        }
+      },
+    ),
+  );
+}
+
 
   Widget _buildCourseItem(String text) {
     return Text(
