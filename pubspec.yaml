@@ -42,6 +42,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_launcher_icons: ^0.14.4
   flutter_local_notifications: ^18.0.1
   flutter_secure_storage: ^9.2.4
   flutter_sound: ^9.28.0
@@ -107,3 +108,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/footer-logo.webp"
+  adaptive_icon_background: "#0F3890"  # لون خلفية الأيقونة في أندرويد
+  adaptive_icon_foreground: "assets/images/footer-logo.webp"

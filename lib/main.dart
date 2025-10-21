@@ -131,6 +131,7 @@ import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_state.dart';
 import 'package:prime_academy/layout/app_layout.dart';
 import 'package:prime_academy/presentation/ContactUs/ContactUs_page.dart';
+import 'package:prime_academy/presentation/splashScreens/custom_splash.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_one.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_three.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_two.dart';
@@ -179,19 +180,22 @@ class MyApp extends StatelessWidget {
           builder: DevicePreview.appBuilder,
           onGenerateRoute: AppRoutes().generateRoute,
           debugShowCheckedModeBanner: false,
-          home: Directionality(
-            textDirection: TextDirection.rtl,
-            child: BlocBuilder<SplashCubit, SplashState>(
-              builder: (context, state) {
-                if (state is SplashOneState) return SplashOne();
-                if (state is SplashTwoState) return SplashTwo();
-                if (state is SplashThreeState) return SplashThree();
-                if (state is SplashFinished) return const AppLayout();
+          home: const CustomSplashScreen(),
+
+          
+          // home: Directionality(
+          //   textDirection: TextDirection.rtl,
+          //   child: BlocBuilder<SplashCubit, SplashState>(
+          //     builder: (context, state) {
+          //       if (state is SplashOneState) return SplashOne();
+          //       if (state is SplashTwoState) return SplashTwo();
+          //       if (state is SplashThreeState) return SplashThree();
+          //       if (state is SplashFinished) return const AppLayout();
                 
-                return const SizedBox.shrink();
-              },
-            ),
-          ),
+          //       return const SizedBox.shrink();
+          //     },
+          //   ),
+          // ),
         ),
       ),
     );
