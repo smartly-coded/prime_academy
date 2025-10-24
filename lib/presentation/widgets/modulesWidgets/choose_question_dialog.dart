@@ -23,7 +23,7 @@ class FullScreenMcqDialog extends StatefulWidget {
 
 class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
     with TickerProviderStateMixin {
-  Set<int> _selectedAnswerIds = {};
+  final Set<int> _selectedAnswerIds = {};
   bool _showResult = false;
   bool _isCorrect = false;
   late AnimationController _scaleController;
@@ -73,7 +73,7 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
     }
     return imagePath.startsWith('/')
         ? Constants.baseUrl + imagePath
-        : Constants.baseUrl + '/' + imagePath;
+        : '${Constants.baseUrl}/$imagePath';
   }
 
   void _submitAnswer() {

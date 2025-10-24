@@ -11,7 +11,7 @@ class FooterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _phoneController = TextEditingController();
+    final phoneController = TextEditingController();
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
 
@@ -190,7 +190,7 @@ class FooterSection extends StatelessWidget {
                         border: Border.all(color: Colors.white, width: 1),
                       ),
                       child: TextFormField(
-                        controller: _phoneController,
+                        controller: phoneController,
                         validator: Validators.validateKuwaitPhone,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
@@ -215,7 +215,7 @@ class FooterSection extends StatelessWidget {
 
                     GestureDetector(
                       onTap: () {
-                        final phone = _phoneController.text.trim();
+                        final phone = phoneController.text.trim();
                         if (Validators.validateKuwaitPhone(phone) == null) {
                           context.read<CommRequestCubit>().sendRequest(phone);
                         } else {

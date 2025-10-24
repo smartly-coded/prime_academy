@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Mycolors {
-  static const backgroundColor = const Color.fromARGB(255, 2, 14, 35);
+  static const backgroundColor = Color.fromARGB(255, 2, 14, 35);
   static const darkblue = Color(
     0XFF222633,
   ); //used in background color of the button

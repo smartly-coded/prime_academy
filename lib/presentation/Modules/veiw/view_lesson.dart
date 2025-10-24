@@ -54,7 +54,7 @@ class _ViewModuleState extends State<ViewModule> {
   String? _currentVideoId;
   bool _isDisposing = false;
   List<LessonQuestion> _lessonQuestions = [];
-  Set<int> _shownQuestions = {};
+  final Set<int> _shownQuestions = {};
   Timer? _questionCheckTimer;
   bool _isPlayerReady = false;
   String _currentLessonTitle = ""; // متغير لحفظ عنوان الدرس الحالي
@@ -222,8 +222,8 @@ class _ViewModuleState extends State<ViewModule> {
 
             // استخدام الطريقة الجديدة
             context.read<MarkAnsweredCubit>().submitChoiceAnswer(
-              question.id!, // questionId
-              question.lessonId!, // lessonId
+              question.id, // questionId
+              question.lessonId, // lessonId
               selectedChoices, // List<int> للاختيارات
             );
             Future.delayed(const Duration(milliseconds: 300), () {
@@ -245,8 +245,8 @@ class _ViewModuleState extends State<ViewModule> {
 
             // استخدام الطريقة الجديدة
             context.read<MarkAnsweredCubit>().submitEssayAnswer(
-              question.id!, // questionId
-              question.lessonId!, // lessonId
+              question.id, // questionId
+              question.lessonId, // lessonId
               answer, // الإجابة النصية
             );
             Future.delayed(const Duration(milliseconds: 300), () {
@@ -270,8 +270,8 @@ class _ViewModuleState extends State<ViewModule> {
 
             // استخدام الطريقة الجديدة
             context.read<MarkAnsweredCubit>().submitFillAnswer(
-              question.id!, // questionId
-              question.lessonId!, // lessonId
+              question.id, // questionId
+              question.lessonId, // lessonId
               answer, // الإجابة النصية
             );
             Future.delayed(const Duration(milliseconds: 300), () {
@@ -294,8 +294,8 @@ class _ViewModuleState extends State<ViewModule> {
 
             // استخدام الطريقة الجديدة
             context.read<MarkAnsweredCubit>().submitMatchAnswer(
-              question.id!, // questionId
-              question.lessonId!, // lessonId
+              question.id, // questionId
+              question.lessonId, // lessonId
               matchAnswers, // Map<int, int> للمطابقة
             );
             Future.delayed(const Duration(milliseconds: 300), () {
@@ -317,8 +317,8 @@ class _ViewModuleState extends State<ViewModule> {
 
             // استخدام الطريقة الجديدة
             context.read<MarkAnsweredCubit>().submitReOrderAnswer(
-              question.id!, // questionId
-              question.lessonId!, // lessonId
+              question.id, // questionId
+              question.lessonId, // lessonId
               orderAnswers, // Map<int, int> للترتيب
             );
             Future.delayed(const Duration(milliseconds: 300), () {
@@ -681,24 +681,18 @@ class _ViewModuleState extends State<ViewModule> {
               _openExternalLink("https://chatgpt.com/");
             }),
             _buildButton("اسأل المعلم", "assets/icons/message.png", () {
-              if (_currentChatId == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('جاري تحميل بيانات الدرس...')),
-                );
-                return;
-              }
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => BlocProvider(
                     create: (context) => ChatCubit(
                       context.read<ChatRepo>(), // ✅ بجيب الـ repo من الـ main
-                      _currentChatId!, // رقم الشات
+                      _currentChatId, // رقم الشات
                       widget.user,
                       //    widget.courseId, // اليوزر اللى جه من loginResponse
                     )..loadChat(),
                     child: ChatScreen(
-                      chatId: _currentChatId!,
+                      chatId: _currentChatId,
                       user: widget.user,
                       //  courseId: widget.courseId,
                     ),
@@ -1139,9 +1133,9 @@ class _ViewModuleState extends State<ViewModule> {
     final secs = seconds % 60;
 
     if (hours > 0) {
-      return "${hours}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}";
+      return "$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}";
     } else {
-      return "${minutes}:${secs.toString().padLeft(2, '0')}";
+      return "$minutes:${secs.toString().padLeft(2, '0')}";
     }
   }
 

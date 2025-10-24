@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 import 'package:prime_academy/features/authScreen/logic/login_state.dart';

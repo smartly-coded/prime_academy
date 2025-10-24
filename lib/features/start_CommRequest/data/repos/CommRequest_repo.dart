@@ -21,7 +21,7 @@ class CommRequestRepository {
         throw Exception(
             'Failed to send Comm Request: ${response.statusCode} ${response.statusMessage}');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception('Dio error: ${e.message}');
     } catch (e) {
       throw Exception('Unexpected error: $e');

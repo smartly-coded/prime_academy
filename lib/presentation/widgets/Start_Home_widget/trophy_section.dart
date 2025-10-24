@@ -118,7 +118,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/video_player.dart';
-import 'package:prime_academy/presentation/widgets/homeWidgets/build_text.dart';
 import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_withoutImage.dart';
 
 class TrophySection extends StatelessWidget {

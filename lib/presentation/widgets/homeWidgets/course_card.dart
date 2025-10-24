@@ -13,13 +13,13 @@ class CourseCard extends StatelessWidget {
     final LoginResponse user;
 
   const CourseCard({
-    Key? key,
+    super.key,
     required this.courseName,
     required this.isMobile,
     this.image,
     required this.courseId,
     required this.user,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class CourseCard extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     height: double.infinity,
                     child: (image != null && image!.isNotEmpty)

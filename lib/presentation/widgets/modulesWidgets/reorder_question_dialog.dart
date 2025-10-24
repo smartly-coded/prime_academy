@@ -10,11 +10,11 @@ class ReorderQuestionDialog extends StatefulWidget {
   final VoidCallback onSkip;
 
   const ReorderQuestionDialog({
-    Key? key,
+    super.key,
     required this.question,
     required this.onAnswerSubmitted,
     required this.onSkip,
-  }) : super(key: key);
+  });
 
   @override
   State<ReorderQuestionDialog> createState() => _ReorderQuestionDialogState();
@@ -23,8 +23,8 @@ class ReorderQuestionDialog extends StatefulWidget {
 class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
   List<Answer> _shuffledAnswers = [];
   List<int> _orderSlots = []; // قائمة أرقام الترتيب
-  Map<int, int?> _matches = {}; // slotIndex -> answerIndex
-  Map<int, bool> _slotHovered = {}; // slotIndex -> isHovered
+  final Map<int, int?> _matches = {}; // slotIndex -> answerIndex
+  final Map<int, bool> _slotHovered = {}; // slotIndex -> isHovered
   bool _showResult = false;
   bool _isCorrect = false;
 
@@ -56,7 +56,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
     }
     return imagePath.startsWith('/')
         ? Constants.baseUrl + imagePath
-        : Constants.baseUrl + '/' + imagePath;
+        : '${Constants.baseUrl}/$imagePath';
   }
 
   void _submitAnswer() {
@@ -69,7 +69,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
     for (int i = 0; i < _orderSlots.length; i++) {
       int? answerIndex = _matches[i];
       if (answerIndex != null) {
-        int answerId = _shuffledAnswers[answerIndex].id!;
+        int answerId = _shuffledAnswers[answerIndex].id;
         orderAnswers[i] = answerId; // position -> answerId
 
         // تحقق من الترتيب الصحيح
@@ -285,12 +285,16 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
                             : _buildOrderSlot(index, isTablet),
                       );
                     },
-                    onWillAccept: (answerIndex) {
+                    onWillAcceptWithDetails: (answerIndex) {
                       return !_matches.containsKey(index);
                     },
-                    onAccept: (answerIndex) {
-                      _handleAnswerDrop(answerIndex, index);
-                    },
+                    // onAcceptWithDetails: (answerIndex) {
+                    //   _handleAnswerDrop(answerIndex, index);
+                    // },
+                    onAcceptWithDetails: (details) {
+  _handleAnswerDrop(details.data, index);
+},
+
                     onMove: (details) {
                       setState(() {
                         _slotHovered[index] = true;
@@ -341,7 +345,7 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
         isTablet,
         isDragging: true,
       ),
-      childWhenDragging: Container(
+      childWhenDragging: SizedBox(
         height: 80,
         child: Center(
           child: Icon(

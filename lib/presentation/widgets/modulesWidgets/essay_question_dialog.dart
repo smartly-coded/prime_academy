@@ -10,11 +10,11 @@ class EssayQuestionDialog extends StatefulWidget {
   final VoidCallback onSkip;
 
   const EssayQuestionDialog({
-    Key? key,
+    super.key,
     required this.question,
     required this.onAnswerSubmitted,
     required this.onSkip,
-  }) : super(key: key);
+  });
 
   @override
   State<EssayQuestionDialog> createState() => _EssayQuestionDialogState();
@@ -90,8 +90,9 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
 
       // مطابقة عكسية - إجابة الطالب موجودة في الإجابة الصحيحة (للكلمات القصيرة)
       if (correctAnswerLower.contains(userAnswerLower) &&
-          userAnswerLower.length >= 3)
+          userAnswerLower.length >= 3) {
         return true;
+      }
 
       return false;
     });
@@ -223,7 +224,7 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
     // حساب ارتفاع ثابت ومناسب للـ TextField
     final textFieldHeight = isLandscape ? 140.0 : 220.0;
 
-    return Container(
+    return SizedBox(
       height: textFieldHeight,
       child: TextField(
         controller: _answerController,

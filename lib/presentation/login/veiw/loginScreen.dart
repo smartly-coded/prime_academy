@@ -4,7 +4,6 @@ import 'package:prime_academy/core/Utils/validators.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
-import 'package:prime_academy/features/authScreen/logic/login_state.dart';
 import 'package:prime_academy/presentation/widgets/loginWidgets/loginBlocListener.dart';
 
 class LoginScreen extends StatefulWidget {

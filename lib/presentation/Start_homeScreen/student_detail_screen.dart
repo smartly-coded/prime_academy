@@ -12,8 +12,7 @@ import 'package:prime_academy/presentation/widgets/homeWidgets/empty_state.dart'
 
 class StudentDetailScreen extends StatefulWidget {
   final int studentId;
-  const StudentDetailScreen({Key? key, required this.studentId})
-    : super(key: key);
+  const StudentDetailScreen({super.key, required this.studentId});
 
   @override
   State<StudentDetailScreen> createState() => _StudentDetailScreenState();

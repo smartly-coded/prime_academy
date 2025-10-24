@@ -9,11 +9,11 @@ class ResponsiveMatchDialog extends StatefulWidget {
   final VoidCallback onSkip;
 
   const ResponsiveMatchDialog({
-    Key? key,
+    super.key,
     required this.question,
     required this.onAnswerSubmitted,
     required this.onSkip,
-  }) : super(key: key);
+  });
 
   @override
   State<ResponsiveMatchDialog> createState() => _ResponsiveMatchDialogState();
@@ -22,8 +22,8 @@ class ResponsiveMatchDialog extends StatefulWidget {
 class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
   late List<Prompt> _prompts;
   late List<ResponseModel> _responses;
-  Map<int, int?> _matches = {}; // promptIndex -> responseIndex
-  Map<int, bool> _responseHovered = {}; // responseIndex -> isHovered
+  final Map<int, int?> _matches = {}; // promptIndex -> responseIndex
+  final Map<int, bool> _responseHovered = {}; // responseIndex -> isHovered
   bool _showResult = false;
   bool _isCorrect = false;
 
@@ -64,7 +64,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
       int? responseIndex = _matches[promptIndex];
       if (responseIndex != null) {
         // promptId -> responseId
-        matchAnswers[_prompts[promptIndex].id!] = _responses[responseIndex].id!;
+        matchAnswers[_prompts[promptIndex].id] = _responses[responseIndex].id;
       }
     }
 
@@ -281,14 +281,18 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                       );
                     },
                     // 🔥 حل المشكلة الثانية: منع وضع أكثر من سؤال في نفس المكان
-                    onWillAccept: (promptIndex) {
+                    onWillAcceptWithDetails: (promptIndex) {
                       return !_matches.containsValue(
                         index,
                       ); // يرفض إذا كان المكان مُستخدم
                     },
-                    onAccept: (promptIndex) {
-                      _handleQuestionDrop(promptIndex, index);
-                    },
+                    // onAcceptWithDetails: (promptIndex) {
+                    //   _handleQuestionDrop(promptIndex, index);
+                    // },
+                    onAcceptWithDetails: (details) {
+  _handleQuestionDrop(details.data, index);
+},
+
                     onMove: (details) {
                       setState(() {
                         _responseHovered[index] = true;
@@ -344,7 +348,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
         isTablet,
         isDragging: true,
       ),
-      childWhenDragging: Container(
+      childWhenDragging: SizedBox(
         height: 80,
         child: Center(
           child: Icon(
@@ -375,7 +379,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
 
   // ويدجت منفصل لعرض الإجابات
   Widget _buildResponseCard(ResponseModel response, bool isTablet) {
-    return Container(
+    return SizedBox(
       height: 60,
       child: Center(
         child: Text(

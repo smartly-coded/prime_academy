@@ -65,7 +65,7 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
 
     return imagePath.startsWith('/')
         ? Constants.baseUrl + imagePath
-        : Constants.baseUrl + '/' + imagePath;
+        : '${Constants.baseUrl}/$imagePath';
   }
 
   Widget _buildUserImage(
@@ -209,7 +209,7 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
   }
 
   Widget _buildLoadingState() {
-    return Container(
+    return SizedBox(
       height: 280,
       child: Center(
         child: Column(
@@ -234,7 +234,7 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
   }
 
   Widget _buildErrorState(String error) {
-    return Container(
+    return SizedBox(
       height: 280,
       child: Center(
         child: Column(
@@ -279,7 +279,7 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
   }
 
   Widget _buildEmptyState() {
-    return Container(
+    return SizedBox(
       height: 280,
       child: Center(
         child: Column(

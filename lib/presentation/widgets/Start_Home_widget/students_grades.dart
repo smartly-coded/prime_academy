@@ -59,7 +59,7 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
 
     return imagePath.startsWith('/')
         ? baseUrl + imagePath
-        : baseUrl + '/' + imagePath;
+        : '$baseUrl/$imagePath';
   }
 
   @override
@@ -243,8 +243,9 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
                                             imageUrl,
                                             fit: BoxFit.cover,
                                             loadingBuilder: (context, child, loadingProgress) {
-                                              if (loadingProgress == null)
+                                              if (loadingProgress == null) {
                                                 return child;
+                                              }
                                               return Center(
                                                 child: CircularProgressIndicator(
                                                   value:
@@ -413,7 +414,7 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
                 ),
               ),
               SizedBox(height: 16),
-              Container(
+              SizedBox(
                 height: 300,
                 width: 250,
                 child: imageUrl.isNotEmpty

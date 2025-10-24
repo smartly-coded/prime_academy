@@ -128,13 +128,9 @@ import 'package:prime_academy/features/contact_us/logic/inquery_cubit.dart';
 import 'package:prime_academy/features/ranckingScreen/data/repos/rank_repo.dart';
 import 'package:prime_academy/features/ranckingScreen/logic/rank_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
-import 'package:prime_academy/features/splashScreens/logic/splash_state.dart';
 import 'package:prime_academy/layout/app_layout.dart';
 import 'package:prime_academy/presentation/ContactUs/ContactUs_page.dart';
 import 'package:prime_academy/presentation/splashScreens/custom_splash.dart';
-import 'package:prime_academy/presentation/splashScreens/splash_one.dart';
-import 'package:prime_academy/presentation/splashScreens/splash_three.dart';
-import 'package:prime_academy/presentation/splashScreens/splash_two.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

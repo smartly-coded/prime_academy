@@ -180,7 +180,7 @@ class AudioRecorderManager {
 
 // واجهة تسجيل محسنة مع تشخيص الأخطاء
 class RecordingDialog extends StatefulWidget {
-  const RecordingDialog({Key? key}) : super(key: key);
+  const RecordingDialog({super.key});
 
   @override
   State<RecordingDialog> createState() => _RecordingDialogState();

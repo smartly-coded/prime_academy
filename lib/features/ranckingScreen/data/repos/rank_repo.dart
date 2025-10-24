@@ -25,7 +25,7 @@ class RankRepository {
         throw Exception(
             'Failed to load ranks: ${response.statusCode} ${response.statusMessage}');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
      
       throw Exception('Dio error: ${e.message}');
     } catch (e) {

@@ -91,7 +91,7 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                               final NotificationModel noti =
                                   notifications[index];
 
-                              final isChat = noti.type?.toLowerCase() == 'chat';
+                              final isChat = noti.type.toLowerCase() == 'chat';
                               final icon = isChat
                                   ? Icons.chat_bubble_outline
                                   : Icons.notifications;

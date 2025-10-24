@@ -136,7 +136,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 class RecordingBottomSheet extends StatefulWidget {
-  const RecordingBottomSheet({Key? key}) : super(key: key);
+  const RecordingBottomSheet({super.key});
 
   @override
   State<RecordingBottomSheet> createState() => _RecordingBottomSheetState();

@@ -939,7 +939,7 @@ class ChatScreen extends StatefulWidget {
   final int chatId;
   final LoginResponse user;
 
-  ChatScreen({super.key, required this.chatId, required this.user});
+  const ChatScreen({super.key, required this.chatId, required this.user});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -1379,7 +1379,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Container(
+            child: SizedBox(
               height: 30,
               child: CustomPaint(painter: WaveformPainter()),
             ),
@@ -1549,8 +1549,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   String buildImageUrl(String? imagePath) {
     if (imagePath == null || imagePath.isEmpty) return "";
-    if (imagePath.startsWith('https://') || imagePath.startsWith('http://'))
+    if (imagePath.startsWith('https://') || imagePath.startsWith('http://')) {
       return imagePath;
+    }
 
     if (imagePath.startsWith('file://')) {
       imagePath = imagePath.substring(7);
@@ -1807,8 +1808,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024)
+    if (bytes < 1024 * 1024 * 1024) {
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 

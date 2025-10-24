@@ -12,12 +12,12 @@ class FillInBlanksDialog extends StatefulWidget {
   final int expectedLength;
 
   const FillInBlanksDialog({
-    Key? key,
+    super.key,
     required this.question,
     required this.onAnswerSubmitted,
     required this.onSkip,
     required this.expectedLength,
-  }) : super(key: key);
+  });
 
   @override
   State<FillInBlanksDialog> createState() => _FillInBlanksDialogState();

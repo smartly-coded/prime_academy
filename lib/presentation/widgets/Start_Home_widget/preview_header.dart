@@ -5,7 +5,7 @@ import 'package:prime_academy/presentation/Home/veiw/home_screen.dart';
 
 class PreviewHeader extends StatefulWidget {
   final StudentPreviewResponse response;
-  const PreviewHeader({Key? key, required this.response}) : super(key: key);
+  const PreviewHeader({super.key, required this.response});
   @override
   State<PreviewHeader> createState() => PreviewHeaderState();
 }

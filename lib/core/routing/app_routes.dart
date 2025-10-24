@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
-import 'package:prime_academy/features/CoursesModules/data/repo/mark_answered_repo.dart';
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/mark_answered_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
