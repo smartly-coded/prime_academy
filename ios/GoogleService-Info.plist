@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyC0fIoDJNGR95jMi_FBA9rbyrCRk_Ao1wI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>82377613199</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.primeAcademy</string>
+	<key>PROJECT_ID</key>
+	<string>prime-academy-eb7a3</string>
+	<key>STORAGE_BUCKET</key>
+	<string>prime-academy-eb7a3.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:82377613199:ios:27d92a1c8d4c55148075fa</string>
+</dict>
+</plist>
