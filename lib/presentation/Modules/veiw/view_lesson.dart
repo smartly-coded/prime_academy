@@ -26,12 +26,15 @@ import 'package:prime_academy/presentation/widgets/modulesWidgets/fill_question_
 import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/choose_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/match_question_dialog.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/materials.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/recorded_lesson_items.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/reorder_question_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'dart:async';
+
+import '../../../features/CoursesModules/data/models/module_lessons_response_model.dart';
 
 class ViewModule extends StatefulWidget {
   final int moduleId;
@@ -703,11 +706,57 @@ class _ViewModuleState extends State<ViewModule> {
                 ),
               );
             }),
-            _buildButton(
-              "الملازم الالكترونيه",
-              "assets/icons/open-book.png",
-              () {},
-            ),
+            // _buildButton(
+            //   "الملازم الالكترونيه",
+            //   "assets/icons/open-book.png",
+            //   () {
+
+            //   },
+
+            //),
+         BlocBuilder<ModuleLessonsCubit, ModuleLessonsState>(
+  builder: (context, state) {
+    return _buildButton(
+      "الملازم الالكترونيه",
+      "assets/icons/open-book.png",
+      () {
+        state.when(
+          initial: () {
+            // حالة البداية، ممكن تسيبيها فارغة
+          },
+          loading: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('جاري تحميل الملازم...'),
+              ),
+            );
+          },
+          success: (data) {
+            // هنا data هو ModuleLessonsResponse مباشرة
+            final materials = data.materials ?? [];
+
+            // الانتقال للصفحة الكاملة بدل الديالوج
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => MaterialsPage(materials: materials),
+              ),
+            );
+          },
+          error: (errorMsg) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('تعذر تحميل الملازم 😔 $errorMsg'),
+              ),
+            );
+          },
+        );
+      },
+    );
+  },
+),
+
+
             _buildButton("الفيديوهات", "assets/icons/play.png", () {}),
           ],
         ),
@@ -869,7 +918,7 @@ class _ViewModuleState extends State<ViewModule> {
               ),
               child: TextButton(
                 onPressed: () {
-                   context.read<ProfileCubit>().emitprofileState();
+                  context.read<ProfileCubit>().emitprofileState();
                 },
                 child: const Text(
                   "حسابي",
@@ -882,65 +931,63 @@ class _ViewModuleState extends State<ViewModule> {
           //   icon: const Icon(Icons.notifications_none, color: Colors.white),
           //   onPressed: () {},
           // ),
-                      SizedBox(width: 8),
-                BlocBuilder<NotificationCubit, NotificationState>(
-                  builder: (context, state) {
-                    bool hasUnread = false;
-                    if (state is NotificationLoaded) {
-                      hasUnread = state.notifications.any(
-                        (n) => n.isRead == false,
-                      );
-                    }
+          SizedBox(width: 8),
+          BlocBuilder<NotificationCubit, NotificationState>(
+            builder: (context, state) {
+              bool hasUnread = false;
+              if (state is NotificationLoaded) {
+                hasUnread = state.notifications.any((n) => n.isRead == false);
+              }
 
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(2),
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            gradient:  LinearGradient(
-                               colors:Mycolors.primary_color.colors,
-                            ),
-                            borderRadius: BorderRadius.circular(50),
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(2),
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: Mycolors.primary_color.colors,
+                      ),
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0XFF161c29),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.notifications_none,
+                            color: Colors.white,
+                            size: 20,
                           ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0XFF161c29),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Center(
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.notifications_none,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  showNotificationsDialog(context,widget.user);
-                                },
-                              ),
-                            ),
-                          ),
+                          onPressed: () {
+                            showNotificationsDialog(context, widget.user);
+                          },
                         ),
-                        if (hasUnread)
-                          Positioned(
-                            right: 4,
-                            top: -1,
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
+                      ),
+                    ),
+                  ),
+                  if (hasUnread)
+                    Positioned(
+                      right: 4,
+                      top: -1,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
         ],
       ),
       body: MultiBlocListener(
