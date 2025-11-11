@@ -11,11 +11,24 @@ class PreviewHeader extends StatefulWidget {
 }
 
 class PreviewHeaderState extends State<PreviewHeader> {
+  String buildImageUrl(String? imagePath) {
+  if (imagePath == null || imagePath.isEmpty) return "";
+  if (imagePath.startsWith('http')) return imagePath;
+
+  const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
+  return imagePath.startsWith('/')
+      ? "$cdnPrefix$imagePath"
+      : "$cdnPrefix/$imagePath";
+}
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
-    final imageUrl = buildImageUrl(widget.response.image!.url);
+    // final imageUrl = buildImageUrl(widget.response.image!.url);
+    final imageUrl = widget.response.image?.url != null && widget.response.image!.url!.isNotEmpty
+    ? buildImageUrl(widget.response.image!.url!)
+    : null;
+
     return Row(
       children: [
         Container(
@@ -28,7 +41,7 @@ class PreviewHeaderState extends State<PreviewHeader> {
           ),
           child: ClipOval(
             child: Image.network(
-              imageUrl,
+             buildImageUrl( imageUrl),
               fit: BoxFit.cover,
               width: 50,
               height: 50,

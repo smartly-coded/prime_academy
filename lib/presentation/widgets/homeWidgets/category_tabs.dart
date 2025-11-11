@@ -18,7 +18,7 @@ class CategoryTabs extends StatelessWidget {
       onTap: () => onTabSelected(index),
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected ? Mycolors.darkblue : Mycolors.cardColor1,
+          color: isSelected ? Color(0xFF12161f) : Mycolors.cardColor1,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
@@ -26,8 +26,10 @@ class CategoryTabs extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: isMobile ? 14 : 16,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Color(0xFFF1E6EE) : Color(0xFF817F6B),
+              // fontWeight: FontWeight.bold,
+              color: isSelected
+                  ? Color(0xFFF1E6EE)
+                  : const Color.fromARGB(255, 167, 167, 167),
               fontFamily: 'Cairo',
             ),
           ),

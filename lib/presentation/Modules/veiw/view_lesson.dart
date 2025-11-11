@@ -12,11 +12,14 @@ import 'package:prime_academy/features/CoursesModules/logic/mark_answered_cubit.
 import 'package:prime_academy/features/CoursesModules/logic/mark_answered_state.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
+import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
+import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubit.dart';
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_state.dart';
 import 'package:prime_academy/presentation/Chat/chatPage.dart';
 import 'package:prime_academy/presentation/Modules/veiw/video_header.dart';
+import 'package:prime_academy/presentation/Notification/notification_screen.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/course_rating_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/essay_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/fill_question_dialog.dart';
@@ -865,7 +868,9 @@ class _ViewModuleState extends State<ViewModule> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                   context.read<ProfileCubit>().emitprofileState();
+                },
                 child: const Text(
                   "حسابي",
                   style: TextStyle(color: Colors.white),
@@ -873,10 +878,69 @@ class _ViewModuleState extends State<ViewModule> {
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.white),
-            onPressed: () {},
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.notifications_none, color: Colors.white),
+          //   onPressed: () {},
+          // ),
+                      SizedBox(width: 8),
+                BlocBuilder<NotificationCubit, NotificationState>(
+                  builder: (context, state) {
+                    bool hasUnread = false;
+                    if (state is NotificationLoaded) {
+                      hasUnread = state.notifications.any(
+                        (n) => n.isRead == false,
+                      );
+                    }
+
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            gradient:  LinearGradient(
+                               colors:Mycolors.primary_color.colors,
+                            ),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0XFF161c29),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.notifications_none,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  showNotificationsDialog(context,widget.user);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (hasUnread)
+                          Positioned(
+                            right: 4,
+                            top: -1,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
         ],
       ),
       body: MultiBlocListener(

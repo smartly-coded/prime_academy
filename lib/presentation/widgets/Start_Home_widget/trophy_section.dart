@@ -126,10 +126,10 @@ class TrophySection extends StatelessWidget {
   Future<void> _handleStartButton(BuildContext context) async {
     try {
       const storage = FlutterSecureStorage();
-      
+
       // 1️⃣ اجيب الـ accessToken
       final accessToken = await storage.read(key: "accessToken");
-      
+
       // 2️⃣ لو مافيش توكن، روح تسجيل دخول
       if (accessToken == null || accessToken.isEmpty) {
         print("⏩ No accessToken found, navigating to LoginScreen");
@@ -141,7 +141,7 @@ class TrophySection extends StatelessWidget {
 
       // 3️⃣ لو فيه توكن، اجيب بيانات المستخدم
       final userData = await storage.read(key: "userData");
-      
+
       if (userData == null || userData.isEmpty) {
         print("⚠️ Token exists but no userData, navigating to login");
         // امسح التوكن لأنه مش مفيد بدون بيانات المستخدم
@@ -157,7 +157,7 @@ class TrophySection extends StatelessWidget {
       try {
         final loginResponse = LoginResponse.fromJson(jsonDecode(userData));
         print("✅ Navigating to HomeScreen with user data");
-        
+
         if (context.mounted) {
           Navigator.pushNamed(
             context,
@@ -171,7 +171,7 @@ class TrophySection extends StatelessWidget {
         await storage.delete(key: "userData");
         await storage.delete(key: "accessToken");
         await storage.delete(key: "refreshToken");
-        
+
         if (context.mounted) {
           Navigator.pushNamed(context, AppRoutes.login);
         }
@@ -186,102 +186,103 @@ class TrophySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildTextWithBorder("نافس و تعلم", "هدفنا إخراج جيل جديد", context),
-        const SizedBox(height: 15),
-        Row(
-          children: [
-            // زر "ابدأ الآن"
-            Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xffd67944),
-                    Color(0xff863868),
-                    Color(0xff51255b),
-                  ],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                ),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: TextButton(
-                onPressed: () => _handleStartButton(context),
-                style: TextButton.styleFrom(
-                  shadowColor: const Color(0XFF222633),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-                    vertical: 12,
-                  ),
-                ),
-                child: const Text(
-                  "ابدأ الآن",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: 'Cairo',
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 20),
-            
-            // زر "اعرف أكثر" مع الفيديو
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xffd67944),
-                        Color(0xff51255b),
-                        Color(0xff51255b),
-                      ],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.bottomRight,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          buildTextWithBorder("نافس و تعلم", "هدفنا إخراج جيل جديد", context),
+          const SizedBox(height: 15),
+          Row(
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "اعرف أكثر",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
-                  child: Center(
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0XFF222633),
+                  const SizedBox(width: 10),
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xffd67944),
+                          Color(0xff51255b),
+                          Color(0xff51255b),
+                        ],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 28,
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0XFF222633),
                         ),
-                        onPressed: () {
-                          showVideoDialog(context);
-                        },
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          onPressed: () {
+                            showVideoDialog(context);
+                          },
+                        ),
                       ),
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(width: 20),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xffd67944),
+                      Color(0xff863868),
+                      Color(0xff51255b),
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                  ),
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                const SizedBox(width: 10),
-                const Text(
-                  "اعرف أكثر",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                child: TextButton(
+                  onPressed: () => _handleStartButton(context),
+                  style: TextButton.styleFrom(
+                    shadowColor: const Color(0XFF222633),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: const Text(
+                    "ابدأ الآن",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontFamily: 'Cairo',
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
-      ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

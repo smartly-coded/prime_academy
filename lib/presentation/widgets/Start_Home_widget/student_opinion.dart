@@ -56,18 +56,26 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
     super.dispose();
   }
 
-  String buildImageUrl(String? imagePath) {
-    if (imagePath == null || imagePath.isEmpty) return "";
+  // String buildImageUrl(String? imagePath) {
+  //   if (imagePath == null || imagePath.isEmpty) return "";
 
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
+  //   if (imagePath.startsWith('http')) {
+  //     return imagePath;
+  //   }
 
-    return imagePath.startsWith('/')
-        ? Constants.baseUrl + imagePath
-        : '${Constants.baseUrl}/$imagePath';
-  }
+  //   return imagePath.startsWith('/')
+  //       ? Constants.baseUrl + imagePath
+  //       : '${Constants.baseUrl}/$imagePath';
+  // }
+String buildImageUrl(String? imagePath) {
+  if (imagePath == null || imagePath.isEmpty) return "";
+  if (imagePath.startsWith('http')) return imagePath;
 
+  const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
+  return imagePath.startsWith('/')
+      ? "$cdnPrefix$imagePath"
+      : "$cdnPrefix/$imagePath";
+}
   Widget _buildUserImage(
     StudentTestimonalsResponse testimonial,
     bool isMobile,

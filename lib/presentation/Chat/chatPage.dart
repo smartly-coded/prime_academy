@@ -1184,10 +1184,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 30,
                     ),
+                    textDirection: TextDirection.rtl,
                   ),
-                  centerTitle: true,
+                  // centerTitle: true,
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(2),
                     child: Container(
@@ -1269,9 +1270,169 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 
+  // Widget _buildNormalUI(ChatCubit cubit) {
+  //   return Row(
+  //     children: [
+  //       CircleAvatar(
+  //         radius: 20,
+  //         backgroundColor: Colors.blue,
+  //         child: IconButton(
+  //           icon: const Icon(Icons.send, color: Colors.white),
+  //           onPressed: () {
+  //             final text = _controller.text.trim();
+  //             final file = _pickedFile;
+
+  //             if (file != null) {
+  //               cubit.sendMedia(file, message: text.isNotEmpty ? text : null);
+  //               setState(() => _pickedFile = null);
+  //               _controller.clear();
+  //             } else if (text.isNotEmpty) {
+  //               cubit.sendMessage(text);
+  //               _controller.clear();
+  //             }
+  //           },
+  //         ),
+  //       ),
+  //       const SizedBox(width: 6),
+  //       CircleAvatar(
+  //         radius: 20,
+  //         backgroundColor: Colors.blue,
+  //         child: IconButton(
+  //           icon: const Icon(Icons.mic, color: Colors.white),
+  //           onPressed: () {
+  //             _startRecording();
+  //           },
+  //         ),
+  //       ),
+  //       const SizedBox(width: 6),
+
+  //       CircleAvatar(
+  //         radius: 20,
+  //         backgroundColor: Mycolors.darkblue,
+  //         child: IconButton(
+  //           icon: const Icon(Icons.attach_file, color: Colors.white),
+  //           onPressed: () async {
+  //             try {
+  //               File? file = await pickFile();
+  //               if (file != null) {
+  //                 setState(() => _pickedFile = file);
+  //               }
+  //             } catch (e) {
+  //               _showError('خطأ في اختيار الملف: $e');
+  //             }
+  //           },
+  //         ),
+  //       ),
+
+  //       const SizedBox(width: 8),
+  //       Expanded(
+  //         child: TextField(
+  //           controller: _controller,
+  //           style: const TextStyle(color: Colors.white),
+  //           decoration: InputDecoration(
+  //             hintText: "اكتب رسالتك...",
+  //             hintStyle: const TextStyle(color: Colors.grey),
+  //             contentPadding: const EdgeInsets.symmetric(
+  //               horizontal: 12,
+  //               vertical: 10,
+  //             ),
+  //             filled: true,
+  //             fillColor: const Color(0xff0d1117),
+  //             border: OutlineInputBorder(
+  //               borderRadius: BorderRadius.circular(20),
+  //               borderSide: const BorderSide(color: Colors.blue),
+  //             ),
+  //             focusedBorder: OutlineInputBorder(
+  //               borderRadius: BorderRadius.circular(20),
+  //               borderSide: const BorderSide(color: Colors.blue, width: 2),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
   Widget _buildNormalUI(ChatCubit cubit) {
     return Row(
       children: [
+        // زر الإرسال
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.blue,
+              width: 2,
+            ), // ✅ البوردر الأزرق
+          ),
+          child: CircleAvatar(
+            radius: 20,
+            backgroundColor: Mycolors.darkblue,
+            child: IconButton(
+              icon: const Icon(Icons.send, color: Colors.white),
+              onPressed: () {
+                final text = _controller.text.trim();
+                final file = _pickedFile;
+
+                if (file != null) {
+                  cubit.sendMedia(file, message: text.isNotEmpty ? text : null);
+                  setState(() => _pickedFile = null);
+                  _controller.clear();
+                } else if (text.isNotEmpty) {
+                  cubit.sendMessage(text);
+                  _controller.clear();
+                }
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+
+        // زر الميكروفون
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.blue, width: 2),
+          ),
+          child: CircleAvatar(
+            radius: 20,
+            backgroundColor: Mycolors.darkblue,
+            child: IconButton(
+              icon: const Icon(Icons.mic, color: Colors.white),
+              onPressed: () {
+                _startRecording();
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.blue, width: 2),
+          ),
+          child: CircleAvatar(
+            radius: 20,
+            backgroundColor: Mycolors.darkblue,
+            child: IconButton(
+              icon: const Icon(Icons.attach_file, color: Colors.white),
+              onPressed: () async {
+                try {
+                  File? file = await pickFile();
+                  if (file != null) {
+                    setState(() => _pickedFile = file);
+                  }
+                } catch (e) {
+                  _showError('خطأ في اختيار الملف: $e');
+                }
+              },
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        
         Expanded(
           child: TextField(
             controller: _controller,
@@ -1296,56 +1457,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ),
           ),
         ),
-        const SizedBox(width: 8),
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: Colors.blue,
-          child: IconButton(
-            icon: const Icon(Icons.attach_file, color: Colors.white),
-            onPressed: () async {
-              try {
-                File? file = await pickFile();
-                if (file != null) {
-                  setState(() => _pickedFile = file);
-                }
-              } catch (e) {
-                _showError('خطأ في اختيار الملف: $e');
-              }
-            },
-          ),
-        ),
-        const SizedBox(width: 6),
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: Colors.blue,
-          child: IconButton(
-            icon: const Icon(Icons.mic, color: Colors.white),
-            onPressed: () {
-              _startRecording();
-            },
-          ),
-        ),
-        const SizedBox(width: 6),
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: Colors.blue,
-          child: IconButton(
-            icon: const Icon(Icons.send, color: Colors.white),
-            onPressed: () {
-              final text = _controller.text.trim();
-              final file = _pickedFile;
-
-              if (file != null) {
-                cubit.sendMedia(file, message: text.isNotEmpty ? text : null);
-                setState(() => _pickedFile = null);
-                _controller.clear();
-              } else if (text.isNotEmpty) {
-                cubit.sendMessage(text);
-                _controller.clear();
-              }
-            },
-          ),
-        ),
       ],
     );
   }
@@ -1362,7 +1473,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: Colors.blue,
+            backgroundColor: Colors.black,
             child: IconButton(
               icon: const Icon(Icons.send, color: Colors.white, size: 20),
               onPressed: () => _sendRecording(cubit),
@@ -1560,8 +1671,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       imagePath = imagePath.substring(5);
     }
 
-    const String baseUrl =
-        'https://cdn-dev.primeacademy.education/primeacademydev';
+    const String baseUrl = 'https://cdn.primeacademy.education/primeacademy';
+    //  'https://cdn-dev.primeacademy.education/primeacademydev';
     return imagePath.startsWith('/')
         ? '$baseUrl$imagePath'
         : '$baseUrl/$imagePath';
@@ -2019,7 +2130,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               minScale: 0.5,
               maxScale: 4.0,
               child: Image.network(
-                imageUrl,
+                buildImageUrl(imageUrl),
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) => const Center(
                   child: Icon(Icons.broken_image, color: Colors.red, size: 100),
@@ -2058,7 +2169,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 borderSide: BorderSide(color: Colors.blue),
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+                borderSide: BorderSide(color: Colors.blue),
               ),
               hintText: 'اكتب رسالتك هنا...',
               hintStyle: TextStyle(color: Colors.grey),

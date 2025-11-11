@@ -3,12 +3,19 @@ class Validators {
     if (value == null || value.isEmpty) {
       return "البريد الإلكتروني مطلوب";
     }
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+   
+    final emailRegex = RegExp(
+      r'^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$',
+    );
+
     if (!emailRegex.hasMatch(value)) {
       return "البريد الإلكتروني غير صحيح";
     }
     return null;
   }
+
+
 
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {

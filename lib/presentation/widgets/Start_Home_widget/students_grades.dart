@@ -19,8 +19,8 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
   int _currentIndex = 0;
   List<dynamic> _certificates = [];
 
-  static const String baseUrl =
-      "https://cdn-dev.primeacademy.education/primeacademydev";
+  // static const String baseUrll =
+  //     "https://cdn-dev.primeacademy.education/primeacademy";
 
   @override
   void initState() {
@@ -52,14 +52,12 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
 
   String _buildImageUrl(String? imagePath) {
     if (imagePath == null || imagePath.isEmpty) return "";
+    if (imagePath.startsWith('http')) return imagePath;
 
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-
+    const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
     return imagePath.startsWith('/')
-        ? baseUrl + imagePath
-        : '$baseUrl/$imagePath';
+        ? "$cdnPrefix$imagePath"
+        : "$cdnPrefix/$imagePath";
   }
 
   @override
@@ -120,7 +118,7 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
             if (_certificates.isEmpty) {
               return Container(
                 padding: const EdgeInsets.symmetric(vertical: 50),
-                color: const Color(0xFF1a1d24),
+                color: Mycolors.cardColor1,
                 child: const Center(
                   child: Column(
                     children: [

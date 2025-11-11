@@ -49,18 +49,26 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
     _timer?.cancel();
   }
 
-  String _buildImageUrl(String? imagePath) {
-    if (imagePath == null || imagePath.isEmpty) return "";
+  // String _buildImageUrl(String? imagePath) {
+  //   if (imagePath == null || imagePath.isEmpty) return "";
 
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
+  //   if (imagePath.startsWith('http')) {
+  //     return imagePath;
+  //   }
 
-    return imagePath.startsWith('/')
-        ? Constants.baseUrl + imagePath
-        : '${Constants.baseUrl}/$imagePath';
-  }
+  //   return imagePath.startsWith('/')
+  //       ? Constants.baseUrl + imagePath
+  //       : '${Constants.baseUrl}/$imagePath';
+  // }
+String _buildImageUrl(String? imagePath) {
+  if (imagePath == null || imagePath.isEmpty) return "";
+  if (imagePath.startsWith('http')) return imagePath;
 
+  const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
+  return imagePath.startsWith('/')
+      ? "$cdnPrefix$imagePath"
+      : "$cdnPrefix/$imagePath";
+}
   void _goToStudentDetail(dynamic student) {
     // إيقاف التايمر مؤقتاً
     _stopTimer();
@@ -124,7 +132,7 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
 
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 50),
-              color: const Color(0xFF1a1d24),
+              color: Mycolors.cardColor1,
               child: Column(
                 children: [
                   // العنوان

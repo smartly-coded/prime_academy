@@ -4,9 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:prime_academy/core/helpers/constants.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
+import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/startScreen/data/models/student_preview_response.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_state.dart';
+import 'package:prime_academy/presentation/Notification/notification_screen.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/preview_header.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/empty_state.dart';
 
@@ -57,7 +60,9 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                   
+                },
                 child: const Text(
                   "حسابي",
                   style: TextStyle(color: Colors.white),
@@ -69,6 +74,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
             icon: const Icon(Icons.notifications_none, color: Colors.white),
             onPressed: () {},
           ),
+                   
         ],
       ),
       body: Directionality(

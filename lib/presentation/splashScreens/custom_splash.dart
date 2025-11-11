@@ -62,9 +62,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
             ..._stars.map((star) => star.buildStar()),
             Center(
               child: Image.asset(
-                'assets/images/logo.png',
-                width: 160,
-                height: 160,
+                'assets/images/footer-logo.webp',
+                width: 250,
+                height: 250,
               ),
             ),
           ],

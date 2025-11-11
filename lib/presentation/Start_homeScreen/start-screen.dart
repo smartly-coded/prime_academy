@@ -72,7 +72,7 @@ class StartPage extends StatelessWidget {
 
   Future<void> openWhatsAppChat() async {
     const String phoneNumber = "96556651979";
-    const String message = "Hello, I want to chat with you!";
+    const String message = "";
 
     final Uri whatsappUrl = Uri.parse(
       "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}",
@@ -90,31 +90,34 @@ class StartPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.5,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
-                child: VideoWithBackground(),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 40.0),
+          child: Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: VideoWithBackground(),
+                ),
               ),
-            ),
 
-            const FeaturesSection(),
+              const FeaturesSection(),
 
-            const VideoSection(),
-            const StudentsSliderSection(),
-            BlocProvider(
-              create: (context) => getIt<TestimonalCubit>(),
-              child: const TestimonialsSection(),
-            ),
+              const VideoSection(),
+              const StudentsSliderSection(),
+              BlocProvider(
+                create: (context) => getIt<TestimonalCubit>(),
+                child: const TestimonialsSection(),
+              ),
 
-            StudentsGreadesSection(),
-            BlocProvider(
-              create: (context) => CommRequestCubit(),
-              child: FooterSection(),
-            ),
-          ],
+              StudentsGreadesSection(),
+              BlocProvider(
+                create: (context) => CommRequestCubit(),
+                child: FooterSection(),
+              ),
+            ],
+          ),
         ),
       ),
 

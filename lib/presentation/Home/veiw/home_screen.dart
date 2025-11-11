@@ -63,7 +63,6 @@
 //         return;
 //       }
 
-   
 //       try {
 //         final loginResponse = LoginResponse.fromJson(jsonDecode(userData));
 //         print("✅ Navigating to HomeScreen from AppLayout");
@@ -250,7 +249,7 @@
 //               SizedBox(height: isMobile ? 20 : 30),
 //               LogoutButton(isMobile: isMobile),
 //               SizedBox(height: isMobile ? 20 : 30),
-               
+
 //               CategoryTabs(
 //                 isMobile: isMobile,
 //                 selectedIndex: selectedIndex,
@@ -302,7 +301,7 @@
 //                               isMobile: isMobile,
 //                               courseId: course.id ?? 0,
 //                                user: widget.user,
-                              
+
 //                             );
 //                           },
 //                         );
@@ -338,8 +337,6 @@
 //       ? Constants.baseUrl + imagePath
 //       : Constants.baseUrl + '/' + imagePath;
 // }
-
-
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -384,111 +381,112 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
       appBar: AppBar(
-  backgroundColor: Colors.black,
-  elevation: 0,
-  automaticallyImplyLeading: false, // علشان ميبقاش في سهم رجوع
-  title: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      // ✅ اللوجو على اليمين
-      Image.asset("assets/images/footer-logo.webp", height: 40),
+        backgroundColor: Mycolors.backgroundColor,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // ✅ اللوجو على اليمين
+            Image.asset("assets/images/footer-logo.webp", height: 40),
 
-      // ✅ الزر والإشعار على الشمال
-      Row(
-        children: [
-          // زر "حسابي"
-          Container(
-            padding: const EdgeInsets.all(2),
-            width: 70,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xff4f2349), Color(0xffa76433)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              width: 50,
-              height: 30,
-              decoration: BoxDecoration(
-                color: const Color(0XFF0f1217),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  context.read<ProfileCubit>().emitprofileState();
-                },
-                child: const Text(
-                  "حسابي",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-
-          // أيقونة النوتيفيكيشن
-          BlocBuilder<NotificationCubit, NotificationState>(
-            builder: (context, state) {
-              bool hasUnread = false;
-              if (state is NotificationLoaded) {
-                hasUnread = state.notifications.any((n) => n.isRead == false);
-              }
-
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xff4f2349), Color(0xffa76433)],
-                      ),
-                      borderRadius: BorderRadius.circular(50),
+            // ✅ الزر والإشعار على الشمال
+            Row(
+              children: [
+                // زر "حسابي"
+                Container(
+                  padding: const EdgeInsets.all(2),
+                  width: 70,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient:  LinearGradient(
+                      colors:Mycolors.primary_color.colors,
                     ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0XFF0f1217),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.notifications_none,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            showNotificationsDialog(context, widget.user);
-                          },
-                        ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Container(
+                    width: 50,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: const Color(0XFF0f1217),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        context.read<ProfileCubit>().emitprofileState();
+                      },
+                      child: const Text(
+                        "حسابي",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
-                  if (hasUnread)
-                    Positioned(
-                      right: 4,
-                      top: -1,
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
+                ),
+                const SizedBox(width: 10),
+
+                BlocBuilder<NotificationCubit, NotificationState>(
+                  builder: (context, state) {
+                    bool hasUnread = false;
+                    if (state is NotificationLoaded) {
+                      hasUnread = state.notifications.any(
+                        (n) => n.isRead == false,
+                      );
+                    }
+
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            gradient:  LinearGradient(
+                               colors:Mycolors.primary_color.colors,
+                            ),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0XFF161c29),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.notifications_none,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  showNotificationsDialog(context, widget.user);
+                                },
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
+                        if (hasUnread)
+                          Positioned(
+                            right: 4,
+                            top: -1,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    ],
-  ),
-),
 
       body: Directionality(
         textDirection: TextDirection.rtl,
@@ -515,7 +513,6 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: isMobile ? 20 : 30),
 
-              // عرض المحتوى حسب التاب المختار
               if (selectedIndex == 0) ...[
                 BlocBuilder<ProfileCubit, ProfileState>(
                   builder: (context, state) {
@@ -539,11 +536,11 @@ class _HomePageState extends State<HomePage> {
                           physics: const NeverScrollableScrollPhysics(),
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: isMobile ? 1 : 2,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20,
-                            childAspectRatio: isMobile ? 0.9 : 0.8,
-                          ),
+                                crossAxisCount: isMobile ? 1 : 2,
+                                crossAxisSpacing: 20,
+                                mainAxisSpacing: 20,
+                                childAspectRatio: isMobile ? 0.9 : 0.8,
+                              ),
                           itemCount: profile.courses!.length,
                           itemBuilder: (context, index) {
                             final course = profile.courses![index];
@@ -582,12 +579,10 @@ class _HomePageState extends State<HomePage> {
 
 String buildImageUrl(String? imagePath) {
   if (imagePath == null || imagePath.isEmpty) return "";
+  if (imagePath.startsWith('http')) return imagePath;
 
-  if (imagePath.startsWith('http')) {
-    return imagePath;
-  }
-
-  return imagePath.startsWith('/')
-      ? Constants.baseUrl + imagePath
-      : '${Constants.baseUrl}/$imagePath';
+  const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
+  final fixedPath = imagePath.startsWith('/') ? imagePath : '/$imagePath';
+  return "$cdnPrefix$fixedPath";
 }
+

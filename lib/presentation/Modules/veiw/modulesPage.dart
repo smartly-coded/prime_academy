@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/CoursesModules/data/repo/modules_repository.dart';
 import 'package:prime_academy/features/CoursesModules/logic/modules_cubit.dart';
+import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
+import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
+import 'package:prime_academy/presentation/Notification/notification_screen.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/module_tile.dart';
 
 class ModulesPage extends StatelessWidget {
@@ -45,7 +48,7 @@ class ModulesPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () { context.read<ProfileCubit>().emitprofileState();},
                   child: const Text(
                     "حسابي",
                     style: TextStyle(color: Colors.white),
@@ -53,10 +56,69 @@ class ModulesPage extends StatelessWidget {
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.notifications_none, color: Colors.white),
-              onPressed: () {},
-            ),
+            // IconButton(
+            //   icon: const Icon(Icons.notifications_none, color: Colors.white),
+            //   onPressed: () {},
+            // ),
+            SizedBox(width: 8),
+                BlocBuilder<NotificationCubit, NotificationState>(
+                  builder: (context, state) {
+                    bool hasUnread = false;
+                    if (state is NotificationLoaded) {
+                      hasUnread = state.notifications.any(
+                        (n) => n.isRead == false,
+                      );
+                    }
+
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            gradient:  LinearGradient(
+                               colors:Mycolors.primary_color.colors,
+                            ),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0XFF161c29),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.notifications_none,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  showNotificationsDialog(context,user);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (hasUnread)
+                          Positioned(
+                            right: 4,
+                            top: -1,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
           ],
         ),
         body: BlocBuilder<ModulesCubit, ModulesState>(

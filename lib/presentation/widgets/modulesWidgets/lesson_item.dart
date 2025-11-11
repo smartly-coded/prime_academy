@@ -7,7 +7,7 @@ class LessonItem extends StatelessWidget {
   final String? time;
   final LessonType type;
   final VoidCallback? onTap;
-  final bool isSelected; // إضافة خاصية التحديد
+  final bool isSelected;
 
   const LessonItem({
     super.key,
@@ -15,7 +15,7 @@ class LessonItem extends StatelessWidget {
     this.time,
     required this.type,
     required this.onTap,
-    this.isSelected = false, // القيمة الافتراضية false
+    this.isSelected = false, 
   });
 
   @override
@@ -23,15 +23,15 @@ class LessonItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200), // تأثير الانتقال السلس
+        duration: const Duration(milliseconds: 200), 
         decoration: BoxDecoration(
-          // تغيير اللون حسب حالة التحديد
+          
           color: isSelected
-              ? Mycolors.cardColor1.withOpacity(0.3) // لون مختلف للعنصر المحدد
+              ? Mycolors.cardColor1.withOpacity(0.3) 
               : Mycolors.darkblue,
           border: Border(
             top: const BorderSide(color: Colors.white12, width: 1.0),
-            // إضافة حدود جانبية للعنصر المحدد
+            
             left: isSelected
                 ? const BorderSide(color: Colors.white, width: 3.0)
                 : BorderSide.none,
@@ -68,7 +68,7 @@ class LessonItem extends StatelessWidget {
               ),
               const SizedBox(width: 12),
             ] else ...[
-              // للمصادر الخارجية
+              
               Column(
                 children: [
                   Icon(

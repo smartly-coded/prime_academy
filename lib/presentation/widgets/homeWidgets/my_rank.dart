@@ -20,7 +20,17 @@ class RankingWidget extends StatefulWidget {
 class _RankingWidgetState extends State<RankingWidget> {
   String? selectedCourse;
   int? selectedCourseId;
+String buildImageUrl(String? imagePath) {
+  if (imagePath == null || imagePath.isEmpty) return "";
 
+  if (imagePath.startsWith('http')) return imagePath;
+
+  const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
+
+  return imagePath.startsWith('/')
+      ? "$cdnPrefix$imagePath"
+      : "$cdnPrefix/$imagePath";
+}
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileCubit, ProfileState>(
@@ -168,8 +178,8 @@ class _RankingWidgetState extends State<RankingWidget> {
               final int rank = ranking.rank;
               final int points = ranking.points;
               final String name = "${ranking.firstname} ${ranking.lastname}";
-              final String? image = ranking.image?.url;
-
+              // final String? image = ranking.image?.url;
+                 final String? imageUrl = buildImageUrl(ranking.image?.url);
               // ألوان الكؤوس
               Color? trophyColor;
               if (rank == 1) trophyColor = Mycolors.gold;
@@ -195,9 +205,9 @@ class _RankingWidgetState extends State<RankingWidget> {
                       radius: 16,
                       backgroundColor: Colors.grey[800],
                       child: ClipOval(
-                        child: image != null
+                        child: imageUrl != null
                             ? Image.network(
-                                image,
+                                imageUrl,
                                 width: 32,
                                 height: 32,
                                 fit: BoxFit.cover,
