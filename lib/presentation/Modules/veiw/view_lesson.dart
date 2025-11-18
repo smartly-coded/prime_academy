@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,13 +64,12 @@ class _ViewModuleState extends State<ViewModule> {
   final Set<int> _shownQuestions = {};
   Timer? _questionCheckTimer;
   bool _isPlayerReady = false;
-  String _currentLessonTitle = ""; // متغير لحفظ عنوان الدرس الحالي
+  String _currentLessonTitle = "";
   Set<int> _rewardedLessons = {};
   bool _isFirstVideo = false;
   bool _hasShownRatingPopup = false;
   Set<String> _shownRatingForCourses = {};
   Set<String> _shownQuestionsGlobally = {};
-  // تحديث العنوان عند تغيير الدرس
   void _updateCurrentLessonTitle(String title) {
     setState(() {
       _currentLessonTitle = title;
@@ -642,7 +642,6 @@ class _ViewModuleState extends State<ViewModule> {
     }
   }
 
-  // بناء الأزرار مع responsive design
   Widget _buildActionButtons(DeviceType deviceType) {
     double fontSize;
     EdgeInsets padding;
@@ -651,25 +650,25 @@ class _ViewModuleState extends State<ViewModule> {
 
     switch (deviceType) {
       case DeviceType.mobilePortrait:
-        fontSize = 12;
-        padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+        fontSize = 14;
+        padding = const EdgeInsets.symmetric(horizontal: 5, vertical: 8);
         spacing = 8;
         buttonHeight = 60;
         break;
       case DeviceType.mobileLandscape:
-        fontSize = 11;
+        fontSize = 20;
         padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 6);
         spacing = 6;
         buttonHeight = 50;
         break;
       case DeviceType.tablet:
-        fontSize = 14;
+        fontSize = 20;
         padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 10);
         spacing = 10;
         buttonHeight = 70;
         break;
       case DeviceType.desktop:
-        fontSize = 15;
+        fontSize = 20;
         padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 12);
         spacing = 12;
         buttonHeight = 80;
@@ -678,93 +677,397 @@ class _ViewModuleState extends State<ViewModule> {
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      height: 80,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _buildButton("اسأل الذكاء الاصطناعي", "assets/icons/bot.png", () {
-              _openExternalLink("https://chatgpt.com/");
-            }),
-            _buildButton("اسأل المعلم", "assets/icons/message.png", () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider(
-                    create: (context) => ChatCubit(
-                      context.read<ChatRepo>(), // ✅ بجيب الـ repo من الـ main
-                      _currentChatId, // رقم الشات
-                      widget.user,
-                      //    widget.courseId, // اليوزر اللى جه من loginResponse
-                    )..loadChat(),
-                    child: ChatScreen(
-                      chatId: _currentChatId,
-                      user: widget.user,
-                      //  courseId: widget.courseId,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              BlocBuilder<ModuleLessonsCubit, ModuleLessonsState>(
+                builder: (context, state) {
+                  return _buildButton(
+                    "الملازم الالكترونيه",
+                    "assets/icons/open-book.png",
+                    () {
+                      state.when(
+                        initial: () {},
+                        loading: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('جاري تحميل الملازم...'),
+                            ),
+                          );
+                        },
+                        success: (data) {
+                          final materials = data.materials ?? [];
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  MaterialsPage(materials: materials),
+                            ),
+                          );
+                        },
+                        error: (errorMsg) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('تعذر تحميل الملازم 😔 $errorMsg'),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    fontSize,
+                    padding,
+                    buttonHeight,
+                  );
+                },
+              ),
+              SizedBox(width: spacing),
+              _buildButton(
+                "الفيديوهات",
+                "assets/icons/play.png",
+                () {},
+                fontSize,
+                padding,
+                buttonHeight,
+              ),
+            ],
+          ),
+          SizedBox(height: spacing),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildButton(
+                "اسأل الذكاء الاصطناعي",
+                "assets/icons/bot.png",
+                () {
+                  _openExternalLink("https://chatgpt.com/");
+                },
+                fontSize,
+                padding,
+                buttonHeight,
+              ),
+              SizedBox(width: spacing),
+              _buildButton(
+                "اسأل المعلم",
+                "assets/icons/message.png",
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (context) => ChatCubit(
+                          context.read<ChatRepo>(),
+                          _currentChatId,
+                          widget.user,
+                        )..loadChat(),
+                        child: ChatScreen(
+                          chatId: _currentChatId,
+                          user: widget.user,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
-            }),
-            // _buildButton(
-            //   "الملازم الالكترونيه",
-            //   "assets/icons/open-book.png",
-            //   () {
-
-            //   },
-
-            //),
-         BlocBuilder<ModuleLessonsCubit, ModuleLessonsState>(
-  builder: (context, state) {
-    return _buildButton(
-      "الملازم الالكترونيه",
-      "assets/icons/open-book.png",
-      () {
-        state.when(
-          initial: () {
-            // حالة البداية، ممكن تسيبيها فارغة
-          },
-          loading: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('جاري تحميل الملازم...'),
+                  );
+                },
+                fontSize,
+                padding,
+                buttonHeight,
               ),
-            );
-          },
-          success: (data) {
-            // هنا data هو ModuleLessonsResponse مباشرة
-            final materials = data.materials ?? [];
-
-            // الانتقال للصفحة الكاملة بدل الديالوج
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MaterialsPage(materials: materials),
-              ),
-            );
-          },
-          error: (errorMsg) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('تعذر تحميل الملازم 😔 $errorMsg'),
-              ),
-            );
-          },
-        );
-      },
-    );
-  },
-),
-
-
-            _buildButton("الفيديوهات", "assets/icons/play.png", () {}),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
+  // دالة بناء الزر مع إضافة الباراميترات الجديدة
+  Widget _buildButton(
+    String text,
+    String imagePath,
+    VoidCallback onTap,
+    double fontSize,
+    EdgeInsets padding,
+    double buttonHeight,
+  ) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          // width: 160,
+          margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          padding: padding,
+          decoration: BoxDecoration(
+            color: Mycolors.cardColor1,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  text,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontFamily: 'Cairo',
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              SizedBox(width: 8),
+              Image.asset(imagePath, width: 20, height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  // بناء الأزرار مع responsive design
+  //   Widget _buildActionButtons(DeviceType deviceType) {
+  //     double fontSize;
+  //     EdgeInsets padding;
+  //     double spacing;
+  //     double buttonHeight;
+
+  //     switch (deviceType) {
+  //       case DeviceType.mobilePortrait:
+  //         fontSize = 12;
+  //         padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+  //         spacing = 8;
+  //         buttonHeight = 60;
+  //         break;
+  //       case DeviceType.mobileLandscape:
+  //         fontSize = 11;
+  //         padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 6);
+  //         spacing = 6;
+  //         buttonHeight = 50;
+  //         break;
+  //       case DeviceType.tablet:
+  //         fontSize = 14;
+  //         padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 10);
+  //         spacing = 10;
+  //         buttonHeight = 70;
+  //         break;
+  //       case DeviceType.desktop:
+  //         fontSize = 15;
+  //         padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 12);
+  //         spacing = 12;
+  //         buttonHeight = 80;
+  //         break;
+  //     }
+
+  //     return Container(
+  //       padding: EdgeInsets.symmetric(horizontal: 16),
+  //       height: 80,
+  //       child: SingleChildScrollView(
+  //         scrollDirection: Axis.horizontal,
+  //         child: Row(
+  //           children: [
+  //             _buildButton("اسأل الذكاء الاصطناعي", "assets/icons/bot.png", () {
+  //               _openExternalLink("https://chatgpt.com/");
+  //             }),
+  //             _buildButton("اسأل المعلم", "assets/icons/message.png", () {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: (_) => BlocProvider(
+  //                     create: (context) => ChatCubit(
+  //                       context.read<ChatRepo>(), // ✅ بجيب الـ repo من الـ main
+  //                       _currentChatId, // رقم الشات
+  //                       widget.user,
+  //                       //    widget.courseId, // اليوزر اللى جه من loginResponse
+  //                     )..loadChat(),
+  //                     child: ChatScreen(
+  //                       chatId: _currentChatId,
+  //                       user: widget.user,
+  //                       //  courseId: widget.courseId,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               );
+  //             }),
+  //             // _buildButton(
+  //             //   "الملازم الالكترونيه",
+  //             //   "assets/icons/open-book.png",
+  //             //   () {
+
+  //             //   },
+
+  //             //),
+  //          BlocBuilder<ModuleLessonsCubit, ModuleLessonsState>(
+  //   builder: (context, state) {
+  //     return _buildButton(
+  //       "الملازم الالكترونيه",
+  //       "assets/icons/open-book.png",
+  //       () {
+  //         state.when(
+  //           initial: () {
+  //             // حالة البداية، ممكن تسيبيها فارغة
+  //           },
+  //           loading: () {
+  //             ScaffoldMessenger.of(context).showSnackBar(
+  //               const SnackBar(
+  //                 content: Text('جاري تحميل الملازم...'),
+  //               ),
+  //             );
+  //           },
+  //           success: (data) {
+  //             // هنا data هو ModuleLessonsResponse مباشرة
+  //             final materials = data.materials ?? [];
+
+  //             // الانتقال للصفحة الكاملة بدل الديالوج
+  //             Navigator.push(
+  //               context,
+  //               MaterialPageRoute(
+  //                 builder: (_) => MaterialsPage(materials: materials),
+  //               ),
+  //             );
+  //           },
+  //           error: (errorMsg) {
+  //             ScaffoldMessenger.of(context).showSnackBar(
+  //               SnackBar(
+  //                 content: Text('تعذر تحميل الملازم 😔 $errorMsg'),
+  //               ),
+  //             );
+  //           },
+  //         );
+  //       },
+  //     );
+  //   },
+  // ),
+
+  //             _buildButton("الفيديوهات", "assets/icons/play.png", () {}),
+  //           ],
+  //         ),
+  //       ),
+  //     );
+  //   }
+
   // بناء قائمة الدروس مع responsive design
+  // Widget _buildLessonsList(
+  //   List<dynamic> lessons,
+  //   List<dynamic> externalSources,
+  //   DeviceType deviceType,
+  // ) {
+  //   double borderRadius;
+  //   EdgeInsets contentPadding;
+  //   double fontSize;
+
+  //   switch (deviceType) {
+  //     case DeviceType.mobilePortrait:
+  //       borderRadius = 20;
+  //       contentPadding = const EdgeInsets.all(16);
+  //       fontSize = 16;
+  //       break;
+  //     case DeviceType.mobileLandscape:
+  //       borderRadius = 16;
+  //       contentPadding = const EdgeInsets.all(12);
+  //       fontSize = 14;
+  //       break;
+  //     case DeviceType.tablet:
+  //       borderRadius = 24;
+  //       contentPadding = const EdgeInsets.all(20);
+  //       fontSize = 18;
+  //       break;
+  //     case DeviceType.desktop:
+  //       borderRadius = 28;
+  //       contentPadding = const EdgeInsets.all(24);
+  //       fontSize = 20;
+  //       break;
+  //   }
+
+  //   return Expanded(
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         color: Mycolors.cardColor1,
+  //         borderRadius: BorderRadius.only(
+  //           topLeft: Radius.circular(borderRadius),
+  //           topRight: Radius.circular(borderRadius),
+  //         ),
+  //       ),
+  //       child: Column(
+  //         children: [
+  //           Container(
+  //             padding: contentPadding,
+  //             child: Center(
+  //               child: Text(
+  //                 "الحصص المسجله",
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontSize: fontSize,
+  //                   fontWeight: FontWeight.bold,
+  //                   fontFamily: 'Cairo',
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //           const Divider(color: Colors.white12, height: 1),
+  //           Expanded(
+  //             child: BlocBuilder<MarkAnsweredCubit, MarkAnsweredState>(
+  //               builder: (context, state) {
+  //                 return ListView.builder(
+  //                   itemCount: (lessons.length + externalSources.length),
+  //                   itemBuilder: (context, index) {
+  //                     if (index < lessons.length) {
+  //                       final item = lessons[index];
+  //                       final lesson = item.lesson!;
+  //                       final isSelected = _currentSelectedItemId == item.id;
+  //                       final isRewarded = _rewardedLessons.contains(item.id);
+
+  //                       return RecordedLessonItem(
+  //                         title: lesson.title,
+  //                         type: item.itemType,
+  //                         isSelected: isSelected,
+  //                         lessonRewarded: isRewarded, // تمرير حالة المكافأة
+  //                         onTap: () {
+  //                           if (!mounted || _isDisposing) return;
+
+  //                           print('Tapping on lesson: ${item.id}');
+  //                           setState(() {
+  //                             _currentSelectedItemId = item.id;
+  //                             _currentLessonTitle = lesson.title;
+  //                           });
+
+  //                           _questionCheckTimer?.cancel();
+  //                           context
+  //                               .read<LessonDetailsCubit>()
+  //                               .emitLessonDetailsStates(item.id);
+  //                         },
+  //                       );
+  //                     } else {
+  //                       final sourceIndex = index - lessons.length;
+  //                       final item = externalSources[sourceIndex];
+  //                       final externalSource = item.externalSource!;
+  //                       final isSelected = _currentSelectedItemId == item.id;
+
+  //                       return RecordedLessonItem(
+  //                         title: externalSource.title,
+  //                         type: item.itemType,
+  //                         isSelected: isSelected,
+  //                         lessonRewarded:
+  //                             false, // المصادر الخارجية مافيهاش مكافآت
+  //                         onTap: () {
+  //                           if (!mounted || _isDisposing) return;
+
+  //                           setState(() {
+  //                             _currentSelectedItemId = item.id;
+  //                           });
+  //                           _openExternalLink(externalSource.url);
+  //                         },
+  //                       );
+  //                     }
+  //                   },
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
   Widget _buildLessonsList(
     List<dynamic> lessons,
     List<dynamic> externalSources,
@@ -773,34 +1076,39 @@ class _ViewModuleState extends State<ViewModule> {
     double borderRadius;
     EdgeInsets contentPadding;
     double fontSize;
+    double titleFontSize;
 
     switch (deviceType) {
       case DeviceType.mobilePortrait:
         borderRadius = 20;
         contentPadding = const EdgeInsets.all(16);
-        fontSize = 16;
+        fontSize = 14;
+        titleFontSize = 20;
         break;
       case DeviceType.mobileLandscape:
         borderRadius = 16;
         contentPadding = const EdgeInsets.all(12);
-        fontSize = 14;
+        fontSize = 12;
+        titleFontSize = 18;
         break;
       case DeviceType.tablet:
         borderRadius = 24;
         contentPadding = const EdgeInsets.all(20);
-        fontSize = 18;
+        fontSize = 16;
+        titleFontSize = 24;
         break;
       case DeviceType.desktop:
         borderRadius = 28;
         contentPadding = const EdgeInsets.all(24);
-        fontSize = 20;
+        fontSize = 18;
+        titleFontSize = 26;
         break;
     }
 
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
-          color: Mycolors.darkblue,
+          color: Mycolors.cardColor1,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(borderRadius),
             topRight: Radius.circular(borderRadius),
@@ -809,20 +1117,25 @@ class _ViewModuleState extends State<ViewModule> {
         child: Column(
           children: [
             Container(
-              padding: contentPadding,
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Colors.amber, width: 2),
+                ),
+              ),
               child: Center(
                 child: Text(
-                  "الحصص المسجله",
+                  "الحصص المسجلة",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: fontSize,
+                    fontSize: titleFontSize,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Cairo',
                   ),
                 ),
               ),
             ),
-            const Divider(color: Colors.white12, height: 1),
+
             Expanded(
               child: BlocBuilder<MarkAnsweredCubit, MarkAnsweredState>(
                 builder: (context, state) {
@@ -835,15 +1148,29 @@ class _ViewModuleState extends State<ViewModule> {
                         final isSelected = _currentSelectedItemId == item.id;
                         final isRewarded = _rewardedLessons.contains(item.id);
 
-                        return RecordedLessonItem(
+                        String duration = _formatVideoLength(
+                          lesson.videoLength,
+                        );
+                        String? thumbnailUrl = lesson.thumbnail;
+                        debugPrint(
+                          "-----------------------------------------------------------THUMBNAIL URL = $thumbnailUrl",
+                        );
+
+                        log(
+                          "LESSON INDEX $index — RAW THUMBNAIL = ${lesson.thumbnail}",
+                        );
+
+                        return _buildCustomLessonItem(
                           title: lesson.title,
-                          type: item.itemType,
+                          duration: duration,
+                          thumbnailUrl: thumbnailUrl,
+                          isVideo: true,
                           isSelected: isSelected,
-                          lessonRewarded: isRewarded, // تمرير حالة المكافأة
+                          isRewarded: isRewarded,
+                          index: index,
                           onTap: () {
                             if (!mounted || _isDisposing) return;
 
-                            print('Tapping on lesson: ${item.id}');
                             setState(() {
                               _currentSelectedItemId = item.id;
                               _currentLessonTitle = lesson.title;
@@ -854,6 +1181,7 @@ class _ViewModuleState extends State<ViewModule> {
                                 .read<LessonDetailsCubit>()
                                 .emitLessonDetailsStates(item.id);
                           },
+                          deviceType: deviceType,
                         );
                       } else {
                         final sourceIndex = index - lessons.length;
@@ -861,12 +1189,14 @@ class _ViewModuleState extends State<ViewModule> {
                         final externalSource = item.externalSource!;
                         final isSelected = _currentSelectedItemId == item.id;
 
-                        return RecordedLessonItem(
+                        return _buildCustomLessonItem(
                           title: externalSource.title,
-                          type: item.itemType,
+                          duration: "رابط",
+                          thumbnailUrl: null,
+                          isVideo: false,
                           isSelected: isSelected,
-                          lessonRewarded:
-                              false, // المصادر الخارجية مافيهاش مكافآت
+                          isRewarded: false,
+                          index: index,
                           onTap: () {
                             if (!mounted || _isDisposing) return;
 
@@ -875,6 +1205,7 @@ class _ViewModuleState extends State<ViewModule> {
                             });
                             _openExternalLink(externalSource.url);
                           },
+                          deviceType: deviceType,
                         );
                       }
                     },
@@ -884,6 +1215,248 @@ class _ViewModuleState extends State<ViewModule> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  String _formatVideoLength(int videoLengthInSeconds) {
+    try {
+      int minutes = videoLengthInSeconds ~/ 60;
+      int seconds = videoLengthInSeconds % 60;
+      return "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+    } catch (e) {
+      return "00:00";
+    }
+  }
+
+  Widget _buildCustomLessonItem({
+    required String title,
+    required String duration,
+    required String? thumbnailUrl,
+    required bool isVideo,
+    required bool isSelected,
+    required bool isRewarded,
+    required int index,
+    required VoidCallback onTap,
+    required DeviceType deviceType,
+  }) {
+    double itemPadding;
+    double iconSize;
+
+    switch (deviceType) {
+      case DeviceType.mobilePortrait:
+        itemPadding = 16;
+        iconSize = 24;
+        break;
+      case DeviceType.mobileLandscape:
+        itemPadding = 12;
+        iconSize = 20;
+        break;
+      case DeviceType.tablet:
+        itemPadding = 20;
+        iconSize = 28;
+        break;
+      case DeviceType.desktop:
+        itemPadding = 24;
+        iconSize = 32;
+        break;
+    }
+
+    Color? cupColor;
+    if (index < 3 && isVideo) {
+      switch (index) {
+        case 0:
+          cupColor = Color(0xFFFFD700);
+          break;
+        case 1:
+          cupColor = Color(0xFFC0C0C0);
+          break;
+        case 2:
+          cupColor = Color(0xFFCD7F32);
+          break;
+      }
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? Color(0xFF2A4D7A) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(itemPadding),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            textDirection: TextDirection.rtl,
+            children: [
+              _buildVideoThumbnailWithDuration(
+                thumbnailUrl: thumbnailUrl,
+                duration: duration,
+                isVideo: isVideo,
+                iconSize: iconSize,
+              ),
+
+              SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      title,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: deviceType == DeviceType.mobilePortrait
+                            ? 14
+                            : 16,
+                        fontFamily: 'Cairo',
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4),
+                    if (isVideo)
+                      Text(
+                        duration,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: deviceType == DeviceType.mobilePortrait
+                              ? 12
+                              : 14,
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              if (cupColor != null) ...[
+                SizedBox(width: 8),
+                Icon(Icons.emoji_events, color: cupColor, size: iconSize),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoThumbnailWithDuration({
+    required String? thumbnailUrl,
+    required String duration,
+    required bool isVideo,
+    required double iconSize,
+  }) {
+    if (isVideo && thumbnailUrl != null && thumbnailUrl.isNotEmpty) {
+      thumbnailUrl =
+          "https://cdn.primeacademy.education/primeacademy$thumbnailUrl";
+      return Container(
+        width: 80,
+        height: 50,
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                thumbnailUrl,
+                width: 80,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildPlaceholderThumbnail(
+                    isVideo,
+                    iconSize,
+                    duration,
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return _buildPlaceholderThumbnail(
+                    isVideo,
+                    iconSize,
+                    duration,
+                  );
+                },
+              ),
+            ),
+
+            Positioned(
+              bottom: 4,
+              left: 4,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  duration,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+    }
+  }
+
+  Widget _buildPlaceholderThumbnail(
+    bool isVideo,
+    double iconSize,
+    String duration,
+  ) {
+    return Container(
+      width: 80,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Color(0xFF1E2A3A),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Stack(
+        children: [
+          Center(
+            child: Icon(
+              isVideo ? Icons.play_arrow : Icons.link,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+
+          if (isVideo)
+            Positioned(
+              bottom: 4,
+              left: 4,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  duration,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -1329,38 +1902,38 @@ class _ViewModuleState extends State<ViewModule> {
     );
   }
 
-  Widget _buildButton(String text, String imagePath, VoidCallback ontap) {
-    return GestureDetector(
-      onTap: ontap,
-      child: Container(
-        width: 170,
-        margin: EdgeInsets.symmetric(horizontal: 6),
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-        decoration: BoxDecoration(
-          color: Mycolors.cardColor1,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                textAlign: TextAlign.right,
-                text,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontFamily: 'Cairo',
-                  color: Colors.white,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            SizedBox(width: 8),
-            Image.asset(imagePath, width: 20, height: 20),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildButton(String text, String imagePath, VoidCallback ontap) {
+  //   return GestureDetector(
+  //     onTap: ontap,
+  //     child: Container(
+  //       width: 170,
+  //       margin: EdgeInsets.symmetric(horizontal: 6),
+  //       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+  //       decoration: BoxDecoration(
+  //         color: Mycolors.cardColor1,
+  //         borderRadius: BorderRadius.circular(12),
+  //       ),
+  //       child: Row(
+  //         children: [
+  //           Expanded(
+  //             child: Text(
+  //               textAlign: TextAlign.right,
+  //               text,
+  //               style: TextStyle(
+  //                 fontSize: 13,
+  //                 fontFamily: 'Cairo',
+  //                 color: Colors.white,
+  //               ),
+  //               overflow: TextOverflow.ellipsis,
+  //             ),
+  //           ),
+  //           SizedBox(width: 8),
+  //           Image.asset(imagePath, width: 20, height: 20),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 // enum لتحديد نوع الجهاز

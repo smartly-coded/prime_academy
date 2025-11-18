@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 Widget buildTextSection(
   BoxConstraints constraints,
@@ -16,24 +17,22 @@ Widget buildTextSection(
       Align(
         alignment: Alignment.centerRight,
         child: Container(
-          padding: EdgeInsets.all(3), // عرض البوردر
+          padding: EdgeInsets.all(3),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xff4f2349), Color(0xffa76433)],
-            ),
+            gradient: LinearGradient(colors: Mycolors.primary_color.colors),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
             decoration: BoxDecoration(
-              color: Color(0XFF0f1217), // لون الخلفية الداخلية
-              borderRadius: BorderRadius.circular(7), // أصغر من الخارجي بـ 3px
+              color: Color(0XFF0f1217),
+              borderRadius: BorderRadius.circular(7),
             ),
             child: Directionality(
               textDirection: TextDirection.rtl,
               child: Text(
                 mainTitle,
-                textAlign: TextAlign.start,
+                textAlign: TextAlign.end,
                 style: TextStyle(
                   fontSize: getResponsiveFontSize(context, fontSize: 18),
                   fontWeight: FontWeight.bold,

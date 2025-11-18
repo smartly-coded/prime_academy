@@ -60,12 +60,13 @@ import 'package:prime_academy/features/start_CommRequest/logic/CommRequest_cubit
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubit.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/Feature_section.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/footer_section.dart';
+import 'package:prime_academy/presentation/widgets/Start_Home_widget/gifSection1.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/student_opinion.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/students_grades.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/students_slider_section.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/video_section.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/VideoWithBackground.dart';
-import 'package:url_launcher/url_launcher.dart'; // ✅ مهم للواتساب
+import 'package:url_launcher/url_launcher.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});
@@ -103,8 +104,30 @@ class StartPage extends StatelessWidget {
               ),
 
               const FeaturesSection(),
+              GifSection(
+                title: " برايم أكاديمي",
+                subtitle: " تلم لك كل دروسك بالشكل الذي تبيه و على مزاجك بعد! ",
+                gifPath: "assets/Gifs/splash1.gif",
+                smallIconPath: "assets/icons/banner.jpg",
+                titleWidth: MediaQuery.of(context).size.width * 0.8,
+              ),
 
               const VideoSection(),
+              GifSection(
+                title: "في برايم اكاديمي ",
+                subtitle: "تدري شنو؟ النجاح صار مرررره سهل \n!",
+                gifPath: "assets/Gifs/onboarding.gif",
+                smallIconPath: "assets/icons/banner.jpg",
+                overlapOffset: 20,
+              ),
+              GifSection(
+                title: "في برايم اكاديمي ",
+                subtitle: "هدفنا اخراج جيل جديد",
+                gifPath: "assets/Gifs/splash2.gif",
+                smallIconPath: "assets/icons/banner3.png",
+                backgroundColor: Color(0xff12161f),
+                overlapOffset: 50,
+              ),
               const StudentsSliderSection(),
               BlocProvider(
                 create: (context) => getIt<TestimonalCubit>(),

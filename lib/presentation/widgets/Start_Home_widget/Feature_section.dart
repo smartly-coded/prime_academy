@@ -13,11 +13,16 @@ class FeaturesSection extends StatelessWidget {
     return Container(
       color: Mycolors.backgroundColor,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            buildTextWithBorder("ابدأ بالتعلم مع برايم أكاديمي", "", context),
+            buildTextWithBorder(
+              "ابدأ بالتعلم مع برايم أكاديمي",
+              "",
+              context,
+              containerWidth: isMobile ? width * 0.8 : width * 0.5,
+            ),
 
             const SizedBox(height: 30),
             GridView.count(
@@ -93,7 +98,7 @@ class FeatureCard extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Cairo',
                 color: Colors.white,
@@ -107,7 +112,7 @@ class FeatureCard extends StatelessWidget {
                 child: Text(
                   description,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     color: Colors.white70,
                     fontFamily: 'Cairo',
                   ),

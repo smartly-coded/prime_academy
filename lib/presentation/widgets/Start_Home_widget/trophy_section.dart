@@ -192,7 +192,12 @@ class TrophySection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          buildTextWithBorder("نافس و تعلم", "هدفنا إخراج جيل جديد", context),
+          buildTextWithBorder(
+            "نافس و تعلم",
+            "هدفنا إخراج جيل جديد",
+            context,
+            containerWidth: MediaQuery.of(context).size.width * 0.4,
+          ),
           const SizedBox(height: 15),
           Row(
             children: [
