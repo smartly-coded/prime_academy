@@ -614,8 +614,7 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
                         "شهادات طلابنا ",
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
+                          // fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
@@ -626,7 +625,7 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 36,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -771,7 +770,7 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: height * 0.05,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,

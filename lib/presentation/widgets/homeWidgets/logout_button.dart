@@ -32,7 +32,6 @@ class LogoutButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: isMobile ? 14 : 16,
                 color: Colors.white,
-                fontFamily: 'Cairo',
               ),
             ),
             

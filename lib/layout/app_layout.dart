@@ -296,9 +296,7 @@ class _AppLayoutState extends State<AppLayout> {
     _loadUserData();
   }
 
- 
   Future<void> _loadUserData() async {
-    
     if (widget.user != null) {
       setState(() {
         _currentUser = widget.user;
@@ -306,7 +304,6 @@ class _AppLayoutState extends State<AppLayout> {
       return;
     }
 
-    
     final loginCubit = context.read<LoginCubit>();
     final savedUser = await loginCubit.loadSavedUser();
 
@@ -314,7 +311,7 @@ class _AppLayoutState extends State<AppLayout> {
       setState(() {
         _currentUser = savedUser;
       });
-      
+
       loginCubit.currentUser = savedUser;
     }
   }
@@ -336,17 +333,15 @@ class _AppLayoutState extends State<AppLayout> {
       child: StartPage(),
     ),
     AboutUsPage(),
-    
+
     ContactUsPage(),
   ];
-
 
   Future<void> _handleAccountButton() async {
     try {
       const storage = FlutterSecureStorage();
       final accessToken = await storage.read(key: "accessToken");
 
-     
       if (accessToken == null || accessToken.isEmpty) {
         print("⏩ No accessToken, navigating to LoginScreen");
         if (mounted) {
@@ -354,7 +349,6 @@ class _AppLayoutState extends State<AppLayout> {
         }
         return;
       }
-
 
       final userData = await storage.read(key: "userData");
 
@@ -401,20 +395,18 @@ class _AppLayoutState extends State<AppLayout> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Mycolors.backgroundColor ,
+        backgroundColor: Mycolors.backgroundColor,
         appBar: AppBar(
-          backgroundColor: Mycolors.backgroundColor ,
+          backgroundColor: Mycolors.backgroundColor,
           elevation: 0,
           title: Image.asset("assets/images/footer-logo.webp", height: 40),
           actions: [
-            
             Container(
               padding: EdgeInsets.all(2),
               width: 70,
               height: 40,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                       colors:Mycolors.primary_color.colors,                ),
+                gradient: LinearGradient(colors: Mycolors.primary_color.colors),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Container(
@@ -425,58 +417,60 @@ class _AppLayoutState extends State<AppLayout> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: TextButton(
-                  onPressed: _handleAccountButton, // 🔥 استخدم الدالة الجديدة
+                  onPressed: _handleAccountButton,
                   child: const Text(
                     "حسابي",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 10),
-          //   Container(
-          //   margin: EdgeInsets.only(left: 6, top: 8, bottom: 8),
-          //   padding: EdgeInsets.all(2),
-          //   decoration: BoxDecoration(
-          //     gradient: LinearGradient(
-          //       colors:Mycolors.primary_color.colors,
-          //     ),
-          //     borderRadius: BorderRadius.circular(18),
-          //   ),
-          //   child: Container(
-          //     padding: EdgeInsets.symmetric(horizontal: 8),
-          //     decoration: BoxDecoration(
-          //       color: Color(0XFF0f1217),
-          //       borderRadius: BorderRadius.circular(16),
-          //     ),
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       mainAxisSize: MainAxisSize.min,
-          //       children: [
-          //         Icon(Icons.location_on, color: Colors.white, size: 14),
-          //         const SizedBox(width: 3),
-          //         const Text(
-          //           "الكويت",
-          //           style: TextStyle(
-          //             color: Colors.white,
-          //             fontSize: 12,
-          //             fontWeight: FontWeight.w500,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-            
+
+            //   Container(
+            //   margin: EdgeInsets.only(left: 6, top: 8, bottom: 8),
+            //   padding: EdgeInsets.all(2),
+            //   decoration: BoxDecoration(
+            //     gradient: LinearGradient(
+            //       colors:Mycolors.primary_color.colors,
+            //     ),
+            //     borderRadius: BorderRadius.circular(18),
+            //   ),
+            //   child: Container(
+            //     padding: EdgeInsets.symmetric(horizontal: 8),
+            //     decoration: BoxDecoration(
+            //       color: Color(0XFF0f1217),
+            //       borderRadius: BorderRadius.circular(16),
+            //     ),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.center,
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: [
+            //         Icon(Icons.location_on, color: Colors.white, size: 14),
+            //         const SizedBox(width: 3),
+            //         const Text(
+            //           "الكويت",
+            //           style: TextStyle(
+            //             color: Colors.white,
+            //             fontSize: 12,
+            //             fontWeight: FontWeight.w500,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             if (_currentUser != null)
               BlocBuilder<NotificationCubit, NotificationState>(
                 builder: (context, state) {
                   bool hasUnread = false;
-      
+
                   if (state is NotificationLoaded) {
-                    hasUnread = state.notifications.any((n) => n.isRead == false);
+                    hasUnread = state.notifications.any(
+                      (n) => n.isRead == false,
+                    );
                   }
-      
+
                   return Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -486,7 +480,7 @@ class _AppLayoutState extends State<AppLayout> {
                         height: 40,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                             colors:Mycolors.primary_color.colors,
+                            colors: Mycolors.primary_color.colors,
                           ),
                           borderRadius: BorderRadius.circular(50),
                         ),
@@ -509,7 +503,7 @@ class _AppLayoutState extends State<AppLayout> {
                           ),
                         ),
                       ),
-      
+
                       // النقطة الحمرا لو فيه إشعارات جديدة
                       if (hasUnread)
                         Positioned(

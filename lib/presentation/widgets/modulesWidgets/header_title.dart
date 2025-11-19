@@ -20,9 +20,8 @@ class HeaderTitle extends StatelessWidget {
               "سؤال على غفلة",
               style: TextStyle(
                 color: Colors.white,
-                fontFamily: 'Cairo',
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
               ),
             ),
           ),

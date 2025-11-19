@@ -9,6 +9,8 @@ import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/startScreen/data/models/student_preview_response.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_state.dart';
+import 'package:prime_academy/layout/app_layout.dart';
+import 'package:prime_academy/layout/custom_app_bar.dart';
 import 'package:prime_academy/presentation/Notification/notification_screen.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/preview_header.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/empty_state.dart';
@@ -36,46 +38,14 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
     final isMobile = width < 600;
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Mycolors.backgroundColor,
-        elevation: 0,
-        title: Image.asset("assets/images/footer-logo.webp", height: 40),
-        actions: [
-          Container(
-            padding: EdgeInsets.all(2),
-            width: 70,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xff4f2349), Color(0xffa76433)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              width: 50,
-              height: 30,
-
-              decoration: BoxDecoration(
-                color: Color(0XFF0f1217),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: TextButton(
-                onPressed: () {
-                   
-                },
-                child: const Text(
-                  "حسابي",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.white),
-            onPressed: () {},
-          ),
-                   
-        ],
+        appBar: CustomAppBar(
+        user: null,
+        showNotificationIcon: false,
+         onLogoPressed: () => Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => AppLayout(user: null)),
+          (route) => false,
+        ),
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,
@@ -167,9 +137,9 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                                                 "عدد الجوائز : ${trophies.length}",
                                                 style: TextStyle(
                                                   fontSize: isMobile ? 16 : 18,
-                                                  fontWeight: FontWeight.bold,
+                                                  // fontWeight: FontWeight.bold,
                                                   color: Colors.white,
-                                                  fontFamily: 'Cairo',
+                                                 
                                                 ),
                                               ),
                                             ],
@@ -281,7 +251,6 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                                                               : 14,
                                                           color:
                                                               Mycolors.orange,
-                                                          fontFamily: 'Cairo',
                                                           fontWeight:
                                                               FontWeight.w500,
                                                         ),

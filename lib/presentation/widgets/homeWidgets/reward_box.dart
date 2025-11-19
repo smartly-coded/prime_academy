@@ -330,9 +330,8 @@ class _RewardBoxState extends State<RewardBox> {
                             "عدد الجوائز : ${trophies.length}",
                             style: TextStyle(
                               fontSize: widget.isMobile ? 20 : 24,
-                              fontWeight: FontWeight.bold,
+                              // fontWeight: FontWeight.bold,
                               color: Colors.white,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                         ],
@@ -387,8 +386,8 @@ class _RewardBoxState extends State<RewardBox> {
                                     trophy.name ?? "بدون اسم",
                                     style: TextStyle(
                                       color: Mycolors.gold,
-                                      fontFamily: 'Cairo',
-                                      fontWeight: FontWeight.bold,
+                                      
+                                      // fontWeight: FontWeight.bold,
                                       fontSize: widget.isMobile ? 14 : 16,
                                     ),
                                     textAlign: TextAlign.center,

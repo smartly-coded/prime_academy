@@ -192,7 +192,7 @@ class _RecordingBottomSheetState extends State<RecordingBottomSheet> {
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,
-              fontWeight: FontWeight.bold,
+              // fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 20),

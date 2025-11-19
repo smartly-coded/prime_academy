@@ -452,8 +452,7 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
                         "طلاب برايم أكاديمي",
                         style: TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
+                          // fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
@@ -530,7 +529,7 @@ class _StudentsSliderSectionState extends State<StudentsSliderSection> {
             style: const TextStyle(
               color: Colors.white,
               fontSize: 12,
-              fontWeight: FontWeight.bold,
+              // fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,

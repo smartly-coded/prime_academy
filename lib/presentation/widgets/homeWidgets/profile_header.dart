@@ -177,16 +177,14 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               style: TextStyle(
                 fontSize: isMobile ? 18 : 20,
                 color: Colors.white70,
-                fontFamily: 'Cairo',
               ),
             ),
             Text(
               "${widget.user.firstname} ${widget.user.lastname}",
               style: TextStyle(
                 fontSize: isMobile ?20 : 24,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontFamily: 'Cairo',
               ),
             ),
           ],

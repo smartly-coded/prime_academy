@@ -6,6 +6,8 @@ import 'package:prime_academy/features/CoursesModules/logic/modules_cubit.dart';
 import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
+import 'package:prime_academy/layout/app_layout.dart';
+import 'package:prime_academy/layout/custom_app_bar.dart';
 import 'package:prime_academy/presentation/Notification/notification_screen.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/module_tile.dart';
 
@@ -27,100 +29,14 @@ class ModulesPage extends StatelessWidget {
           ModulesCubit(ModulesRepository())..loadModules(courseId),
       child: Scaffold(
         backgroundColor: Mycolors.backgroundColor,
-        appBar: AppBar(
-          backgroundColor: Mycolors.backgroundColor,
-          elevation: 0,
-          title: Image.asset("assets/images/footer-logo.webp", height: 40),
-          actions: [
-            Container(
-              padding: const EdgeInsets.all(2),
-              width: 70,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xff4f2349), Color(0xffa76433)],
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0XFF0f1217),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextButton(
-                  onPressed: () { context.read<ProfileCubit>().emitprofileState();},
-                  child: const Text(
-                    "حسابي",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            // IconButton(
-            //   icon: const Icon(Icons.notifications_none, color: Colors.white),
-            //   onPressed: () {},
-            // ),
-            SizedBox(width: 8),
-                BlocBuilder<NotificationCubit, NotificationState>(
-                  builder: (context, state) {
-                    bool hasUnread = false;
-                    if (state is NotificationLoaded) {
-                      hasUnread = state.notifications.any(
-                        (n) => n.isRead == false,
-                      );
-                    }
-
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(2),
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            gradient:  LinearGradient(
-                               colors:Mycolors.primary_color.colors,
-                            ),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0XFF161c29),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Center(
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.notifications_none,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  showNotificationsDialog(context,user);
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (hasUnread)
-                          Positioned(
-                            right: 4,
-                            top: -1,
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-          ],
+          appBar: CustomAppBar(
+        user: user,
+         onLogoPressed: () => Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => AppLayout(user: user)),
+          (route) => false,
         ),
+      ),
         body: BlocBuilder<ModulesCubit, ModulesState>(
           builder: (context, state) {
             if (state is ModulesLoading) {
@@ -145,9 +61,8 @@ class ModulesPage extends StatelessWidget {
                           courseName,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                            // fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                       ),

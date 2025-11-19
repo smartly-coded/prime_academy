@@ -64,7 +64,6 @@ class RecordedLessonItem extends StatelessWidget {
                     style: TextStyle(
                       color: isSelected ? Colors.white70 : Colors.white54,
                       fontSize: 12,
-                      fontFamily: 'Cairo',
                       fontWeight: isSelected
                           ? FontWeight.w500
                           : FontWeight.normal,
@@ -80,7 +79,6 @@ class RecordedLessonItem extends StatelessWidget {
                 style: TextStyle(
                   color: isSelected ? Colors.white : Colors.white,
                   fontSize: 14,
-                  fontFamily: 'Cairo',
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
                 maxLines: 2,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 class AboutUsPage extends StatelessWidget {
   const AboutUsPage({super.key});
@@ -19,14 +19,14 @@ class AboutUsPage extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 800),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Center(
                 child: Container(
-                  padding: const EdgeInsets.all(3),
+                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xffa76433), Color(0xff4f2349)],
+                    gradient: LinearGradient(
+                      colors: Mycolors.primary_color.colors,
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -34,8 +34,8 @@ class AboutUsPage extends StatelessWidget {
                   ),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 30,
+                      vertical: 50,
+                      horizontal: 100,
                     ),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 36, 43, 56),
@@ -45,9 +45,8 @@ class AboutUsPage extends StatelessWidget {
                       "من نحن",
                       style: TextStyle(
                         fontSize: isMobile ? 24 : 28,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ),
@@ -59,17 +58,16 @@ class AboutUsPage extends StatelessWidget {
                 "برايم أكاديمي",
                 style: TextStyle(
                   fontSize: isMobile ? 18 : 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontFamily: 'Cairo',
+                  // fontWeight: FontWeight.bold,
+                  color: Colors.orange,
                 ),
               ),
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xffa76433), Color(0xff4f2349)],
+                  gradient: LinearGradient(
+                    colors: Mycolors.primary_color.colors,
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -88,9 +86,8 @@ class AboutUsPage extends StatelessWidget {
                     "نبذة عنا",
                     style: TextStyle(
                       fontSize: isMobile ? 20 : 24,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontFamily: 'Cairo',
                     ),
                   ),
                 ),
@@ -102,11 +99,11 @@ class AboutUsPage extends StatelessWidget {
                 "المنصات التعليمية كثيره ومتعدده ولكن في برامم أكاديمي تقدم محتوي مختلف تماما عن طريق اتباع لأفضل الطرق الحديثه في توصيل المعلوماك واتباع انظمه الذكاء الاصطناعي التي تجذب الطلب نحو المذاكره والتحقيق والتطور.",
                 style: TextStyle(
                   fontSize: isMobile ? 14 : 16,
-                  color: Colors.white70,
-                  fontFamily: 'Cairo',
+                  color: Colors.white,
+                  // fontFamily: 'Cairo',
                   height: 1.6,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.end,
               ),
 
               const SizedBox(height: 30),
@@ -134,9 +131,8 @@ class AboutUsPage extends StatelessWidget {
                     "انظمة برامم أكاديمي المبتكره",
                     style: TextStyle(
                       fontSize: isMobile ? 18 : 22,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontFamily: 'Cairo',
                     ),
                   ),
                 ),
@@ -288,14 +284,15 @@ class AboutUsPage extends StatelessWidget {
         border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: isMobile ? 35 : 40,
             height: isMobile ? 35 : 40,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xffa76433), Color(0xff4f2349)],
+                colors: Mycolors.primary_color.colors,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -306,9 +303,8 @@ class AboutUsPage extends StatelessWidget {
                 number,
                 style: TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  // fontWeight: FontWeight.bold,
                   fontSize: isMobile ? 16 : 18,
-                  fontFamily: 'Cairo',
                 ),
               ),
             ),
@@ -316,15 +312,14 @@ class AboutUsPage extends StatelessWidget {
           const SizedBox(width: 15),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   title,
                   style: TextStyle(
                     fontSize: isMobile ? 16 : 18,
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    fontFamily: 'Cairo',
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -333,10 +328,9 @@ class AboutUsPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: isMobile ? 14 : 16,
                     color: Colors.white70,
-                    fontFamily: 'Cairo',
                     height: 1.6,
                   ),
-                  textAlign: TextAlign.start,
+                  textAlign: TextAlign.end,
                 ),
               ],
             ),
@@ -355,6 +349,7 @@ class AboutUsPage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
             width: isMobile ? 90 : 110,
@@ -362,8 +357,8 @@ class AboutUsPage extends StatelessWidget {
             padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Color(0xffa76433), Color(0xff4f2349)],
+              gradient: LinearGradient(
+                colors: Mycolors.primary_color.colors,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -390,9 +385,8 @@ class AboutUsPage extends StatelessWidget {
                       value,
                       style: TextStyle(
                         fontSize: isMobile ? 18 : 22,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ],
@@ -406,7 +400,6 @@ class AboutUsPage extends StatelessWidget {
             style: TextStyle(
               fontSize: isMobile ? 12 : 14,
               color: Colors.white70,
-              fontFamily: 'Cairo',
             ),
             textAlign: TextAlign.center,
           ),

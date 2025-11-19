@@ -99,8 +99,7 @@ class FeatureCard extends StatelessWidget {
               title,
               style: const TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Cairo',
+                // fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
               textAlign: TextAlign.center,
@@ -114,7 +113,6 @@ class FeatureCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 15,
                     color: Colors.white70,
-                    fontFamily: 'Cairo',
                   ),
                   textAlign: TextAlign.center,
                 ),

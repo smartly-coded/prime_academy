@@ -87,6 +87,16 @@ flutter:
     - assets/videos/
     - assets/Gifs/
     - assets/frames/
+    - assets/fonts/
+
+
+  fonts:
+    - family: Bahij
+      fonts:
+        - asset: assets/fonts/Bahij_TheSansArabic-SemiLight.ttf
+          weight: 300
+        - asset: assets/fonts/Bahij_TheSansArabic-Bold.ttf
+          weight: 700  
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see
@@ -110,6 +120,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
 flutter_icons:
   android: true
   ios: true

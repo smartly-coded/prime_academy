@@ -24,7 +24,7 @@ class EmptyState extends StatelessWidget {
           style: TextStyle(
             fontSize: isMobile ? 16 : 18,
             color: Colors.white70,
-            fontFamily: 'Cairo',
+           
           ),
         ),
       ),

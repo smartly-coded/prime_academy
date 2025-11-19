@@ -128,8 +128,7 @@ String buildImageUrl(String? imagePath) {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Mycolors.grey,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -144,8 +143,7 @@ String buildImageUrl(String? imagePath) {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Mycolors.grey,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                       Icon(
@@ -163,8 +161,7 @@ String buildImageUrl(String? imagePath) {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Mycolors.grey,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Cairo',
+                      // fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -237,8 +234,7 @@ String buildImageUrl(String? imagePath) {
                           "$rank",
                           style: const TextStyle(
                             color: Colors.black,
-                            fontFamily: 'Cairo',
-                            fontWeight: FontWeight.bold,
+                            // fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -250,7 +246,6 @@ String buildImageUrl(String? imagePath) {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Colors.white,
-                          fontFamily: 'Cairo',
                           fontWeight: rank == 1
                               ? FontWeight.bold
                               : FontWeight.normal,
@@ -271,8 +266,7 @@ String buildImageUrl(String? imagePath) {
                                 "$points",
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontFamily: 'Cairo',
-                                  fontWeight: FontWeight.bold,
+                                  // fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -320,7 +314,7 @@ String buildImageUrl(String? imagePath) {
           icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
           hint: Text(
             hint,
-            style: const TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
+            style: const TextStyle(color: Colors.white70, ),
           ),
           items: items.map((String item) {
             return DropdownMenuItem<String>(
@@ -329,7 +323,6 @@ String buildImageUrl(String? imagePath) {
                 item,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                 ),
               ),
             );

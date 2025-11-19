@@ -176,9 +176,8 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
               _cleanHtmlText(widget.question.title),
               style: TextStyle(
                 color: Colors.white,
-                fontFamily: 'Cairo',
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -380,7 +379,6 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
             "${slotIndex + 1}",
             style: TextStyle(
               color: Colors.white,
-              fontFamily: 'Cairo',
               fontSize: isTablet ? 12 : 10,
               fontWeight: FontWeight.w400,
             ),
@@ -463,7 +461,6 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
                 answer.title,
                 style: TextStyle(
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                   fontSize: isTablet ? 14 : 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -503,9 +500,8 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
                     color: _isAnswerComplete
                         ? const Color(0xFFD32F2F)
                         : Colors.white,
-                    fontFamily: 'Cairo',
                     fontSize: isTablet ? 18 : 16,
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -556,9 +552,8 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
               _isCorrect ? "ترتيب صحيح!" : "ترتيب خاطئ!",
               style: const TextStyle(
                 color: Colors.white,
-                fontFamily: 'Cairo',
                 fontSize: 32,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
@@ -569,7 +564,6 @@ class _ReorderQuestionDialogState extends State<ReorderQuestionDialog> {
                   : "بعض الكلمات في الترتيب الخاطئ",
               style: const TextStyle(
                 color: Colors.white,
-                fontFamily: 'Cairo',
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),

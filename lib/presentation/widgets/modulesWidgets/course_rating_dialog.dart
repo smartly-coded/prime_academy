@@ -68,9 +68,8 @@ class _CourseRatingDialogState extends State<CourseRatingDialog> {
             'تقييم الكورس',
             style: TextStyle(
               color: Colors.white,
-              fontFamily: 'Cairo',
               fontSize: 22,
-              fontWeight: FontWeight.bold,
+              // fontWeight: FontWeight.bold,
             ),
           ),
         ],
@@ -91,14 +90,12 @@ class _CourseRatingDialogState extends State<CourseRatingDialog> {
                 maxLength: 300,
                 style: TextStyle(
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                   fontSize: 14,
                 ),
                 decoration: InputDecoration(
                   hintText: 'اكتب تقييمك هنا',
                   hintStyle: TextStyle(
                     color: Colors.white54,
-                    fontFamily: 'Cairo',
                   ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.all(15),
@@ -120,7 +117,6 @@ class _CourseRatingDialogState extends State<CourseRatingDialog> {
             'تخطي',
             style: TextStyle(
               color: _isSubmitting ? Colors.white24 : Colors.white54,
-              fontFamily: 'Cairo',
               fontSize: 16,
             ),
           ),
@@ -156,9 +152,8 @@ class _CourseRatingDialogState extends State<CourseRatingDialog> {
                     'إرسال التقييم',
                     style: TextStyle(
                       color: Colors.white,
-                      fontFamily: 'Cairo',
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                     ),
                   ),
           ),

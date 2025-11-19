@@ -88,8 +88,8 @@ Widget videoHeader(
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: fontSize,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Cairo',
+                    // fontWeight: FontWeight.bold,
+                    
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

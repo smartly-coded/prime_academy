@@ -50,7 +50,6 @@ class FooterSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: isMobile ? 18 : 20, // زاد 4px
                   color: Colors.white70,
-                  fontFamily: 'Cairo',
                   height: 1.6,
                 ),
               ),
@@ -72,9 +71,8 @@ class FooterSection extends StatelessWidget {
                 "الكورسات",
                 style: TextStyle(
                   fontSize: 24, // زاد 4px
-                  fontWeight: FontWeight.bold,
+                  // fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                 ),
               ),
               Divider(
@@ -102,9 +100,8 @@ class FooterSection extends StatelessWidget {
                 "المناهج",
                 style: TextStyle(
                   fontSize: 24, // زاد 4px
-                  fontWeight: FontWeight.bold,
+                  // fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                 ),
               ),
               Divider(
@@ -152,9 +149,8 @@ class FooterSection extends StatelessWidget {
                       "ابقى على تواصل !",
                       style: TextStyle(
                         fontSize: 26, // زاد 4px
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                     Divider(
@@ -170,7 +166,6 @@ class FooterSection extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20, // زاد 4px
                         color: Colors.white,
-                        fontFamily: 'Cairo',
                         height: 1.5,
                       ),
                     ),
@@ -194,7 +189,6 @@ class FooterSection extends StatelessWidget {
                           hintText: "رقم هاتفك المحمول",
                           hintStyle: TextStyle(
                             color: Color.fromARGB(255, 229, 228, 228),
-                            fontFamily: 'Cairo',
                             fontSize: 18, // زاد 4px
                           ),
                           border: InputBorder.none,
@@ -202,7 +196,6 @@ class FooterSection extends StatelessWidget {
                         ),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontFamily: 'Cairo',
                           fontSize: 18, // زاد 4px
                         ),
                         keyboardType: TextInputType.phone,
@@ -254,8 +247,7 @@ class FooterSection extends StatelessWidget {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 22, // زاد 4px
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Cairo',
+                                      // fontWeight: FontWeight.bold,
                                     ),
                                   );
                                 },
@@ -274,7 +266,6 @@ class FooterSection extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white54,
                   fontSize: 18, // زاد 4px
-                  fontFamily: 'Cairo',
                 ),
               ),
             ],
@@ -314,7 +305,6 @@ class FooterSection extends StatelessWidget {
       style: const TextStyle(
         fontSize: 20, // زاد 4px
         color: Colors.white70,
-        fontFamily: 'Cairo',
       ),
     );
   }

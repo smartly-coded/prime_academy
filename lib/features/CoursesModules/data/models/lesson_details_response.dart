@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:json_annotation/json_annotation.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/media.dart';
 
 part 'lesson_details_response.g.dart';
 
@@ -34,10 +35,14 @@ class LessonDetailsResponse {
   @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
 
-  final String? thumbnail;
+  // final String? thumbnail;
 
-  @JsonKey(name: 'video_source')
-  final String? videoSource;
+  // @JsonKey(name: 'video_source')
+  // final String? videoSource;
+final Media? thumbnail;
+
+@JsonKey(name: 'video_source')
+final Media? videoSource;
 
   final Map<String, dynamic> groupedQuestions;
 

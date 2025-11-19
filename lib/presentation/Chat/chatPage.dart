@@ -268,7 +268,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     "اسألني لايف",
                     style: TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                       fontSize: 30,
                     ),
                     textDirection: TextDirection.rtl,
@@ -569,7 +569,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              // fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(width: 12),
@@ -674,7 +674,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           userName,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                            // fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(width: 6),

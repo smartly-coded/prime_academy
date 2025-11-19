@@ -58,9 +58,8 @@ class PreviewHeaderState extends State<PreviewHeader> {
               "${widget.response.firstname} ${widget.response.lastname}",
               style: TextStyle(
                 fontSize: isMobile ? 18 : 22,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontFamily: 'Cairo',
               ),
             ),
           ],

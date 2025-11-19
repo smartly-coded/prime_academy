@@ -208,7 +208,6 @@ class TrophySection extends StatelessWidget {
                     "اعرف أكثر",
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
@@ -279,7 +278,6 @@ class TrophySection extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
-                      fontFamily: 'Cairo',
                     ),
                   ),
                 ),

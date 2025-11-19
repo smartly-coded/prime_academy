@@ -169,7 +169,6 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                       "يمكنك اختيار أكثر من إجابة",
                       style: TextStyle(
                         color: Colors.white,
-                        fontFamily: 'Cairo',
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
                       ),
@@ -306,9 +305,8 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                         color: _selectedAnswerIds.isNotEmpty
                             ? const Color(0xFF7B1FA2)
                             : Colors.white.withOpacity(0.5),
-                        fontFamily: 'Cairo',
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -375,9 +373,8 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
             title,
             style: const TextStyle(
               color: Colors.white,
-              fontFamily: 'Cairo',
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              // fontWeight: FontWeight.bold,
               shadows: [
                 Shadow(
                   color: Colors.black54,
@@ -401,9 +398,8 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
       title,
       style: const TextStyle(
         color: Colors.white,
-        fontFamily: 'Cairo',
         fontSize: 24,
-        fontWeight: FontWeight.bold,
+        // fontWeight: FontWeight.bold,
         shadows: [
           Shadow(color: Colors.black54, offset: Offset(1, 1), blurRadius: 3),
         ],
@@ -463,9 +459,8 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                 _isCorrect ? "إجابة صحيحة!" : "إجابة خاطئة!",
                 style: const TextStyle(
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                   fontSize: 36,
-                  fontWeight: FontWeight.bold,
+                  // fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -479,7 +474,6 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                     : "لا بأس، حاول مرة أخرى في المرة القادمة",
                 style: const TextStyle(
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),
@@ -501,9 +495,8 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                         "الإجابة الصحيحة:",
                         style: TextStyle(
                           color: Colors.white,
-                          fontFamily: 'Cairo',
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -511,7 +504,6 @@ class _FullScreenMcqDialogState extends State<FullScreenMcqDialog>
                         _getCorrectAnswerText(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontFamily: 'Cairo',
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                         ),

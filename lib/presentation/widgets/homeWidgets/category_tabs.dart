@@ -30,7 +30,7 @@ class CategoryTabs extends StatelessWidget {
               color: isSelected
                   ? Color(0xFFF1E6EE)
                   : const Color.fromARGB(255, 167, 167, 167),
-              fontFamily: 'Cairo',
+             
             ),
           ),
         ),

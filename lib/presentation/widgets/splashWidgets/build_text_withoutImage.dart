@@ -135,8 +135,8 @@ Widget buildTextWithBorder(
               textAlign: TextAlign.center,
               textDirection: TextDirection.rtl,
               style: TextStyle(
-                fontSize: getResponsiveFontSize(context, fontSize: 24),
-                fontWeight: FontWeight.bold,
+                fontSize: getResponsiveFontSize(context, fontSize: 18),
+                // fontWeight: FontWeight.bold,
                 color: Colors.white,
                 height: 1.2,
               ),
@@ -145,7 +145,7 @@ Widget buildTextWithBorder(
         ),
       ),
 
-      // const SizedBox(height: 6),
+      const SizedBox(height: 10),
       RichText(
         textAlign: TextAlign.right,
         textDirection: TextDirection.rtl,
@@ -154,9 +154,10 @@ Widget buildTextWithBorder(
             TextSpan(
               text: subTitle,
               style: TextStyle(
-                fontSize: getResponsiveFontSize(context, fontSize: 22),
-                fontWeight: FontWeight.w600,
+                fontSize: getResponsiveFontSize(context, fontSize: 17),
+                // fontWeight: FontWeight.w600,
                 color: Colors.white,
+                fontFamily: 'Bahij',
                 height: 1.3,
               ),
             ),

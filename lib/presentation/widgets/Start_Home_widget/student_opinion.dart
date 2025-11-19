@@ -559,7 +559,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
             color: Colors.white,
             fontSize: isMobile ? 16 : 20, // تصغير حجم الخط
             fontWeight: FontWeight.bold,
-            fontFamily: 'Cairo',
           ),
         ),
       ),
@@ -603,7 +602,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                     style: TextStyle(
                       fontSize: isMobile ? 20 : 25,
                       color: Colors.white,
-                      fontFamily: 'Cairo',
                       height: 1.5,
                     ),
                     textAlign: TextAlign.center,
@@ -626,7 +624,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                       fontSize: isMobile ? 14 : 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey[600],
-                      fontFamily: 'Cairo',
                     ),
                   ),
                 ),
@@ -660,7 +657,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
               'جاري تحميل آراء الطلاب...',
               style: TextStyle(
                 color: Colors.white70,
-                fontFamily: 'Cairo',
                 fontSize: 14,
               ),
             ),
@@ -683,7 +679,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
               'خطأ في تحميل التقييمات',
               style: TextStyle(
                 color: Colors.red,
-                fontFamily: 'Cairo',
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -693,7 +688,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
               error,
               style: TextStyle(
                 color: Colors.white70,
-                fontFamily: 'Cairo',
                 fontSize: 12,
               ),
               textAlign: TextAlign.center,
@@ -711,7 +705,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                 'إعادة المحاولة',
                 style: TextStyle(
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                   fontSize: 12,
                 ),
               ),
@@ -735,7 +728,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
               'لا توجد تقييمات متاحة حالياً',
               style: TextStyle(
                 color: Colors.white70,
-                fontFamily: 'Cairo',
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -745,7 +737,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
               'كن أول من يقيم الكورسات!',
               style: TextStyle(
                 color: Colors.white54,
-                fontFamily: 'Cairo',
                 fontSize: 12,
               ),
             ),
@@ -785,7 +776,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
                   color: Colors.white,
                 ),
               ),

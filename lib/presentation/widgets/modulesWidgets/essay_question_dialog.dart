@@ -210,9 +210,8 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
         _cleanHtmlText(widget.question.title),
         style: TextStyle(
           color: Colors.white,
-          fontFamily: 'Cairo',
           fontSize: isLandscape ? 18 : 26,
-          fontWeight: FontWeight.bold,
+          // fontWeight: FontWeight.bold,
           height: 1.4,
         ),
         textAlign: TextAlign.center,
@@ -233,7 +232,6 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
         textAlignVertical: TextAlignVertical.top,
         style: TextStyle(
           color: Colors.white,
-          fontFamily: 'Cairo',
           fontSize: isLandscape ? 14 : 16,
           height: 1.5,
         ),
@@ -241,7 +239,6 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
           hintText: "اكتب إجابتك هنا...",
           hintStyle: TextStyle(
             color: Colors.white.withOpacity(0.6),
-            fontFamily: 'Cairo',
             fontSize: isLandscape ? 14 : 16,
           ),
           border: OutlineInputBorder(
@@ -296,9 +293,8 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
                 color: hasText
                     ? const Color.fromARGB(255, 98, 4, 115)
                     : Colors.white.withOpacity(0.5),
-                fontFamily: 'Cairo',
                 fontSize: isLandscape ? 18 : 20,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
               ),
             ),
           );
@@ -361,9 +357,8 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
                   _isCorrect ? "إجابة ممتازة!" : "تم إرسال إجابتك!",
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: 'Cairo',
                     fontSize: isLandscape ? 28 : 36,
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -377,7 +372,6 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
                       : "سيتم مراجعة إجابتك من قبل المعلم",
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: 'Cairo',
                     fontSize: isLandscape ? 14 : 18,
                     fontWeight: FontWeight.w500,
                   ),
@@ -399,9 +393,8 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
                         "إجابتك:",
                         style: TextStyle(
                           color: Colors.white,
-                          fontFamily: 'Cairo',
                           fontSize: isLandscape ? 14 : 16,
-                          fontWeight: FontWeight.bold,
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -414,7 +407,6 @@ class _EssayQuestionDialogState extends State<EssayQuestionDialog>
                             _userAnswer,
                             style: TextStyle(
                               color: Colors.white,
-                              fontFamily: 'Cairo',
                               fontSize: isLandscape ? 13 : 16,
                               fontWeight: FontWeight.w500,
                               height: 1.4,

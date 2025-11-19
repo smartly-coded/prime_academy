@@ -145,7 +145,6 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                   "اسحب الأسئلة وأسقطها على الإجابات المناسبة",
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: 'Cairo',
                     fontSize: isTablet ? 18 : 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -386,7 +385,6 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
           response.title,
           style: TextStyle(
             color: Colors.white,
-            fontFamily: 'Cairo',
             fontSize: isTablet ? 14 : 12,
             fontWeight: FontWeight.w600,
           ),
@@ -474,7 +472,6 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                   _cleanHtmlText(prompt.title),
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: 'Cairo',
                     fontSize: isTablet ? 14 : 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -515,9 +512,8 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                     color: _isAnswerComplete
                         ? const Color(0xFFD32F2F)
                         : Colors.white,
-                    fontFamily: 'Cairo',
                     fontSize: isTablet ? 18 : 16,
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -568,9 +564,8 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
               _isCorrect ? "إجابة صحيحة!" : "إجابة خاطئة!",
               style: const TextStyle(
                 color: Colors.white,
-                fontFamily: 'Cairo',
                 fontSize: 32,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
@@ -581,7 +576,6 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
                   : "بعض الروابط غير صحيحة، حاول مرة أخرى",
               style: const TextStyle(
                 color: Colors.white,
-                fontFamily: 'Cairo',
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),

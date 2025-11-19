@@ -20,8 +20,12 @@ LessonDetailsResponse _$LessonDetailsResponseFromJson(
   externalUrl: json['external_url'] as String?,
   createdAt: DateTime.parse(json['created_at'] as String),
   updatedAt: DateTime.parse(json['updated_at'] as String),
-  thumbnail: json['thumbnail'] as String?,
-  videoSource: json['video_source'] as String?,
+  thumbnail: json['thumbnail'] == null
+      ? null
+      : Media.fromJson(json['thumbnail'] as Map<String, dynamic>),
+  videoSource: json['video_source'] == null
+      ? null
+      : Media.fromJson(json['video_source'] as Map<String, dynamic>),
   groupedQuestions: json['groupedQuestions'] as Map<String, dynamic>,
   chatId: (json['chatId'] as num).toInt(),
   isEnrolled: json['isEnrolled'] as bool,

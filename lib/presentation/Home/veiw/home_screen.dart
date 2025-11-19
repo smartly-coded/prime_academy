@@ -342,11 +342,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/constants.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/core/routing/app_routes.dart';
 import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/profileScreen/data/models/student_profile_response.dart';
 import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/profileScreen/logic/profile_state.dart';
+import 'package:prime_academy/layout/app_layout.dart';
+import 'package:prime_academy/layout/custom_app_bar.dart';
 import 'package:prime_academy/presentation/Notification/notification_screen.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/category_tabs.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/course_card.dart';
@@ -380,114 +383,14 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Mycolors.backgroundColor,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // ✅ اللوجو على اليمين
-            Image.asset("assets/images/footer-logo.webp", height: 40),
-
-            // ✅ الزر والإشعار على الشمال
-            Row(
-              children: [
-                // زر "حسابي"
-                Container(
-                  padding: const EdgeInsets.all(2),
-                  width: 70,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient:  LinearGradient(
-                      colors:Mycolors.primary_color.colors,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Container(
-                    width: 50,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: const Color(0XFF0f1217),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: TextButton(
-                      onPressed: () {
-                        context.read<ProfileCubit>().emitprofileState();
-                      },
-                      child: const Text(
-                        "حسابي",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-
-                BlocBuilder<NotificationCubit, NotificationState>(
-                  builder: (context, state) {
-                    bool hasUnread = false;
-                    if (state is NotificationLoaded) {
-                      hasUnread = state.notifications.any(
-                        (n) => n.isRead == false,
-                      );
-                    }
-
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(2),
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            gradient:  LinearGradient(
-                               colors:Mycolors.primary_color.colors,
-                            ),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0XFF161c29),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Center(
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.notifications_none,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  showNotificationsDialog(context, widget.user);
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (hasUnread)
-                          Positioned(
-                            right: 4,
-                            top: -1,
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
+      appBar: CustomAppBar(
+        user: widget.user,
+        onLogoPressed: () => Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => AppLayout(user: widget.user)),
+          (route) => false,
         ),
       ),
-
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
@@ -585,4 +488,3 @@ String buildImageUrl(String? imagePath) {
   final fixedPath = imagePath.startsWith('/') ? imagePath : '/$imagePath';
   return "$cdnPrefix$fixedPath";
 }
-

@@ -375,7 +375,7 @@ class _RecordingDialogState extends State<RecordingDialog> {
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,
-              fontWeight: FontWeight.bold,
+              // fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),

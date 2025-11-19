@@ -182,6 +182,7 @@ import 'package:prime_academy/core/Utils/validators.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
+import 'package:prime_academy/layout/custom_app_bar.dart';
 import 'package:prime_academy/presentation/widgets/loginWidgets/loginBlocListener.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -202,18 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0A0A0A),
-        elevation: 0,
-        leadingWidth: isSmallMobile ? 120 : 180,
-        leading: Padding(
-          padding: EdgeInsets.only(left: isSmallMobile ? 4.0 : 8.0),
-          child: Image.asset(
-            "assets/images/footer-logo.webp",
-            height: isSmallMobile ? 35 : 45,
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(user: null, showNotificationIcon: false),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
@@ -461,7 +451,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? 14
                               : 16,
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

@@ -99,8 +99,9 @@ class _GifSectionState extends State<GifSection>
                   text: TextSpan(
                     style: TextStyle(
                       fontSize: 26 * scale,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white70,
+                      // fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontFamily: 'Bahij',
                       height: 1.5,
                     ),
                     children: [

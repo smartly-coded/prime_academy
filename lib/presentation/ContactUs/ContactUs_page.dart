@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/Utils/validators.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/contact_us/data/models/inquery_model.dart';
 import 'package:prime_academy/features/contact_us/logic/inquery_cubit.dart';
 import 'package:prime_academy/features/contact_us/logic/inquiry_state.dart';
@@ -9,7 +9,7 @@ import 'package:prime_academy/features/contact_us/logic/inquiry_state.dart';
 class ContactUsPage extends StatelessWidget {
   ContactUsPage({super.key});
 
-  final _formKey = GlobalKey<FormState>(); 
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _messageController = TextEditingController();
@@ -105,13 +105,15 @@ class ContactUsPage extends StatelessWidget {
   }
 
   Widget _buildSendButton(
-      BuildContext context, ContactUsState state, bool isMobile) {
+    BuildContext context,
+    ContactUsState state,
+    bool isMobile,
+  ) {
     return GestureDetector(
       onTap: state is ContactUsLoading
           ? null
           : () {
               if (_formKey.currentState?.validate() ?? false) {
-                
                 final request = InquiryRequest(
                   fullname: _nameController.text.trim(),
                   phoneNumber: _phoneController.text.trim(),
@@ -124,8 +126,8 @@ class ContactUsPage extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(3),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xffa76433), Color(0xff4f2349)],
+          gradient: LinearGradient(
+            colors: Mycolors.primary_color.colors,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -144,9 +146,8 @@ class ContactUsPage extends StatelessWidget {
                     "إرسال",
                     style: TextStyle(
                       fontSize: isMobile ? 18 : 20,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontFamily: 'Cairo',
                     ),
                   ),
           ),
@@ -156,56 +157,50 @@ class ContactUsPage extends StatelessWidget {
   }
 
   Widget _buildHeader(bool isMobile) => Container(
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xffa76433), Color(0xff4f2349)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(15),
+    padding: const EdgeInsets.all(3),
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: Mycolors.primary_color.colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(15),
+    ),
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 100),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 38, 45, 58),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Text(
+        "تواصل معنا",
+        style: TextStyle(
+          fontSize: isMobile ? 24 : 28,
+          // fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 15,
-            horizontal: 30,
-          ),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 38, 45, 58),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Text(
-            "تواصل معنا",
-            style: TextStyle(
-              fontSize: isMobile ? 24 : 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontFamily: 'Cairo',
-            ),
-          ),
-        ),
-      );
+      ),
+    ),
+  );
 
   Widget _buildTitle(bool isMobile) => Text(
-        "لديك أي أسئلة؟",
-        style: TextStyle(
-          fontSize: isMobile ? 20 : 22,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          fontFamily: 'Cairo',
-        ),
-      );
+    "لديك أي أسئلة؟",
+    style: TextStyle(
+      fontSize: isMobile ? 20 : 22,
+      // fontWeight: FontWeight.bold,
+      color: Colors.white,
+    ),
+  );
 
   Widget _buildDescription(bool isMobile) => Text(
-        "نحن هنا لمساعدتك وإجابة على جميع استفساراتك واختياجاتك التعليمية.\nلا تتردد في الاتصال بنا للحصول على المساعدة وتقديم ملاحظاتك.",
-        style: TextStyle(
-          fontSize: isMobile ? 14 : 16,
-          color: Colors.white70,
-          fontFamily: 'Cairo',
-          height: 1.6,
-        ),
-        textAlign: TextAlign.center,
-      );
+    "نحن هنا لمساعدتك وإجابة على جميع استفساراتك واختياجاتك التعليمية.\nلا تتردد في الاتصال بنا للحصول على المساعدة وتقديم ملاحظاتك.",
+    style: TextStyle(
+      fontSize: isMobile ? 14 : 16,
+      color: Colors.white70,
+      height: 1.6,
+    ),
+    textAlign: TextAlign.center,
+  );
 
   Widget _buildTextFieldWithIcon({
     required TextEditingController controller,
@@ -245,7 +240,6 @@ class ContactUsPage extends StatelessWidget {
                   hintText: hintText,
                   hintStyle: TextStyle(
                     color: Colors.white54,
-                    fontFamily: 'Cairo',
                     fontSize: isMobile ? 14 : 16,
                   ),
                   border: InputBorder.none,
@@ -255,7 +249,6 @@ class ContactUsPage extends StatelessWidget {
                 ),
                 style: TextStyle(
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                   fontSize: isMobile ? 14 : 16,
                 ),
                 keyboardType: keyboardType,
@@ -294,16 +287,12 @@ class ContactUsPage extends StatelessWidget {
                 validator: Validators.validateMessage,
                 decoration: const InputDecoration(
                   hintText: "اكتب رسالتك",
-                  hintStyle: TextStyle(
-                    color: Colors.white54,
-                    fontFamily: 'Cairo',
-                  ),
+                  hintStyle: TextStyle(color: Colors.white54),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 16),
                 ),
                 style: TextStyle(
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                   fontSize: isMobile ? 14 : 16,
                 ),
                 maxLines: 4,
@@ -316,47 +305,46 @@ class ContactUsPage extends StatelessWidget {
   }
 
   Widget _buildSocialBox(bool isMobile) => Container(
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xffa76433), Color(0xff4f2349)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    padding: const EdgeInsets.all(3),
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: Mycolors.primary_color.colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(15),
+    ),
+    child: Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 38, 45, 58),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        children: [
+          Text(
+            "أو راسلنا عبر مواقع التواصل الاجتماعي",
+            style: TextStyle(
+              fontSize: isMobile ? 14 : 16,
+              color: Colors.white70,
+              // fontWeight: FontWeight.bold,
+            ),
           ),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 38, 45, 58),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Column(
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "أو راسلنا عبر مواقع التواصل الاجتماعي",
-                style: TextStyle(
-                  fontSize: isMobile ? 14 : 16,
-                  color: Colors.white70,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildSocialIcon(Icons.facebook, 'Facebook'),
-                  const SizedBox(width: 15),
-                  _buildSocialIcon(Icons.chat, 'WhatsApp'),
-                  const SizedBox(width: 15),
-                  _buildSocialIcon(Icons.camera_alt, 'Instagram'),
-                ],
-              ),
+              _buildSocialIcon(Icons.facebook, 'Facebook'),
+              const SizedBox(width: 15),
+              _buildSocialIcon(Icons.chat, 'WhatsApp'),
+              const SizedBox(width: 15),
+              _buildSocialIcon(Icons.camera_alt, 'Instagram'),
             ],
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 
   Widget _buildSocialIcon(IconData icon, String tooltip) {
     return Container(

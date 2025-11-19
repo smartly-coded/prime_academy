@@ -220,7 +220,6 @@ class LessonItem extends StatelessWidget {
                       : isSmallMobile
                       ? 13
                       : 16, // تكبير الخط
-                  fontFamily: 'Cairo',
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
                 maxLines: 2,
@@ -251,7 +250,6 @@ class LessonItem extends StatelessWidget {
                             : isSmallMobile
                             ? 10
                             : 12, // تكبير الخط
-                        fontFamily: 'Cairo',
                         fontWeight: isSelected
                             ? FontWeight.w500
                             : FontWeight.normal,
@@ -279,7 +277,6 @@ class LessonItem extends StatelessWidget {
                           : isSmallMobile
                           ? 10
                           : 12, // تكبير الخط
-                      fontFamily: 'Cairo',
                       fontWeight: isSelected
                           ? FontWeight.w500
                           : FontWeight.normal,

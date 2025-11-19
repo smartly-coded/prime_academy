@@ -227,9 +227,8 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
         _cleanHtmlText(widget.question.title),
         style: TextStyle(
           color: Colors.white,
-          fontFamily: 'Cairo',
           fontSize: isLandscape ? 20 : 28,
-          fontWeight: FontWeight.bold,
+          // fontWeight: FontWeight.bold,
           height: 1.4,
         ),
         textAlign: TextAlign.center,
@@ -346,7 +345,7 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: boxSize < 45 ? 16 : (boxSize < 55 ? 18 : 20),
-            fontWeight: FontWeight.bold,
+            // fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
           maxLength: 1,
@@ -394,7 +393,6 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
         "مسح الكل",
         style: TextStyle(
           color: Colors.white70,
-          fontFamily: 'Cairo',
           fontSize: 16,
         ),
       ),
@@ -422,9 +420,8 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
             color: _isAnswerComplete
                 ? const Color(0xFF2E7D32)
                 : Colors.white.withOpacity(0.5),
-            fontFamily: 'Cairo',
             fontSize: 20,
-            fontWeight: FontWeight.bold,
+            // fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -482,9 +479,8 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
                   _isCorrect ? "إجابة صحيحة!" : "إجابة خاطئة!",
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: 'Cairo',
                     fontSize: isLandscape ? 28 : 36,
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -497,7 +493,6 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
                       : "راجع إجابتك وحاول مرة أخرى",
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: 'Cairo',
                     fontSize: isLandscape ? 14 : 18,
                     fontWeight: FontWeight.w500,
                   ),
@@ -518,9 +513,8 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
                         "إجابتك:",
                         style: TextStyle(
                           color: Colors.white,
-                          fontFamily: 'Cairo',
                           fontSize: isLandscape ? 14 : 16,
-                          fontWeight: FontWeight.bold,
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -528,9 +522,8 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
                         _userAnswer.isEmpty ? "لم تكتب إجابة" : _userAnswer,
                         style: TextStyle(
                           color: Colors.white,
-                          fontFamily: 'Cairo',
                           fontSize: isLandscape ? 20 : 24,
-                          fontWeight: FontWeight.bold,
+                          // fontWeight: FontWeight.bold,
                           letterSpacing: 2,
                         ),
                         textAlign: TextAlign.center,
@@ -554,9 +547,8 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
                           "الإجابة الصحيحة:",
                           style: TextStyle(
                             color: Colors.white,
-                            fontFamily: 'Cairo',
                             fontSize: isLandscape ? 14 : 16,
-                            fontWeight: FontWeight.bold,
+                            // fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -564,9 +556,8 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
                           widget.question.correctAnswers.first.title ?? "",
                           style: TextStyle(
                             color: Colors.white,
-                            fontFamily: 'Cairo',
                             fontSize: isLandscape ? 20 : 24,
-                            fontWeight: FontWeight.bold,
+                            // fontWeight: FontWeight.bold,
                             letterSpacing: 2,
                           ),
                           textAlign: TextAlign.center,

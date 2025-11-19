@@ -10,7 +10,7 @@ Widget buildText(String mainTitle, String subTitle, BuildContext context) {
 
         style: TextStyle(
           fontSize: getResponsiveFontSize(context, fontSize: 18),
-          fontWeight: FontWeight.bold,
+          // fontWeight: FontWeight.bold,
           color: Colors.white,
           height: 1.2,
         ),

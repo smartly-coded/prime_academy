@@ -20,9 +20,8 @@ Widget questionTitle(String questionTitle) {
       _cleanHtmlText(questionTitle),
       style: const TextStyle(
         color: Colors.white,
-        fontFamily: 'Cairo',
         fontSize: 22,
-        fontWeight: FontWeight.bold,
+        // fontWeight: FontWeight.bold,
         height: 1.4,
       ),
       textAlign: TextAlign.center,

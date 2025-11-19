@@ -211,9 +211,8 @@ class CourseCard extends StatelessWidget {
                         courseName,
                         style: TextStyle(
                           fontSize: isMobile ? 15 : 17,
-                          fontWeight: FontWeight.bold,
+                          // fontWeight: FontWeight.bold,
                           color: Colors.white,
-                          fontFamily: 'Cairo',
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 2,
@@ -262,9 +261,8 @@ class CourseCard extends StatelessWidget {
                                 "الذهاب للدورة",
                                 style: TextStyle(
                                   fontSize: isMobile ? 14 : 16,
-                                  fontWeight: FontWeight.bold,
+                                  // fontWeight: FontWeight.bold,
                                   color: Colors.white,
-                                  fontFamily: 'Cairo',
                                 ),
                               ),
                             ],

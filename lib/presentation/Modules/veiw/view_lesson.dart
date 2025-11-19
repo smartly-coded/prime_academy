@@ -18,6 +18,8 @@ import 'package:prime_academy/features/authScreen/data/models/login_response.dar
 import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubit.dart';
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_state.dart';
+import 'package:prime_academy/layout/app_layout.dart';
+import 'package:prime_academy/layout/custom_app_bar.dart';
 import 'package:prime_academy/presentation/Chat/chatPage.dart';
 import 'package:prime_academy/presentation/Modules/veiw/video_header.dart';
 import 'package:prime_academy/presentation/Notification/notification_screen.dart';
@@ -74,6 +76,16 @@ class _ViewModuleState extends State<ViewModule> {
     setState(() {
       _currentLessonTitle = title;
     });
+  }
+
+  String _formatVideoLength(int videoLengthInSeconds) {
+    try {
+      int minutes = videoLengthInSeconds ~/ 60;
+      int seconds = videoLengthInSeconds % 60;
+      return "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+    } catch (e) {
+      return "00:00";
+    }
   }
 
   Future<void> _loadShownRatings() async {
@@ -150,10 +162,7 @@ class _ViewModuleState extends State<ViewModule> {
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      'شكراً لك! تم إرسال تقييمك بنجاح',
-                      style: TextStyle(fontFamily: 'Cairo'),
-                    ),
+                    content: Text('شكراً لك! تم إرسال تقييمك بنجاح'),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
@@ -226,11 +235,10 @@ class _ViewModuleState extends State<ViewModule> {
           onAnswerSubmitted: (List<int> selectedChoices, bool isCorrect) {
             Navigator.of(context).pop();
 
-            // استخدام الطريقة الجديدة
             context.read<MarkAnsweredCubit>().submitChoiceAnswer(
-              question.id, // questionId
-              question.lessonId, // lessonId
-              selectedChoices, // List<int> للاختيارات
+              question.id,
+              question.lessonId,
+              selectedChoices,
             );
             Future.delayed(const Duration(milliseconds: 300), () {
               _resumeVideo();
@@ -249,7 +257,6 @@ class _ViewModuleState extends State<ViewModule> {
           onAnswerSubmitted: (String answer, bool isCorrect) {
             Navigator.of(context).pop();
 
-            // استخدام الطريقة الجديدة
             context.read<MarkAnsweredCubit>().submitEssayAnswer(
               question.id, // questionId
               question.lessonId, // lessonId
@@ -807,11 +814,7 @@ class _ViewModuleState extends State<ViewModule> {
                 child: Text(
                   text,
                   textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    fontFamily: 'Cairo',
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: fontSize, color: Colors.white),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -1068,11 +1071,7 @@ class _ViewModuleState extends State<ViewModule> {
   //     ),
   //   );
   // }
-  Widget _buildLessonsList(
-    List<dynamic> lessons,
-    List<dynamic> externalSources,
-    DeviceType deviceType,
-  ) {
+  Widget _buildLessonsList(List<dynamic> items, DeviceType deviceType) {
     double borderRadius;
     EdgeInsets contentPadding;
     double fontSize;
@@ -1083,7 +1082,7 @@ class _ViewModuleState extends State<ViewModule> {
         borderRadius = 20;
         contentPadding = const EdgeInsets.all(16);
         fontSize = 14;
-        titleFontSize = 20;
+        titleFontSize = 24;
         break;
       case DeviceType.mobileLandscape:
         borderRadius = 16;
@@ -1105,130 +1104,103 @@ class _ViewModuleState extends State<ViewModule> {
         break;
     }
 
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Mycolors.cardColor1,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(borderRadius),
-            topRight: Radius.circular(borderRadius),
-          ),
+    return Container(
+        height: 500,
+      decoration: BoxDecoration(
+        color: Mycolors.cardColor1.withOpacity(0.8),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(borderRadius),
+          topRight: Radius.circular(borderRadius),
         ),
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Colors.amber, width: 2),
-                ),
-              ),
-              child: Center(
+      ),
+      child: Column(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                 child: Text(
                   "الحصص المسجلة",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: titleFontSize,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ),
-            ),
-
-            Expanded(
-              child: BlocBuilder<MarkAnsweredCubit, MarkAnsweredState>(
-                builder: (context, state) {
-                  return ListView.builder(
-                    itemCount: (lessons.length + externalSources.length),
-                    itemBuilder: (context, index) {
-                      if (index < lessons.length) {
-                        final item = lessons[index];
-                        final lesson = item.lesson!;
-                        final isSelected = _currentSelectedItemId == item.id;
-                        final isRewarded = _rewardedLessons.contains(item.id);
-
-                        String duration = _formatVideoLength(
-                          lesson.videoLength,
-                        );
-                        String? thumbnailUrl = lesson.thumbnail;
-                        debugPrint(
-                          "-----------------------------------------------------------THUMBNAIL URL = $thumbnailUrl",
-                        );
-
-                        log(
-                          "LESSON INDEX $index — RAW THUMBNAIL = ${lesson.thumbnail}",
-                        );
-
-                        return _buildCustomLessonItem(
-                          title: lesson.title,
-                          duration: duration,
-                          thumbnailUrl: thumbnailUrl,
-                          isVideo: true,
-                          isSelected: isSelected,
-                          isRewarded: isRewarded,
-                          index: index,
-                          onTap: () {
-                            if (!mounted || _isDisposing) return;
-
-                            setState(() {
-                              _currentSelectedItemId = item.id;
-                              _currentLessonTitle = lesson.title;
-                            });
-
-                            _questionCheckTimer?.cancel();
-                            context
-                                .read<LessonDetailsCubit>()
-                                .emitLessonDetailsStates(item.id);
-                          },
-                          deviceType: deviceType,
-                        );
-                      } else {
-                        final sourceIndex = index - lessons.length;
-                        final item = externalSources[sourceIndex];
-                        final externalSource = item.externalSource!;
-                        final isSelected = _currentSelectedItemId == item.id;
-
-                        return _buildCustomLessonItem(
-                          title: externalSource.title,
-                          duration: "رابط",
-                          thumbnailUrl: null,
-                          isVideo: false,
-                          isSelected: isSelected,
-                          isRewarded: false,
-                          index: index,
-                          onTap: () {
-                            if (!mounted || _isDisposing) return;
-
-                            setState(() {
-                              _currentSelectedItemId = item.id;
-                            });
-                            _openExternalLink(externalSource.url);
-                          },
-                          deviceType: deviceType,
-                        );
-                      }
-                    },
-                  );
-                },
+    
+              Container(
+                height: 2,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: Mycolors.primary_color.colors,
+                  ),
+                ),
               ),
+            ],
+          ),
+          SizedBox(height: 15),
+          SizedBox(
+           height: deviceType == DeviceType.mobilePortrait
+      ? 400
+      : deviceType == DeviceType.mobileLandscape
+          ? 300
+          : 500, 
+            child: ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index] as Item;
+                final isLesson = item.lesson != null;
+                final title = isLesson
+                    ? item.lesson!.title
+                    : item.externalSource!.title;
+                final duration = isLesson
+                    ? _formatVideoLength(item.lesson!.videoLength)
+                    : 'رابط';
+                final thumbnailUrl = isLesson ? item.lesson!.thumbnail : null;
+                final accessWithoutEnrollment = isLesson
+                    ? item.lesson!.accessWithoutEnrollment
+                    : false;
+                
+                // Cup colors للثلاثة الأوائل فقط
+                
+                return _buildCustomLessonItem(
+                  title: title,
+                  duration: duration,
+                  thumbnailUrl: thumbnailUrl,
+                  isVideo: isLesson,
+                  isSelected: _currentSelectedItemId == item.id,
+                  isRewarded: accessWithoutEnrollment,
+                  index: index,
+                  onTap: () {
+                    setState(() {
+                      _currentSelectedItemId = item.id;
+                      if (isLesson) {
+                        _currentLessonTitle = item.lesson!.title;
+                      }
+                    });
+                    if (isLesson) {
+                      _questionCheckTimer?.cancel();
+                      context
+                          .read<LessonDetailsCubit>()
+                          .emitLessonDetailsStates(item.id);
+                    } else {
+                      _openExternalLink(item.externalSource!.url);
+                    }
+                  },
+                  deviceType: deviceType,
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  String _formatVideoLength(int videoLengthInSeconds) {
-    try {
-      int minutes = videoLengthInSeconds ~/ 60;
-      int seconds = videoLengthInSeconds % 60;
-      return "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
-    } catch (e) {
-      return "00:00";
-    }
-  }
-
+  // تعديل بسيط في _buildCustomLessonItem لتستقبل cupColor
   Widget _buildCustomLessonItem({
     required String title,
     required String duration,
@@ -1239,6 +1211,7 @@ class _ViewModuleState extends State<ViewModule> {
     required int index,
     required VoidCallback onTap,
     required DeviceType deviceType,
+    Color? cupColor,
   }) {
     double itemPadding;
     double iconSize;
@@ -1262,28 +1235,22 @@ class _ViewModuleState extends State<ViewModule> {
         break;
     }
 
-    Color? cupColor;
-    if (index < 3 && isVideo) {
-      switch (index) {
-        case 0:
-          cupColor = Color(0xFFFFD700);
-          break;
-        case 1:
-          cupColor = Color(0xFFC0C0C0);
-          break;
-        case 2:
-          cupColor = Color(0xFFCD7F32);
-          break;
-      }
-    }
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        height: 110,
+        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF2A4D7A) : Colors.transparent,
+          color: isSelected
+              ? Color(0xFF0e3995cc).withOpacity(.19)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? Color.fromARGB(14, 57, 67, 204).withOpacity(.99)
+                : Colors.transparent,
+            width: 2,
+          ),
         ),
         child: Padding(
           padding: EdgeInsets.all(itemPadding),
@@ -1297,11 +1264,10 @@ class _ViewModuleState extends State<ViewModule> {
                 isVideo: isVideo,
                 iconSize: iconSize,
               ),
-
               SizedBox(width: 12),
-
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
@@ -1312,33 +1278,17 @@ class _ViewModuleState extends State<ViewModule> {
                         fontSize: deviceType == DeviceType.mobilePortrait
                             ? 14
                             : 16,
-                        fontFamily: 'Cairo',
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4),
-                    if (isVideo)
-                      Text(
-                        duration,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: deviceType == DeviceType.mobilePortrait
-                              ? 12
-                              : 14,
-                          fontFamily: 'Cairo',
-                        ),
-                      ),
                   ],
                 ),
               ),
-
-              if (cupColor != null) ...[
-                SizedBox(width: 8),
+              if (cupColor != null) SizedBox(width: 8),
+              if (cupColor != null)
                 Icon(Icons.emoji_events, color: cupColor, size: iconSize),
-              ],
             ],
           ),
         ),
@@ -1356,16 +1306,16 @@ class _ViewModuleState extends State<ViewModule> {
       thumbnailUrl =
           "https://cdn.primeacademy.education/primeacademy$thumbnailUrl";
       return Container(
-        width: 80,
-        height: 50,
+        width: 100,
+        height: 95,
         child: Stack(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
                 thumbnailUrl,
-                width: 80,
-                height: 50,
+                width: 100,
+                height: 95,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return _buildPlaceholderThumbnail(
@@ -1399,8 +1349,7 @@ class _ViewModuleState extends State<ViewModule> {
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 10,
-                    fontFamily: 'Cairo',
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -1419,8 +1368,8 @@ class _ViewModuleState extends State<ViewModule> {
     String duration,
   ) {
     return Container(
-      width: 80,
-      height: 50,
+      width: 100,
+      height: 95,
       decoration: BoxDecoration(
         color: Color(0xFF1E2A3A),
         borderRadius: BorderRadius.circular(8),
@@ -1450,8 +1399,7 @@ class _ViewModuleState extends State<ViewModule> {
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 10,
-                    fontFamily: 'Cairo',
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -1469,99 +1417,13 @@ class _ViewModuleState extends State<ViewModule> {
 
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Mycolors.backgroundColor,
-        elevation: 0,
-        title: Image.asset("assets/images/footer-logo.webp", height: 40),
-        actions: [
-          Container(
-            padding: const EdgeInsets.all(2),
-            width: 70,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xff4f2349), Color(0xffa76433)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0XFF0f1217),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  context.read<ProfileCubit>().emitprofileState();
-                },
-                child: const Text(
-                  "حسابي",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-          // IconButton(
-          //   icon: const Icon(Icons.notifications_none, color: Colors.white),
-          //   onPressed: () {},
-          // ),
-          SizedBox(width: 8),
-          BlocBuilder<NotificationCubit, NotificationState>(
-            builder: (context, state) {
-              bool hasUnread = false;
-              if (state is NotificationLoaded) {
-                hasUnread = state.notifications.any((n) => n.isRead == false);
-              }
-
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: Mycolors.primary_color.colors,
-                      ),
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0XFF161c29),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.notifications_none,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            showNotificationsDialog(context, widget.user);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (hasUnread)
-                    Positioned(
-                      right: 4,
-                      top: -1,
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
+      appBar: CustomAppBar(
+        user: widget.user,
+        onLogoPressed: () => Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => AppLayout(user: widget.user)),
+          (route) => false,
+        ),
       ),
       body: MultiBlocListener(
         listeners: [
@@ -1645,10 +1507,7 @@ class _ViewModuleState extends State<ViewModule> {
                 error: (error) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        'خطأ في إرسال التقييم: $error',
-                        style: TextStyle(fontFamily: 'Cairo'),
-                      ),
+                      content: Text('خطأ في إرسال التقييم: $error'),
                       backgroundColor: Colors.red,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
@@ -1688,7 +1547,7 @@ class _ViewModuleState extends State<ViewModule> {
               initial: () => const Center(
                 child: Text(
                   "جاري تحميل الدروس...",
-                  style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
               loading: () => const Center(
@@ -1711,45 +1570,60 @@ class _ViewModuleState extends State<ViewModule> {
 
                 // تخطيط مختلف للـ landscape والـ tablet
                 if (isLandscape && deviceType != DeviceType.mobilePortrait) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          children: [
-                            videoHeader(
-                              _currentLessonTitle,
-                              context,
-                              deviceType,
-                            ),
-                            _buildVideoPlayer(deviceType),
-                            _buildActionButtons(deviceType),
-                          ],
-                        ),
-                      ),
-                      // الجانب الأيمن - قائمة الدروس
-                      Expanded(
-                        flex: 2,
-                        child: _buildLessonsList(
-                          lessons,
-                          externalSources,
-                          deviceType,
-                        ),
-                      ),
-                    ],
-                  );
-                } else {
-                  // التخطيط العمودي للـ portrait
-                  return Column(
-                    children: [
-                      videoHeader(_currentLessonTitle, context, deviceType),
+  return SingleChildScrollView(
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // الجزء اليسار
+        Expanded(
+          flex: 3,
+          child: Column(
+            children: [
+              videoHeader(_currentLessonTitle, context, deviceType),
+              _buildVideoPlayer(deviceType),
+              _buildActionButtons(deviceType),
+            ],
+          ),
+        ),
 
-                      _buildVideoPlayer(deviceType),
-                      _buildActionButtons(deviceType),
-                      _buildLessonsList(lessons, externalSources, deviceType),
-                    ],
-                  );
-                }
+        // قائمة الدروس يمين
+        Expanded(
+          flex: 2,
+          child: Column(
+            children: [
+              _buildLessonsList(
+                module.items ?? [],
+                deviceType,
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+              else {
+  return SingleChildScrollView(
+    child: Column(
+      children: [
+        videoHeader(_currentLessonTitle, context, deviceType),
+
+        _buildVideoPlayer(deviceType),
+        _buildActionButtons(deviceType),
+
+        SizedBox(height: 40),
+
+        // قائمة الدروس تحت الفيديو
+        _buildLessonsList(
+          module.items ?? [],
+          deviceType,
+        ),
+      ],
+    ),
+  );
+}
+
               },
               error: (error) => Center(
                 child: Column(
@@ -1766,8 +1640,7 @@ class _ViewModuleState extends State<ViewModule> {
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 18,
-                        fontFamily: 'Cairo',
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -1776,7 +1649,6 @@ class _ViewModuleState extends State<ViewModule> {
                       style: TextStyle(
                         color: Colors.red.withOpacity(0.8),
                         fontSize: 14,
-                        fontFamily: 'Cairo',
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1795,10 +1667,7 @@ class _ViewModuleState extends State<ViewModule> {
                       ),
                       child: const Text(
                         "إعادة المحاولة",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Cairo',
-                        ),
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ],
@@ -1832,29 +1701,23 @@ class _ViewModuleState extends State<ViewModule> {
         backgroundColor: Mycolors.darkblue,
         title: const Text(
           "فتح رابط خارجي",
-          style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+          style: TextStyle(color: Colors.white),
         ),
         content: Text(
           "هل تريد فتح هذا الرابط؟\n$url",
-          style: const TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "إلغاء",
-              style: TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
-            ),
+            child: const Text("إلغاء", style: TextStyle(color: Colors.white70)),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
               await _launchUrl(url);
             },
-            child: const Text(
-              "فتح",
-              style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
-            ),
+            child: const Text("فتح", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -1881,21 +1744,12 @@ class _ViewModuleState extends State<ViewModule> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Mycolors.darkblue,
-        title: const Text(
-          "خطأ",
-          style: TextStyle(color: Colors.red, fontFamily: 'Cairo'),
-        ),
-        content: Text(
-          message,
-          style: const TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
-        ),
+        title: const Text("خطأ", style: TextStyle(color: Colors.red)),
+        content: Text(message, style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "موافق",
-              style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
-            ),
+            child: const Text("موافق", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

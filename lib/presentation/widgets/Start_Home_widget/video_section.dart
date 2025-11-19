@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_withoutImage.dart';
 import 'package:video_player/video_player.dart';
+
 class VideoSection extends StatefulWidget {
   const VideoSection({super.key});
 
@@ -70,8 +71,8 @@ class _VideoSectionState extends State<VideoSection> {
                 "لاتخاف تنسى \nالفيديوهات عندك، تعيدها متى ما\n !تبي، ومرات قد ما تبي",
                 style: TextStyle(
                   fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white70,
+                  // fontWeight: FontWeight.bold,
+                  color: Colors.white,
                   height: 1.5,
                 ),
                 textAlign: TextAlign.end,

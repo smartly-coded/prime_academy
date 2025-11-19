@@ -222,8 +222,7 @@ class _ModuleTileState extends State<ModuleTile> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
+                          // fontWeight: FontWeight.bold,
                           fontSize: isTablet ? 18 : 16,
                         ),
                       ),
@@ -238,7 +237,6 @@ class _ModuleTileState extends State<ModuleTile> {
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: isTablet ? 14 : 12,
-                            fontFamily: 'Cairo',
                             fontWeight: FontWeight.w500,
                           ),
                         )
@@ -251,7 +249,6 @@ class _ModuleTileState extends State<ModuleTile> {
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: isTablet ? 14 : 12,
-                            fontFamily: 'Cairo',
                             fontWeight: FontWeight.w500,
                           ),
                         ),
