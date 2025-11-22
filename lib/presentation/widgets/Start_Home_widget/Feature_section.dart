@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_withoutImage.dart';
@@ -25,13 +26,14 @@ class FeaturesSection extends StatelessWidget {
             ),
 
             const SizedBox(height: 30),
+
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: isMobile ? 1 : 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: isMobile ? 1.8 : 1,
+              childAspectRatio: isMobile ? 1.8 : 1.4,
               children: const [
                 FeatureCard(
                   icon: Icons.menu_book,
@@ -45,14 +47,12 @@ class FeaturesSection extends StatelessWidget {
                   description:
                       "راح تستفيد من خبرات مدرسين متمكنين يساعدونك توصل لأفضل مستوى.",
                 ),
-
                 FeatureCard(
                   icon: Icons.assignment,
                   title: "اختبارات تفاعلية ممتعة",
                   description:
                       "اختبارات سهلة وممتعة تخلّيك تجهز حق الامتحانات بطريقة سريعة ومضمونة.",
                 ),
-
                 FeatureCard(
                   icon: Icons.computer,
                   title: "تعلم عن بُعد",
@@ -82,44 +82,38 @@ class FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Mycolors.cardColor,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.orange, size: 40),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                // fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+    final width = MediaQuery.of(context).size.width;
+    final bool isTablet = width >= 600;
+
+    return Container(
+      // تم تقليل الارتفاع للتابلت
+      height: isTablet ? 70 : null, // كان 90 للتابلت
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Mycolors.cardColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.orange, size: 40),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              description,
+              style: const TextStyle(fontSize: 15, color: Colors.white70),
               textAlign: TextAlign.center,
             ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.white70,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

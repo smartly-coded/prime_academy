@@ -12,13 +12,12 @@ class VideoSection extends StatefulWidget {
 class _VideoSectionState extends State<VideoSection> {
   late VideoPlayerController _controller;
 
-  /// قيمة ثابتة لرفع الفيديو فوق الجزء اللي قبله
-  final double fixedOverlap = 20; // ← الرقم الثابت
+  final double fixedOverlap = 20;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/videos/splash3.webm')
+      _controller = VideoPlayerController.asset('assets/videos/splash3.mp4')
       ..initialize().then((_) {
         setState(() {});
         _controller.setLooping(true);

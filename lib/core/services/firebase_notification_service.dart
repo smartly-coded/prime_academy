@@ -17,7 +17,7 @@ class FirebaseNotificationService {
       'high_importance_channel',
       'High Importance Notifications',
       description: 'This channel is used for important notifications.',
-      importance: Importance.max, // 👈 لازم تكون max عشان heads-up
+      importance: Importance.max,
     );
 
     await _localNotificationsPlugin
@@ -29,12 +29,22 @@ class FirebaseNotificationService {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
 
     await _localNotificationsPlugin.initialize(initializationSettings);
 
-    // 🟢 طلب إذن الإشعارات (مطلوب من Android 13+)
+    // 🟢 طلب إذن الإشعارات
     NotificationSettings settings =
         await FirebaseMessaging.instance.requestPermission(
       alert: true,
@@ -57,7 +67,7 @@ class FirebaseNotificationService {
             android: AndroidNotificationDetails(
               'high_importance_channel',
               'High Importance Notifications',
-              importance: Importance.max, // 👈 Heads-up
+              importance: Importance.max,
               priority: Priority.high,
               playSound: true,
               enableVibration: true,
@@ -69,12 +79,11 @@ class FirebaseNotificationService {
       }
     });
 
-    // 🔥 عرض الـ Token في الكونسول (للاختبار من Firebase Console أو Postman)
+    // 🔥 عرض الـ Token في الكونسول
     final token = await FirebaseMessaging.instance.getToken();
     print('🔥 FCM Token: $token');
   }
 
-  
   static Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
     await Firebase.initializeApp();

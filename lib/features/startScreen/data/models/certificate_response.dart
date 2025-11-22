@@ -13,6 +13,13 @@ class CertificateResponse {
   @JsonKey(name: "updated_at")
   final DateTime updatedAt;
   final ImageData image;
+  
+  // Add these fields for student information
+  final String? firstname;
+  final String? lastname;
+  @JsonKey(name: "studentName")
+  final String? studentName;
+  final String? name;
 
   CertificateResponse({
     required this.id,
@@ -21,6 +28,10 @@ class CertificateResponse {
     required this.createdAt,
     required this.updatedAt,
     required this.image,
+    this.firstname,
+    this.lastname,
+    this.studentName,
+    this.name,
   });
 
   factory CertificateResponse.fromJson(Map<String, dynamic> json) =>
