@@ -5,12 +5,14 @@ class ItemModel {
   final LessonType type; // Enum
   final String title;
   final String? time;
+  final String? url;
 
-  ItemModel({
+  ItemModel( {
     required this.id,
     required this.type,
     required this.title,
     this.time,
+    required this.url,
   });
 
   factory ItemModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class ItemModel {
 
     String extractedTitle = '';
     String? extractedTime;
+    String? extractedUrl;
 
     if (json['lesson'] != null) {
       extractedTitle = json['lesson']['title'] ?? '';
@@ -29,6 +32,7 @@ class ItemModel {
       }
     } else if (json['external_source'] != null) {
       extractedTitle = json['external_source']['title'] ?? '';
+      extractedUrl = json['external_source']['url'];
     }
 
     return ItemModel(
@@ -36,6 +40,7 @@ class ItemModel {
       type: itemType, // Enum هنا
       title: extractedTitle,
       time: extractedTime,
+      url: extractedUrl,
     );
   }
 }

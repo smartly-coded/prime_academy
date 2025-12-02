@@ -228,10 +228,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
 import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
+import 'package:prime_academy/features/CoursesModules/data/repo/modules_lessons_repo.dart';
+import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/Notification/data/models/notification_model.dart';
 import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/presentation/Chat/chatPage.dart';
+import 'package:prime_academy/presentation/Modules/veiw/view_lesson.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 enum DeviceType { mobile, tablet }
 
@@ -327,13 +331,47 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                                   : Icons.notifications;
 
                               return GestureDetector(
+                                // onTap: () {
+                                //   context
+                                //       .read<NotificationCubit>()
+                                //       .markNotificationAsRead(noti.id!);
+
+                                //   if (noti.type.toLowerCase() == 'chat') {
+                                //     final chatId = noti.data?['chatId'];
+                                //     if (chatId != null) {
+                                //       Navigator.push(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //           builder: (_) => BlocProvider(
+                                //             create: (context) => ChatCubit(
+                                //               context.read<ChatRepo>(),
+                                //               chatId,
+                                //               user,
+                                //             )..loadChat(),
+                                //             child: ChatScreen(
+                                //               chatId: chatId,
+                                //               user: user,
+                                //             ),
+                                //           ),
+                                //         ),
+                                //       );
+                                //     }
+                                //   }
+                                // },
                                 onTap: () {
                                   context
                                       .read<NotificationCubit>()
                                       .markNotificationAsRead(noti.id!);
 
-                                  if (noti.type.toLowerCase() == 'chat') {
-                                    final chatId = noti.data?['chatId'];
+                                  final type = noti.type;
+                                  final data = noti.data;
+                                  final link = data?["link"];
+
+                                  // ===========================================================
+                                  // 1) فتح الشات Chat
+                                  // ===========================================================
+                                  if (type.toLowerCase() == "chat") {
+                                    final chatId = data?['chatId'];
                                     if (chatId != null) {
                                       Navigator.push(
                                         context,
@@ -352,8 +390,68 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                                         ),
                                       );
                                     }
+                                    return;
+                                  }
+
+                                  // ===========================================================
+                                  // 2) فتح درس جديد NEW_LESSON
+                                  // ===========================================================
+                                  if (type == "NEW_LESSON" && link != null) {
+                                    try {
+                                      // مثال: /course/2/module/56?lessonId=300&active_tab=videos
+                                      final uri = Uri.parse(link);
+
+                                      final segments = uri
+                                          .pathSegments; // [course, 2, module, 56]
+                                      final courseId = int.tryParse(
+                                        segments[1],
+                                      );
+                                      final moduleId = int.tryParse(
+                                        segments[3],
+                                      );
+
+                                      final lessonId = int.tryParse(
+                                        uri.queryParameters['lessonId'] ?? "",
+                                      );
+
+                                      if (courseId != null &&
+                                          moduleId != null &&
+                                          lessonId != null) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => BlocProvider(
+                                              create: (context) =>
+                                                  ModuleLessonsCubit(context.read<ModulesLessonsRepo>(),)..emitModuleLessonsStates(moduleId, courseId),
+                                              child: ViewModule(
+                                                moduleId: moduleId,
+                                                courseId: courseId,
+                                                itemId: lessonId,
+                                                user: user,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      print(
+                                        "Error parsing NEW_LESSON link: $e",
+                                      );
+                                    }
+
+                                    return;
+                                  }
+
+                                  // ===========================================================
+                                  // 3) فتح الامتحان EXTERNAL_SOURCE
+                                  // ===========================================================
+                                  if (type == "EXTERNAL_SOURCE" &&
+                                      link != null) {
+                                    launchUrlString(link);
+                                    return;
                                   }
                                 },
+
                                 child: Stack(
                                   children: [
                                     Padding(

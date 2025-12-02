@@ -15,6 +15,7 @@ import 'package:prime_academy/presentation/Modules/veiw/view_lesson.dart';
 import 'package:prime_academy/presentation/Start_homeScreen/student_detail_screen.dart';
 import 'package:prime_academy/presentation/login/veiw/loginScreen.dart';
 import 'package:prime_academy/presentation/splashScreens/splash_one.dart';
+import 'package:prime_academy/presentation/widgets/Start_Home_widget/all_students_page.dart';
 
 class AppRoutes {
   static const String login = '/login';
@@ -22,6 +23,8 @@ class AppRoutes {
   static const String Home = '/home';
   static const String studentDetail = 'student-detail';
   static const String moduleLessonsPreview = '/module_lesson_preview';
+  static const allStudentsPage = "/allStudentsPage";
+
   Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
@@ -78,6 +81,10 @@ class AppRoutes {
             ),
           ),
         );
+case allStudentsPage:
+  return MaterialPageRoute(
+    builder: (_) => const AllStudentsPage(),
+  );
 
       default:
         return MaterialPageRoute(

@@ -25,7 +25,8 @@ abstract class ApiService {
   @POST(ApiConstants.login)
   Future<LoginResponse> login(@Body() LoginRequestBody loginRequestBody);
   @GET(ApiConstants.studentsPreview)
-  Future<StudentsResponse> getStudents();
+  // Future<StudentsResponse> getStudents();
+  Future<StudentsResponse> getStudents({@Query("page") int page = 1});
   @GET(ApiConstants.certificates)
   Future<List<CertificateResponse>> getCertificates();
   @GET(ApiConstants.studentProfile)

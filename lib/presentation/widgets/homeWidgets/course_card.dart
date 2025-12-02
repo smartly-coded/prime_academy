@@ -22,6 +22,8 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ValueNotifier<bool> gradientFlipped4 = ValueNotifier(false);
+
     return Container(
       decoration: BoxDecoration(
         color: Mycolors.cardColor1,
@@ -56,107 +58,48 @@ class CourseCard extends StatelessWidget {
                     height: double.infinity,
 
                     child: (image != null && image!.isNotEmpty)
-    ? ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Image.network(
-          buildImageUrl(image), 
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-            child: Transform.scale(
-              scale: 1.1,
-              child: Image.asset(
-                'assets/Gifs/englishcourse.gif',
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
-              ),
-            ),
-          ),
-        ),
-      )
-    : Center(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFAA00).withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.menu_book,
-            color: Color(0xFFFFAA00),
-            size: 40,
-          ),
-        ),
-      ),
-
-                  //   child: (image != null && image!.isNotEmpty)
-                  //       ? ClipRRect(
-                  //           borderRadius: const BorderRadius.only(
-                  //             topLeft: Radius.circular(20),
-                  //             topRight: Radius.circular(20),
-                  //           ),
-                  //           // child: Image.network(
-                  //           //   image!,
-                  //           //   // fit: BoxFit.cover,
-                  //           //   errorBuilder: (context, error, stackTrace) =>
-                  //           //       Center(
-                  //           //         child: Image.asset(
-                  //           //           'assets/Gifs/englishcourse.gif',
-                  //           //           width: 1000,
-                  //           //           // height: double.infinity,
-                  //           //           // width: 80,
-                  //           //           // height: isMobile ? 200 : 140,
-                  //           //           fit: BoxFit.contain,
-                  //           //         ),
-                  //           //       ),
-                  //           // ),
-                  //           child: Image.network(
-                  //             image!,
-                  //             fit: BoxFit.cover,
-                  //             errorBuilder: (context, error, stackTrace) =>
-                  //                 ClipRRect(
-                  //                   borderRadius: const BorderRadius.only(
-                  //                     topLeft: Radius.circular(20),
-                  //                     topRight: Radius.circular(20),
-                  //                   ),
-                  //                   child: Transform.scale(
-                  //                     scale: 1.1,
-                  //                     child: Image.asset(
-                  //                       'assets/Gifs/englishcourse.gif',
-                  //                       width: double.infinity,
-                  //                       height: double.infinity,
-                  //                       fit: BoxFit
-                  //                           .cover, // تملى كل المساحة وتقص الزايد
-                  //                       alignment: Alignment.center,
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //           ),
-                  //         )
-                  //       : Center(
-                  //           child: Container(
-                  //             padding: const EdgeInsets.all(20),
-                  //             decoration: BoxDecoration(
-                  //               color: const Color(0xFFFFAA00).withOpacity(0.2),
-                  //               shape: BoxShape.circle,
-                  //             ),
-
-                  //             child: const Icon(
-                  //               Icons.menu_book,
-                  //               color: Color(0xFFFFAA00),
-                  //               size: 40,
-                  //             ),
-                  //           ),
-                  //         ),
-                   ),
+                        ? ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                            child: Image.network(
+                              buildImageUrl(image),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
+                                    child: Transform.scale(
+                                      scale: 1.1,
+                                      child: Image.asset(
+                                        'assets/Gifs/englishcourse.gif',
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        fit: BoxFit.cover,
+                                        alignment: Alignment.center,
+                                      ),
+                                    ),
+                                  ),
+                            ),
+                          )
+                        : Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFAA00).withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.menu_book,
+                                color: Color(0xFFFFAA00),
+                                size: 40,
+                              ),
+                            ),
+                          ),
+                  ),
 
                   if (image != null && image!.isNotEmpty)
                     Container(
@@ -185,39 +128,113 @@ class CourseCard extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: Mycolors.primary_color.colors,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xffa76433).withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: const Offset(0, 2),
+                    // GestureDetector(
+                    //    onTap: () {
+                    //     Navigator.of(context).push(
+                    //       MaterialPageRoute(
+                    //         builder: (context) => ModulesPage(
+                    //           courseId: courseId,
+                    //           courseName: courseName,
+                    //           user: user,
+                    //         ),
+                    //       ),
+                    //     );
+                    //   },
+                    //   child: Container(
+                    //     width: double.infinity,
+                    //     padding: const EdgeInsets.symmetric(
+                    //       horizontal: 16,
+                    //       vertical: 12,
+                    //     ),
+                    //     decoration: BoxDecoration(
+                    //       gradient: LinearGradient(
+                    //         colors: Mycolors.primary_color.colors,
+                    //         begin: Alignment.topLeft,
+                    //         end: Alignment.bottomRight,
+                    //       ),
+                    //       borderRadius: BorderRadius.circular(20),
+                    //       boxShadow: [
+                    //         BoxShadow(
+                    //           color: const Color(0xffa76433).withOpacity(0.3),
+                    //           spreadRadius: 1,
+                    //           blurRadius: 5,
+                    //           offset: const Offset(0, 2),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //     child: Text(
+                    //       courseName,
+                    //       style: TextStyle(
+                    //         fontSize: isMobile ? 15 : 17,
+                    //         // fontWeight: FontWeight.bold,
+                    //         color: Colors.white,
+                    //       ),
+                    //       textAlign: TextAlign.center,
+                    //       maxLines: 2,
+                    //       overflow: TextOverflow.ellipsis,
+                    //     ),
+                    //   ),
+                    // ),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: gradientFlipped4,
+                      builder: (context, isFlipped, _) {
+                        return GestureDetector(
+                          onTap: () {
+                            // نقلب اتجاه الـ gradient
+                            gradientFlipped4.value = !gradientFlipped4.value;
+
+                            // باقي onTap الأصلي
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ModulesPage(
+                                  courseId: courseId,
+                                  courseName: courseName,
+                                  user: user,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: Mycolors.primary_color.colors,
+                                begin: isFlipped
+                                    ? Alignment.bottomRight
+                                    : Alignment.topLeft,
+                                end: isFlipped
+                                    ? Alignment.topLeft
+                                    : Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xffa76433,
+                                  ).withOpacity(0.3),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              courseName,
+                              style: TextStyle(
+                                fontSize: isMobile ? 15 : 17,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ],
-                      ),
-                      child: Text(
-                        courseName,
-                        style: TextStyle(
-                          fontSize: isMobile ? 15 : 17,
-                          // fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                        );
+                      },
                     ),
 
                     SizedBox(height: 20),
@@ -251,11 +268,6 @@ class CourseCard extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // const Icon(
-                              //   Icons.play_arrow,
-                              //   color: Colors.white,
-                              //   size: 20,
-                              // ),
                               const SizedBox(width: 8),
                               Text(
                                 "الذهاب للدورة",
@@ -279,17 +291,15 @@ class CourseCard extends StatelessWidget {
       ),
     );
   }
+
   // دالة لتحويل المسار النسبي للرابط الكامل
-String buildImageUrl(String? imagePath) {
-  if (imagePath == null || imagePath.isEmpty) return "";
-  if (imagePath.startsWith('http')) return imagePath;
+  String buildImageUrl(String? imagePath) {
+    if (imagePath == null || imagePath.isEmpty) return "";
+    if (imagePath.startsWith('http')) return imagePath;
 
-  const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
-  // تأكد إن فيه "/" واحد فقط بين الجزء الثابت والمسار
-  final fixedPath = imagePath.startsWith('/') ? imagePath : '/$imagePath';
-  return "$cdnPrefix$fixedPath";
-}
-
-
-
+    const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
+    // تأكد إن فيه "/" واحد فقط بين الجزء الثابت والمسار
+    final fixedPath = imagePath.startsWith('/') ? imagePath : '/$imagePath';
+    return "$cdnPrefix$fixedPath";
+  }
 }

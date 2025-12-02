@@ -1,76 +1,70 @@
+
 // import 'package:flutter/material.dart';
+// import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 // Widget buildTextWithBorder(
 //   String mainTitle,
 //   String subTitle,
-//   BuildContext context,
-// ) {
-//   return Column(
-//     crossAxisAlignment: CrossAxisAlignment.start,
-//     mainAxisAlignment: MainAxisAlignment.start,
-//     children: [
+//   BuildContext context, {
+//   double? containerWidth,
+// }) {
+//   double defaultWidth =
+//       containerWidth ?? MediaQuery.of(context).size.width * 0.5;
 
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.end,
+//     mainAxisAlignment: MainAxisAlignment.center,
+//     children: [
 //       Align(
-//         alignment: Alignment.bottomRight,
+//         alignment: Alignment.centerRight,
 //         child: Container(
-//           padding: EdgeInsets.all(3),
+//           width: defaultWidth,
+//           padding: const EdgeInsets.all(3),
 //           decoration: BoxDecoration(
 //             gradient: LinearGradient(
-//               colors: [Color(0xff4f2349), Color(0xffa76433)],
-//               begin: Alignment.topRight,
-//               end: Alignment.bottomLeft,
+//               colors: Mycolors.primary_color.colors,
+//               begin: Alignment.bottomRight,
+//               end: Alignment.topLeft,
 //             ),
 //             borderRadius: BorderRadius.circular(10),
 //           ),
 //           child: Container(
-//             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+//             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
 //             decoration: BoxDecoration(
-//               color: Color(0XFF222633),
+//               color: const Color(0XFF222633),
 //               borderRadius: BorderRadius.circular(7),
 //             ),
-//             child: Directionality(
+//             child: Text(
+//               mainTitle,
+//               textAlign: TextAlign.center,
 //               textDirection: TextDirection.rtl,
-//               child: Text(
-//                 mainTitle,
-//                 textAlign: TextAlign.start,
-//                 style: TextStyle(
-//                   fontSize: getResponsiveFontSize(context, fontSize: 20),
-//                   fontWeight: FontWeight.bold,
-//                   color: Colors.white,
-//                   height: 1.2,
-//                 ),
+//               style: TextStyle(
+//                 fontSize: getResponsiveFontSize(context, fontSize: 18),
+//                 color: Colors.white,
+//                 height: 1.2,
 //               ),
 //             ),
 //           ),
 //         ),
 //       ),
-//       const SizedBox(height: 16),
 
-//       // العنوان الفرعي مع الصورة في آخر النص
-//       Align(
-//         alignment: Alignment.bottomRight, // ✅ إجبار المحاذاة من اليمين
-//         child: Directionality(
-//           textDirection: TextDirection.rtl,
-//           child: RichText(
-//             textAlign: TextAlign.start,
-//             text: TextSpan(
-//               children: [
-//                 // النص
-//                 TextSpan(
-//                   text: subTitle,
-//                   style: TextStyle(
-//                     fontSize: getResponsiveFontSize(context, fontSize: 20),
-//                     fontWeight: FontWeight.w600,
-//                     color: Colors.white,
-//                     height: 1.3,
-//                   ),
-//                 ),
-
-//                 TextSpan(text: " "),
-
-//               ],
+//       const SizedBox(height: 10),
+//       RichText(
+//         textAlign: TextAlign.right,
+//         textDirection: TextDirection.rtl,
+//         text: TextSpan(
+//           children: [
+//             TextSpan(
+//               text: subTitle,
+//               style: TextStyle(
+//                 fontSize: getResponsiveFontSize(context, fontSize: 17),
+//                 color: Colors.white,
+//                 fontFamily: 'Bahij',
+//                 height: 1.3,
+//               ),
 //             ),
-//           ),
+//             const TextSpan(text: " "),
+//           ],
 //         ),
 //       ),
 //       const SizedBox(height: 24),
@@ -78,17 +72,16 @@
 //   );
 // }
 
-// // Helper functions
 // double getResponsiveFontSize(BuildContext context, {required double fontSize}) {
 //   double scaleFactor = getScaleFactor(context);
 //   double responsiveFontSize = fontSize * scaleFactor;
-//   double lowerLimit = responsiveFontSize * .8;
+//   double lowerLimit = responsiveFontSize * 0.8;
 //   double upperLimit = responsiveFontSize * 1.2;
 //   return responsiveFontSize.clamp(lowerLimit, upperLimit);
 // }
 
 // double getScaleFactor(BuildContext context) {
-//   double width = MediaQuery.sizeOf(context).width;
+//   double width = MediaQuery.of(context).size.width;
 //   if (width < 600) {
 //     return width / 400;
 //   } else {
@@ -97,54 +90,67 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
+import 'package:prime_academy/presentation/widgets/homeWidgets/build_text.dart';
 
 Widget buildTextWithBorder(
   String mainTitle,
   String subTitle,
   BuildContext context, {
-  double? containerWidth, // ← optional width
+  double? containerWidth,
 }) {
   double defaultWidth =
       containerWidth ?? MediaQuery.of(context).size.width * 0.5;
+
+  // نستخدم ValueNotifier لتغيير اتجاه gradient عند الضغط
+  final gradientFlipped = ValueNotifier<bool>(false);
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.end,
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       Align(
-        alignment: Alignment.centerRight, // دايمًا على اليمين
-        child: Container(
-          width: defaultWidth, // استخدمنا width سواء مرسل أو default
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: Mycolors.primary_color.colors,
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0XFF222633),
-              borderRadius: BorderRadius.circular(7),
-            ),
-            child: Text(
-              mainTitle,
-              textAlign: TextAlign.center,
-              textDirection: TextDirection.rtl,
-              style: TextStyle(
-                fontSize: getResponsiveFontSize(context, fontSize: 18),
-                // fontWeight: FontWeight.bold,
-                color: Colors.white,
-                height: 1.2,
+        alignment: Alignment.centerRight,
+        child: ValueListenableBuilder<bool>(
+          valueListenable: gradientFlipped,
+          builder: (context, isFlipped, _) {
+            return GestureDetector(
+              onTap: () {
+                gradientFlipped.value = !gradientFlipped.value;
+              },
+              child: Container(
+                width: defaultWidth,
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: Mycolors.primary_color.colors,
+                    begin: isFlipped ? Alignment.topLeft : Alignment.bottomRight,
+                    end: isFlipped ? Alignment.bottomRight : Alignment.topLeft,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: const Color(0XFF222633),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  child: Text(
+                    mainTitle,
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      fontSize: getResponsiveFontSize(context, fontSize: 18),
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
-
       const SizedBox(height: 10),
       RichText(
         textAlign: TextAlign.right,
@@ -155,7 +161,6 @@ Widget buildTextWithBorder(
               text: subTitle,
               style: TextStyle(
                 fontSize: getResponsiveFontSize(context, fontSize: 17),
-                // fontWeight: FontWeight.w600,
                 color: Colors.white,
                 fontFamily: 'Bahij',
                 height: 1.3,
@@ -168,21 +173,4 @@ Widget buildTextWithBorder(
       const SizedBox(height: 24),
     ],
   );
-}
-
-double getResponsiveFontSize(BuildContext context, {required double fontSize}) {
-  double scaleFactor = getScaleFactor(context);
-  double responsiveFontSize = fontSize * scaleFactor;
-  double lowerLimit = responsiveFontSize * 0.8;
-  double upperLimit = responsiveFontSize * 1.2;
-  return responsiveFontSize.clamp(lowerLimit, upperLimit);
-}
-
-double getScaleFactor(BuildContext context) {
-  double width = MediaQuery.of(context).size.width;
-  if (width < 600) {
-    return width / 400;
-  } else {
-    return width / 700;
-  }
 }

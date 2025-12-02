@@ -14,6 +14,10 @@ CertificateResponse _$CertificateResponseFromJson(Map<String, dynamic> json) =>
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       image: ImageData.fromJson(json['image'] as Map<String, dynamic>),
+      firstname: json['firstname'] as String?,
+      lastname: json['lastname'] as String?,
+      studentName: json['studentName'] as String?,
+      name: json['name'] as String?,
     );
 
 Map<String, dynamic> _$CertificateResponseToJson(
@@ -25,6 +29,10 @@ Map<String, dynamic> _$CertificateResponseToJson(
   'created_at': instance.createdAt.toIso8601String(),
   'updated_at': instance.updatedAt.toIso8601String(),
   'image': instance.image,
+  'firstname': instance.firstname,
+  'lastname': instance.lastname,
+  'studentName': instance.studentName,
+  'name': instance.name,
 };
 
 ImageData _$ImageDataFromJson(Map<String, dynamic> json) => ImageData(

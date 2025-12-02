@@ -507,6 +507,7 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    ValueNotifier<bool> gradientFlipped2 = ValueNotifier(false);
 
     int itemsPerPage;
     if (screenWidth < 600) {
@@ -548,6 +549,9 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
               textAlign: TextAlign.center,
             ),
           ),
+          studentsBatchLoaded: (students) {
+            return SizedBox.shrink();
+          },
           success: (response) {
             try {
               _certificates = response ?? [];
@@ -592,34 +596,50 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
               child: Column(
                 children: [
                   // العنوان
-                  Container(
-                    padding: const EdgeInsets.all(3),
-                    margin: const EdgeInsets.only(bottom: 30),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      gradient: const LinearGradient(
-                        colors: [Color(0xffa76433), Color(0xff4f2349)],
-                      ),
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Mycolors.darkblue,
-                      ),
-                      child: const Text(
-                        "شهادات طلابنا ",
-                        style: TextStyle(
-                          fontSize: 24,
-                          // fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                  ValueListenableBuilder<bool>(
+                    valueListenable: gradientFlipped2,
+                    builder: (context, isFlipped, _) {
+                      return GestureDetector(
+                        onTap: () {
+                          gradientFlipped2.value = !gradientFlipped2.value;
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(3),
+                          margin: const EdgeInsets.only(bottom: 30),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            gradient: LinearGradient(
+                              colors: Mycolors.primary_color.colors,
+                              begin: isFlipped
+                                  ? Alignment.topLeft
+                                  : Alignment.bottomRight,
+                              end: isFlipped
+                                  ? Alignment.bottomRight
+                                  : Alignment.topLeft,
+                            ),
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Mycolors.darkblue,
+                            ),
+                            child: const Text(
+                              "شهادات طلابنا ",
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
+
                   Text(
                     '  للعام الحالي ',
                     style: TextStyle(

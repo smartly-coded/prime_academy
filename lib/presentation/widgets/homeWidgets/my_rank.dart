@@ -20,17 +20,23 @@ class RankingWidget extends StatefulWidget {
 class _RankingWidgetState extends State<RankingWidget> {
   String? selectedCourse;
   int? selectedCourseId;
-String buildImageUrl(String? imagePath) {
-  if (imagePath == null || imagePath.isEmpty) return "";
+  int currentPage = 1;
+  int pageSize = 25;
+  int totalPages = 1;
 
-  if (imagePath.startsWith('http')) return imagePath;
+  bool sortByRank = true;
+  String buildImageUrl(String? imagePath) {
+    if (imagePath == null || imagePath.isEmpty) return "";
 
-  const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
+    if (imagePath.startsWith('http')) return imagePath;
 
-  return imagePath.startsWith('/')
-      ? "$cdnPrefix$imagePath"
-      : "$cdnPrefix/$imagePath";
-}
+    const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
+
+    return imagePath.startsWith('/')
+        ? "$cdnPrefix$imagePath"
+        : "$cdnPrefix/$imagePath";
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileCubit, ProfileState>(
@@ -83,8 +89,35 @@ String buildImageUrl(String? imagePath) {
                       );
                     } else if (rankState is RankSuccess) {
                       final rankings = rankState.ranks;
-                      return _buildRankingTable(rankings);
+
+                     
+                      totalPages = (rankings.length / pageSize).ceil();
+
+                     
+                      if (sortByRank) {
+                        rankings.sort((a, b) => a.rank.compareTo(b.rank));
+                      } else {
+                        rankings.sort(
+                          (a, b) => "${a.firstname} ${a.lastname}".compareTo(
+                            "${b.firstname} ${b.lastname}",
+                          ),
+                        );
+                      }
+
+                     
+                      final pagedRankings = rankings
+                          .skip((currentPage - 1) * pageSize)
+                          .take(pageSize)
+                          .toList();
+
+                      return _buildRankingTable(pagedRankings);
+
                     }
+
+                    // if (rankState is RankSuccess) {
+                    //   final rankings = rankState.ranks;
+                    //   return _buildRankingTable(rankings);
+                    // }
                     return const SizedBox();
                   },
                 ),
@@ -96,199 +129,274 @@ String buildImageUrl(String? imagePath) {
     );
   }
 
-  Widget _buildRankingTable(List<RankingModel> rankings) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Mycolors.cardColor1,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
-      ),
-      child: Column(
-        children: [
-          // رأس الجدول
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              color: Mycolors.cardColor1,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15),
-                topRight: Radius.circular(15),
-              ),
-            ),
-            child: const Row(
+  Widget _buildRankingTable(List<RankingModel> allRankings) {
+  
+    final int pageSize = 25;
+    totalPages = (allRankings.length / pageSize).ceil();
+
+   
+    if (sortByRank) {
+      allRankings.sort((a, b) => a.rank.compareTo(b.rank));
+    } else {
+      allRankings.sort(
+        (a, b) => "${a.firstname} ${a.lastname}".compareTo(
+          "${b.firstname} ${b.lastname}",
+        ),
+      );
+    }
+
+   
+    final pagedRankings = allRankings
+        .skip((currentPage - 1) * pageSize)
+        .take(pageSize)
+        .toList();
+
+    return Column(
+      children: [
+       
+        if (totalPages > 1)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(width: 40),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 70,
-                      child: Text(
-                        "الترتيب",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Mycolors.grey,
-                          // fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Icon(Icons.arrow_upward, color: Mycolors.grey, size: 16),
-                  ],
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Text(
-                        "الاسم",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Mycolors.grey,
-                          // fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Icon(
-                        Icons.arrow_downward,
-                        color: Mycolors.grey,
-                        size: 16,
-                      ),
-                    ],
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
                   ),
+                  onPressed: currentPage > 1
+                      ? () {
+                          setState(() => currentPage--);
+                        }
+                      : null,
+                  child: const Text("السابق"),
                 ),
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    "النقاط",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Mycolors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
+                const SizedBox(width: 12),
+                Text(
+                  "صفحة $currentPage من $totalPages",
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(width: 12),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
                   ),
+                  onPressed: currentPage < totalPages
+                      ? () {
+                          setState(() => currentPage++);
+                        }
+                      : null,
+                  child: const Text("التالي"),
                 ),
               ],
             ),
           ),
 
-          // محتوى الجدول
-          Column(
-            children: rankings.map((ranking) {
-              final int rank = ranking.rank;
-              final int points = ranking.points;
-              final String name = "${ranking.firstname} ${ranking.lastname}";
-              // final String? image = ranking.image?.url;
-                 final String? imageUrl = buildImageUrl(ranking.image?.url);
-              // ألوان الكؤوس
-              Color? trophyColor;
-              if (rank == 1) trophyColor = Mycolors.gold;
-              if (rank == 2) trophyColor = Mycolors.silver;
-              if (rank == 3) trophyColor = const Color(0xFFcd7f32);
-
-              return Container(
+        // الجدول نفسه
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Mycolors.cardColor1,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.white.withOpacity(0.06)),
+          ),
+          child: Column(
+            children: [
+              // Header مع ترتيب عند الضغط
+              Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
                 ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.white.withOpacity(0.06),
-                      width: 1,
-                    ),
+                decoration: const BoxDecoration(
+                  color: Mycolors.cardColor1,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15),
                   ),
                 ),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.grey[800],
-                      child: ClipOval(
-                        child: imageUrl != null
-                            ? Image.network(
-                                imageUrl,
-                                width: 32,
-                                height: 32,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  );
-                                },
-                              )
-                            : const Icon(Icons.person, color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    SizedBox(
-                      width: 70,
-                      child: CircleAvatar(
-                        radius: 18,
-                        backgroundColor: (rank == 1)
-                            ? Mycolors.gold
-                            : (rank == 2)
-                            ? Mycolors.silver
-                            : (rank == 3)
-                            ? const Color(0xFFcd7f32)
-                            : Mycolors.lightgrey,
-                        child: Text(
-                          "$rank",
-                          style: const TextStyle(
-                            color: Colors.black,
-                            // fontWeight: FontWeight.bold,
+                    const SizedBox(width: 40),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          sortByRank = true;
+                          currentPage = 1;
+                        });
+                      },
+                      child: Row(
+                        children: const [
+                          SizedBox(
+                            width: 70,
+                            child: Text(
+                              "الترتيب",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Mycolors.grey),
+                            ),
                           ),
-                        ),
+                          Icon(
+                            Icons.arrow_upward,
+                            color: Mycolors.grey,
+                            size: 16,
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        name,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: rank == 1
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 25.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            sortByRank = false;
+                            currentPage = 1;
+                          });
+                        },
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              radius: 18,
-                              backgroundColor: Mycolors.blue,
-                              child: Text(
-                                "$points",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  // fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              "الاسم",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Mycolors.grey),
                             ),
-                            const SizedBox(width: 10),
-                            if (trophyColor != null) ...[
-                              Icon(
-                                Icons.emoji_events,
-                                color: trophyColor,
-                                size: 22,
-                              ),
-                            ],
+                            Icon(
+                              Icons.arrow_downward,
+                              color: Mycolors.grey,
+                              size: 16,
+                            ),
                           ],
                         ),
                       ),
                     ),
+                    const SizedBox(
+                      width: 100,
+                      child: Text(
+                        "النقاط",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Mycolors.grey),
+                      ),
+                    ),
                   ],
                 ),
-              );
-            }).toList(),
+              ),
+
+              // بيانات الطلاب
+              Column(
+                children: pagedRankings.map((ranking) {
+                  final int rank = ranking.rank;
+                  final int points = ranking.points;
+                  final String name =
+                      "${ranking.firstname} ${ranking.lastname}";
+
+                  final String? imageUrl = buildImageUrl(ranking.image?.url);
+
+                  Color? trophyColor;
+                  if (rank == 1) trophyColor = Mycolors.gold;
+                  if (rank == 2) trophyColor = Mycolors.silver;
+                  if (rank == 3) trophyColor = const Color(0xFFcd7f32);
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.white.withOpacity(0.06),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.grey[800],
+                          child: ClipOval(
+                            child: imageUrl != null
+                                ? Image.network(
+                                    imageUrl,
+                                    width: 32,
+                                    height: 32,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(
+                                        Icons.person,
+                                        color: Colors.white,
+                                      );
+                                    },
+                                  )
+                                : const Icon(Icons.person, color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 70,
+                          child: CircleAvatar(
+                            radius: 18,
+                            backgroundColor: (rank == 1)
+                                ? Mycolors.gold
+                                : (rank == 2)
+                                ? Mycolors.silver
+                                : (rank == 3)
+                                ? const Color(0xFFcd7f32)
+                                : Mycolors.lightgrey,
+                            child: Text(
+                              "$rank",
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            name,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: rank == 1
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 25.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: Mycolors.blue,
+                                  child: Text(
+                                    "$points",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                if (trophyColor != null) ...[
+                                  Icon(
+                                    Icons.emoji_events,
+                                    color: trophyColor,
+                                    size: 22,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -312,19 +420,11 @@ String buildImageUrl(String? imagePath) {
           value: value,
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-          hint: Text(
-            hint,
-            style: const TextStyle(color: Colors.white70, ),
-          ),
+          hint: Text(hint, style: const TextStyle(color: Colors.white70)),
           items: items.map((String item) {
             return DropdownMenuItem<String>(
               value: item,
-              child: Text(
-                item,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+              child: Text(item, style: const TextStyle(color: Colors.white)),
             );
           }).toList(),
           onChanged: onChanged,

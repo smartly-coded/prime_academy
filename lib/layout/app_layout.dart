@@ -321,8 +321,9 @@ class _AppLayoutState extends State<AppLayout> {
       providers: [
         BlocProvider(
           create: (_) =>
-              StartScreenCubit(getIt<StartScreenRepo>())
-                ..emitStartScreenState(),
+             StartScreenCubit(getIt<StartScreenRepo>())
+    ..emitAllStudentsState(),
+
         ),
         BlocProvider(
           create: (context) =>

@@ -14,10 +14,14 @@ class FooterSection extends StatelessWidget {
     final phoneController = TextEditingController();
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
+    ValueNotifier<bool> gradientFlipped3 = ValueNotifier(false);
 
     return Container(
       color: Mycolors.backgroundColor,
-      padding: const EdgeInsets.symmetric(vertical: 44, horizontal: 24), // زاد 4px
+      padding: const EdgeInsets.symmetric(
+        vertical: 44,
+        horizontal: 24,
+      ), // زاد 4px
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1000),
@@ -59,9 +63,17 @@ class FooterSection extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildSocialIcon(Icons.facebook, 'Facebook','https://www.facebook.com/primeacademy.co'),
+                  _buildSocialIcon(
+                    Icons.facebook,
+                    'Facebook',
+                    'https://www.facebook.com/primeacademy.co',
+                  ),
                   const SizedBox(width: 19), // زاد 4px
-                  _buildSocialIcon(Icons.play_arrow, 'YouTube','https://www.youtube.com/channel/UCYvdLyU752m0ln637tW540Q'),
+                  _buildSocialIcon(
+                    Icons.play_arrow,
+                    'YouTube',
+                    'https://www.youtube.com/channel/UCYvdLyU752m0ln637tW540Q',
+                  ),
                 ],
               ),
 
@@ -192,7 +204,10 @@ class FooterSection extends StatelessWidget {
                             fontSize: 18, // زاد 4px
                           ),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18), // زاد 4px
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 18,
+                          ), // زاد 4px
                         ),
                         style: const TextStyle(
                           color: Colors.white,
@@ -202,58 +217,129 @@ class FooterSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 19), // زاد 4px
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     final phone = phoneController.text.trim();
+                    //     if (Validators.validateKuwaitPhone(phone) == null) {
+                    //       context.read<CommRequestCubit>().sendRequest(phone);
+                    //     } else {
+                    //       ScaffoldMessenger.of(context).showSnackBar(
+                    //         const SnackBar(
+                    //           content: Text("❌ أدخل رقم هاتف صحيح"),
+                    //         ),
+                    //       );
+                    //     }
+                    //   },
+                    //   child: Container(
+                    //     padding: const EdgeInsets.all(4), // زاد 1px
+                    //     decoration: BoxDecoration(
+                    //       gradient:  LinearGradient(
+                    //         colors:Mycolors.primary_color.colors,
+                    //         begin: Alignment.topLeft,
+                    //         end: Alignment.bottomRight,
+                    //       ),
+                    //       borderRadius: BorderRadius.circular(19),
+                    //     ),
+                    //     child: Container(
+                    //       padding: const EdgeInsets.all(19),
+                    //       decoration: BoxDecoration(
+                    //         color: const Color.fromARGB(255, 28, 31, 48),
+                    //         borderRadius: BorderRadius.circular(19),
+                    //       ),
+                    //       child:
+                    //           BlocBuilder<CommRequestCubit, CommRequestState>(
+                    //             builder: (context, state) {
+                    //               if (state is CommRequestLoading) {
+                    //                 return const Center(
+                    //                   child: CircularProgressIndicator(
+                    //                     color: Colors.white,
+                    //                   ),
+                    //                 );
+                    //               }
+                    //               return Text(
+                    //                 "ارسال",
+                    //                 style: TextStyle(
+                    //                   color: Colors.white,
+                    //                   fontSize: 20,
+                    //                 ),
+                    //               );
+                    //             },
+                    //           ),
+                    //     ),
+                    //   ),
+                    // ),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: gradientFlipped3,
+                      builder: (context, isFlipped, _) {
+                        return GestureDetector(
+                          onTap: () {
+                           
+                            gradientFlipped3.value = !gradientFlipped3.value;
 
-                    GestureDetector(
-                      onTap: () {
-                        final phone = phoneController.text.trim();
-                        if (Validators.validateKuwaitPhone(phone) == null) {
-                          context.read<CommRequestCubit>().sendRequest(phone);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("❌ أدخل رقم هاتف صحيح"),
-                            ),
-                          );
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(4), // زاد 1px
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xffa76433), Color(0xff4f2349)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(19), // زاد 4px
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.all(19), // زاد 4px
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 28, 31, 48),
-                            borderRadius: BorderRadius.circular(19), // زاد 4px
-                          ),
-                          child:
-                              BlocBuilder<CommRequestCubit, CommRequestState>(
-                                builder: (context, state) {
-                                  if (state is CommRequestLoading) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                      ),
-                                    );
-                                  }
-                                  return Text(
-                                    "ارسال",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22, // زاد 4px
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                  );
-                                },
+                           
+                            final phone = phoneController.text.trim();
+                            if (Validators.validateKuwaitPhone(phone) == null) {
+                              context.read<CommRequestCubit>().sendRequest(
+                                phone,
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: Colors.white,
+                                  content: Text(
+                                    "❌ أدخل رقم هاتف كويتي صحيح",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: Mycolors.primary_color.colors,
+                                begin: isFlipped
+                                    ? Alignment.bottomRight
+                                    : Alignment.topLeft,
+                                end: isFlipped
+                                    ? Alignment.topLeft
+                                    : Alignment.bottomRight,
                               ),
-                        ),
-                      ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(13),
+                              decoration: BoxDecoration(
+                                color: Mycolors.cardColor1,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child:
+                                  BlocBuilder<
+                                    CommRequestCubit,
+                                    CommRequestState
+                                  >(
+                                    builder: (context, state) {
+                                      if (state is CommRequestLoading) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      }
+                                      return const Text(
+                                        "ارسال",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -275,28 +361,28 @@ class FooterSection extends StatelessWidget {
     );
   }
 
- Widget _buildSocialIcon(IconData icon, String tooltip, String url) {
-  return Container(
-    width: 54, // زاد 4px
-    height: 54, // زاد 4px
-    decoration: const BoxDecoration(
-      color: Color.fromARGB(0, 42, 45, 52),
-      shape: BoxShape.circle,
-    ),
-    child: IconButton(
-      icon: Icon(icon, color: Colors.white, size: 28), // زاد 4px
-      tooltip: tooltip,
-      onPressed: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        } else {
-          debugPrint('Could not launch $url');
-        }
-      },
-    ),
-  );
-}
+  Widget _buildSocialIcon(IconData icon, String tooltip, String url) {
+    return Container(
+      width: 54, // زاد 4px
+      height: 54, // زاد 4px
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(0, 42, 45, 52),
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: Colors.white, size: 28), // زاد 4px
+        tooltip: tooltip,
+        onPressed: () async {
+          final uri = Uri.parse(url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else {
+            debugPrint('Could not launch $url');
+          }
+        },
+      ),
+    );
+  }
 
   Widget _buildCourseItem(String text) {
     return Text(

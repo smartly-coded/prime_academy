@@ -1,17 +1,14 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:prime_academy/core/helpers/constants.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
-import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
-import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/startScreen/data/models/student_preview_response.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_state.dart';
 import 'package:prime_academy/layout/app_layout.dart';
 import 'package:prime_academy/layout/custom_app_bar.dart';
-import 'package:prime_academy/presentation/Notification/notification_screen.dart';
 import 'package:prime_academy/presentation/widgets/Start_Home_widget/preview_header.dart';
 import 'package:prime_academy/presentation/widgets/homeWidgets/empty_state.dart';
 
@@ -24,24 +21,58 @@ class StudentDetailScreen extends StatefulWidget {
 }
 
 class _StudentDetailScreenState extends State<StudentDetailScreen> {
+  late PageController _pageController;
+  Timer? _autoScrollTimer;
+
+  int trophiesLength = 1;
+  int _currentPage = 0;
+
   @override
   void initState() {
+    super.initState();
+
     context.read<StudentPreviewCubit>().emitProfilePreviewState(
       widget.studentId,
     );
-    super.initState();
+
+    _pageController = PageController(viewportFraction: 0.7);
+
+    _startAutoScroll();
+  }
+
+  void _startAutoScroll() {
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (_pageController.hasClients && trophiesLength > 1) {
+        _currentPage++;
+        final nextPage = _currentPage % trophiesLength;
+
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoScrollTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
+
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
-        appBar: CustomAppBar(
+      appBar: CustomAppBar(
         user: null,
         showNotificationIcon: false,
-         onLogoPressed: () => Navigator.pushAndRemoveUntil(
+        onLogoPressed: () => Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => AppLayout(user: null)),
           (route) => false,
@@ -71,197 +102,203 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                       final profile = data as StudentPreviewResponse;
                       final trophies = profile.trophies ?? [];
 
+                     
+                      trophiesLength = trophies.length;
+
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // PreviewHeader moved outside and above the container
                           PreviewHeader(response: profile),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 100),
 
-                          // Container for trophies section
                           Container(
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF2a2d34),
+                              color: trophies.isEmpty
+                                  ? Mycolors.backgroundColor
+                                  : Mycolors.cardColor1,
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: trophies.isEmpty
-                                ? EmptyState(
-                                    message: "لا توجد جوائز",
-                                    isMobile: isMobile,
-                                  )
+                                ? Container(color: Mycolors.backgroundColor)
                                 : Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      // كونتينر عدد الجوائز في الوسط
-                                      Center(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 24,
-                                            vertical: 12,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            gradient: const LinearGradient(
-                                              colors: [
-                                                Mycolors.orange,
-                                                Color(0xff4f2349),
-                                              ],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black.withOpacity(
-                                                  0.3,
-                                                ),
-                                                spreadRadius: 1,
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 3),
-                                              ),
+                                      Container(
+                                        height: 120,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xff3D57E9),
+                                              Color(0xffff9933),
                                             ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
                                           ),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(
-                                                Icons.emoji_events,
-                                                color: Colors.amber,
-                                                size: 24,
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Text(
-                                                "عدد الجوائز : ${trophies.length}",
-                                                style: TextStyle(
-                                                  fontSize: isMobile ? 16 : 18,
-                                                  // fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                 
-                                                ),
-                                              ),
-                                            ],
+                                          borderRadius: BorderRadius.circular(
+                                            20,
                                           ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(
+                                                0.3,
+                                              ),
+                                              spreadRadius: 1,
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.emoji_events,
+                                              color: Colors.amber,
+                                              size: 30,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              "عدد الجوائز : ${trophies.length}",
+                                              style: const TextStyle(
+                                                fontSize: 24,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      const SizedBox(height: 20),
+                                      const SizedBox(height: 50),
 
-                                      // Grid View of trophies
-                                      GridView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: isMobile ? 2 : 3,
-                                              crossAxisSpacing: 12,
-                                              mainAxisSpacing: 12,
-                                              childAspectRatio: 0.85,
-                                            ),
-                                        itemCount: trophies.length,
-                                        itemBuilder: (context, index) {
-                                          final trophy = trophies[index];
-                                          final imageUrl = _buildImageUrl(
-                                            trophy.image.url,
-                                          );
+                                      // ============================
+                                      //     AUTO SCROLL PAGEVIEW
+                                      // ============================
+                                      SizedBox(
+                                        height: isMobile ? 220 : 250,
+                                        child: PageView.builder(
+                                          controller: _pageController,
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount: trophies.length,
+                                          itemBuilder: (context, index) {
+                                            final trophy = trophies[index];
+                                            final imageUrl = _buildImageUrl(
+                                              trophy.image.url,
+                                            );
 
-                                          return Container(
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF3a3d44),
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.2),
-                                                  spreadRadius: 1,
-                                                  blurRadius: 5,
-                                                  offset: const Offset(0, 2),
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8.0,
+                                                  ),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Mycolors.cardColor1,
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withOpacity(0.1),
+                                                      blurRadius: 8,
+                                                      offset: const Offset(
+                                                        0,
+                                                        2,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(
-                                                8.0,
-                                              ),
-                                              child: Column(
-                                                children: [
-                                                  Expanded(
-                                                    flex: 3,
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            12,
-                                                          ),
-                                                      child: Container(
-                                                        width: double.infinity,
-                                                        decoration: BoxDecoration(
-                                                          color:
-                                                              Colors.grey[800],
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                12,
-                                                              ),
-                                                        ),
+                                                child: Column(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            const BorderRadius.only(
+                                                              topLeft:
+                                                                  Radius.circular(
+                                                                    16,
+                                                                  ),
+                                                              topRight:
+                                                                  Radius.circular(
+                                                                    16,
+                                                                  ),
+                                                            ),
                                                         child:
                                                             imageUrl.isNotEmpty
                                                             ? Image.network(
                                                                 imageUrl,
                                                                 fit: BoxFit
                                                                     .cover,
-                                                                errorBuilder:
-                                                                    (
-                                                                      context,
-                                                                      error,
-                                                                      stackTrace,
-                                                                    ) => const Icon(
-                                                                      Icons
-                                                                          .broken_image,
-                                                                      color: Colors
-                                                                          .red,
-                                                                      size: 30,
-                                                                    ),
+                                                                width: double
+                                                                    .infinity,
+                                                                errorBuilder: (_, __, ___) => Container(
+                                                                  color: Colors
+                                                                      .grey[200],
+                                                                  child: const Icon(
+                                                                    Icons
+                                                                        .broken_image,
+                                                                    size: 40,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                  ),
+                                                                ),
                                                               )
-                                                            : const Icon(
-                                                                Icons
-                                                                    .image_not_supported,
+                                                            : Container(
                                                                 color: Colors
-                                                                    .white54,
-                                                                size: 30,
+                                                                    .grey[200],
+                                                                child: const Icon(
+                                                                  Icons
+                                                                      .emoji_events,
+                                                                  size: 40,
+                                                                  color: Colors
+                                                                      .amber,
+                                                                ),
                                                               ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Center(
-                                                      child: Text(
-                                                        trophy.name,
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: TextStyle(
-                                                          fontSize: isMobile
-                                                              ? 12
-                                                              : 14,
-                                                          color:
-                                                              Mycolors.orange,
-                                                          fontWeight:
-                                                              FontWeight.w500,
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Container(
+                                                        width: double.infinity,
+                                                        padding:
+                                                            const EdgeInsets.all(
+                                                              8,
+                                                            ),
+                                                        child: Center(
+                                                          child: Text(
+                                                            trophy.name ??
+                                                                "بدون اسم",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Mycolors.gold,
+                                                              fontSize: isMobile
+                                                                  ? 14
+                                                                  : 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          );
-                                        },
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -282,12 +319,9 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
 
 String _buildImageUrl(String? imagePath) {
   if (imagePath == null || imagePath.isEmpty) return "";
-
-  if (imagePath.startsWith('http')) {
-    return imagePath;
-  }
-
+  if (imagePath.startsWith('http')) return imagePath;
+  const String cdnPrefix = "https://cdn.primeacademy.education/primeacademy";
   return imagePath.startsWith('/')
-      ? Constants.baseUrl + imagePath
-      : "${Constants.baseUrl}/$imagePath";
+      ? "$cdnPrefix$imagePath"
+      : "$cdnPrefix/$imagePath";
 }
