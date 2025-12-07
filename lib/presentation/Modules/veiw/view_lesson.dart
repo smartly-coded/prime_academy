@@ -958,6 +958,8 @@ class _ViewModuleState extends State<ViewModule> {
                 final accessWithoutEnrollment = isLesson
                     ? item.lesson!.accessWithoutEnrollment
                     : false;
+                final watched = isLesson ? item.lesson!.watched : false;
+                final cupColor = watched ? Colors.amber : Colors.grey;
 
                 return _buildCustomLessonItem(
                   title: title,
@@ -966,6 +968,8 @@ class _ViewModuleState extends State<ViewModule> {
                   isVideo: isLesson,
                   isSelected: _currentSelectedItemId == item.id,
                   isRewarded: accessWithoutEnrollment,
+                  videoUrl: isLesson ? item.lesson?.externalUrl : null,
+
                   index: index,
                   onTap: () {
                     setState(() {
@@ -984,6 +988,7 @@ class _ViewModuleState extends State<ViewModule> {
                     }
                   },
                   deviceType: deviceType,
+                  cupColor: isLesson ? cupColor : null,
                 );
               },
             ),
@@ -1004,6 +1009,7 @@ class _ViewModuleState extends State<ViewModule> {
     required VoidCallback onTap,
     required DeviceType deviceType,
     Color? cupColor,
+    String? videoUrl,
   }) {
     double itemPadding;
     double iconSize;
@@ -1055,6 +1061,7 @@ class _ViewModuleState extends State<ViewModule> {
                 duration: duration,
                 isVideo: isVideo,
                 iconSize: iconSize,
+                videoUrl: videoUrl,
               ),
               SizedBox(width: 12),
               Expanded(
@@ -1088,65 +1095,157 @@ class _ViewModuleState extends State<ViewModule> {
     );
   }
 
+  // Widget _buildVideoThumbnailWithDuration({
+  //   required String? thumbnailUrl,
+  //   required String duration,
+  //   required bool isVideo,
+  //   required double iconSize,
+  // }) {
+  //   if (isVideo && thumbnailUrl != null && thumbnailUrl.isNotEmpty) {
+  //     thumbnailUrl =
+  //         "https://cdn.primeacademy.education/primeacademy$thumbnailUrl";
+  //     return Container(
+  //       width: 100,
+  //       height: 95,
+  //       child: Stack(
+  //         children: [
+  //           ClipRRect(
+  //             borderRadius: BorderRadius.circular(8),
+  //             child: Image.network(
+  //               thumbnailUrl,
+  //               width: 100,
+  //               height: 95,
+  //               fit: BoxFit.cover,
+  //               errorBuilder: (context, error, stackTrace) {
+  //                 return _buildPlaceholderThumbnail(
+  //                   isVideo,
+  //                   iconSize,
+  //                   duration,
+  //                 );
+  //               },
+  //               loadingBuilder: (context, child, loadingProgress) {
+  //                 if (loadingProgress == null) return child;
+  //                 return _buildPlaceholderThumbnail(
+  //                   isVideo,
+  //                   iconSize,
+  //                   duration,
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //           Positioned(
+  //             bottom: 4,
+  //             left: 4,
+  //             child: Container(
+  //               padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+  //               decoration: BoxDecoration(
+  //                 color: Colors.black.withOpacity(0.8),
+  //                 borderRadius: BorderRadius.circular(4),
+  //               ),
+  //               child: Text(
+  //                 duration,
+  //                 style: TextStyle(color: Colors.white, fontSize: 10),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   } else {
+  //     return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+  //   }
+  // }
+
+  String? extractYouTubeId(String url) {
+    final Uri? uri = Uri.tryParse(url);
+    if (uri == null) return null;
+
+    if (uri.host.contains("youtu.be")) {
+      return uri.pathSegments.isNotEmpty ? uri.pathSegments[0] : null;
+    }
+
+    if (uri.host.contains("youtube.com")) {
+      return uri.queryParameters["v"];
+    }
+
+    return null;
+  }
+
   Widget _buildVideoThumbnailWithDuration({
     required String? thumbnailUrl,
     required String duration,
     required bool isVideo,
     required double iconSize,
+    String? videoUrl, // ⭐ أضفنا الفيديو يو آر إل هنا
   }) {
+    // لو في thumbnail من السيرفر
     if (isVideo && thumbnailUrl != null && thumbnailUrl.isNotEmpty) {
       thumbnailUrl =
           "https://cdn.primeacademy.education/primeacademy$thumbnailUrl";
-      return Container(
-        width: 100,
-        height: 95,
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                thumbnailUrl,
-                width: 100,
-                height: 95,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return _buildPlaceholderThumbnail(
-                    isVideo,
-                    iconSize,
-                    duration,
-                  );
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return _buildPlaceholderThumbnail(
-                    isVideo,
-                    iconSize,
-                    duration,
-                  );
-                },
-              ),
-            ),
-            Positioned(
-              bottom: 4,
-              left: 4,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  duration,
-                  style: TextStyle(color: Colors.white, fontSize: 10),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+
+      return _buildNetworkThumb(thumbnailUrl, duration, iconSize, isVideo);
     }
+
+    // ⭐ لو مفيش thumbnail و الفيديو من يوتيوب
+    if (isVideo && videoUrl != null) {
+      final videoId = extractYouTubeId(videoUrl);
+      if (videoId != null) {
+        final ytThumb = "https://img.youtube.com/vi/$videoId/hqdefault.jpg";
+
+        return _buildNetworkThumb(ytThumb, duration, iconSize, isVideo);
+      }
+    }
+
+    // لو ولا thumbnail ولا فيديو يوتيوب → صورة افتراضية
+    return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+  }
+
+  // ⭐ فصلتلك دي عشان تتكرر مرتين
+  Widget _buildNetworkThumb(
+    String url,
+    String duration,
+    double iconSize,
+    bool isVideo,
+  ) {
+    return Container(
+      width: 100,
+      height: 95,
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              url,
+              width: 100,
+              height: 95,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+              },
+            ),
+          ),
+          Positioned(
+            bottom: 4,
+            left: 4,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                duration,
+                style: TextStyle(color: Colors.white, fontSize: 10),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildPlaceholderThumbnail(
