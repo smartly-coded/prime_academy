@@ -288,31 +288,45 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
 
     final numberOfRows = (totalBoxes / maxBoxesPerRow).ceil();
 
-    return Column(
-      children: List.generate(numberOfRows, (rowIndex) {
-        final startIndex = rowIndex * maxBoxesPerRow;
-        final endIndex = (startIndex + maxBoxesPerRow).clamp(0, totalBoxes);
-        final boxesInThisRow = endIndex - startIndex;
-
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: rowIndex < numberOfRows - 1 ? 15 : 0,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(boxesInThisRow, (boxIndex) {
-              final globalIndex = startIndex + boxIndex;
-              return _buildSingleCharacterBox(
-                globalIndex,
-                actualBoxSize,
-                boxSpacing,
-                boxIndex < boxesInThisRow - 1,
-              );
-            }),
-          ),
-        );
-      }),
+    return Wrap(
+  alignment: WrapAlignment.center,
+  spacing: boxSpacing,
+  runSpacing: 15,
+  children: List.generate(totalBoxes, (index) {
+    return _buildSingleCharacterBox(
+      index,
+      actualBoxSize,
+      boxSpacing,
+      true, // مش مهم هنا
     );
+  }),
+)
+;
+    // Column(
+    //   children: List.generate(numberOfRows, (rowIndex) {
+    //     final startIndex = rowIndex * maxBoxesPerRow;
+    //     final endIndex = (startIndex + maxBoxesPerRow).clamp(0, totalBoxes);
+    //     final boxesInThisRow = endIndex - startIndex;
+
+    //     return Padding(
+    //       padding: EdgeInsets.only(
+    //         bottom: rowIndex < numberOfRows - 1 ? 15 : 0,
+    //       ),
+    //       child: Row(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         children: List.generate(boxesInThisRow, (boxIndex) {
+    //           final globalIndex = startIndex + boxIndex;
+    //           return _buildSingleCharacterBox(
+    //             globalIndex,
+    //             actualBoxSize,
+    //             boxSpacing,
+    //             boxIndex < boxesInThisRow - 1,
+    //           );
+    //         }),
+    //       ),
+    //     );
+    //   }),
+    // );
   }
 
   Widget _buildSingleCharacterBox(

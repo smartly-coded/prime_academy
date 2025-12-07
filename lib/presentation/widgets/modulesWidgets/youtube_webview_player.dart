@@ -1,24 +1,324 @@
-import 'dart:io';
-import 'dart:convert';
+// import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'package:prime_academy/presentation/widgets/modulesWidgets/fullscreen_youtube_player.dart';
+// import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+// class YouTubeWebViewPlayer extends StatefulWidget {
+//   final String videoId;
+//   final bool autoPlay;
+//   final bool showControls;
+//   final VoidCallback? onReady;
+//   final Function(String)? onError;
+//   final Function(Duration position, Duration duration)? onProgress;
+//   final VoidCallback? onVideoEnd;
+
+//   const YouTubeWebViewPlayer({
+//     Key? key,
+//     required this.videoId,
+//     this.autoPlay = true,
+//     this.showControls = true,
+//     this.onReady,
+//     this.onError,
+//     this.onProgress,
+//     this.onVideoEnd,
+//   }) : super(key: key);
+
+//   @override
+//   State<YouTubeWebViewPlayer> createState() => YouTubeWebViewPlayerState();
+// }
+
+// class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
+//   late YoutubePlayerController _controller;
+//   bool _isReady = false;
+//   Timer? _progressTimer;
+// // bool _isInFullscreen = false;
+//   @override
+//   void initState() {
+//     super.initState();
+//     print('🎬 Initializing YouTube player for: ${widget.videoId}');
+    
+//     _controller = YoutubePlayerController(
+//       initialVideoId: widget.videoId,
+//       flags: YoutubePlayerFlags(
+//         autoPlay: widget.autoPlay,
+//         mute: false,
+//         enableCaption: false,
+//         controlsVisibleAtStart: widget.showControls,
+//         hideThumbnail: true,
+//         showLiveFullscreenButton: false,
+//         forceHD: false,
+//         useHybridComposition: true,
+//       ),
+//     );
+
+//     _controller.addListener(_playerListener);
+//   }
+
+//   void _playerListener() {
+//     if (!mounted) return;
+
+//     final state = _controller.value.playerState;
+    
+//     if (!_isReady && state == PlayerState.playing) {
+//       _isReady = true;
+//       widget.onReady?.call();
+//       _startProgressTracking();
+//     }
+
+//     if (state == PlayerState.ended) {
+//       widget.onVideoEnd?.call();
+//       _progressTimer?.cancel();
+//     }
+
+//     if (state == PlayerState.playing && _progressTimer == null) {
+//       _startProgressTracking();
+//     } else if (state != PlayerState.playing) {
+//       _progressTimer?.cancel();
+//       _progressTimer = null;
+//     }
+//   }
+
+//   void _startProgressTracking() {
+//     _progressTimer?.cancel();
+//     _progressTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+//       if (!mounted || !_controller.value.isReady) return;
+
+//       final position = _controller.value.position;
+//       final duration = _controller.metadata.duration;
+
+//       widget.onProgress?.call(position, duration);
+//     });
+//   }
+
+
+// Future<void> _enterFullscreen() async {
+//   final currentPosition = _controller.value.position;
+
+//   final returnedPosition = await Navigator.of(context).push<Duration>(
+//     MaterialPageRoute(
+//       builder: (context) => FullscreenYouTubePlayer(
+//         controller: _controller,
+//         startAt: currentPosition,
+//       ),
+//     ),
+//   );
+
+//   if (!mounted) return;
+
+//   if (returnedPosition != null) {
+//     _controller.seekTo(returnedPosition);
+//     if (!_controller.value.isPlaying) {
+//       _controller.play();
+//     }
+//   }
+
+//   // ← أضف السطر ده: نوقف الـ WebView مؤقتًا عشان ما يبعتش رسايل بعد الرجوع
+//   _controller.pause();
+// }
+
+
+// //   Future<void> _enterFullscreen() async {
+// //   final currentPosition = _controller.value.position;
+
+// //   final returnedPosition = await Navigator.of(context).push<Duration>(
+// //     MaterialPageRoute(
+// //       builder: (context) => FullscreenYouTubePlayer(
+// //         controller: _controller,
+// //         startAt: currentPosition,
+// //       ),
+// //     ),
+// //   );
+
+// //   if (!mounted) return;
+
+// //   if (returnedPosition != null) {
+// //     _controller.seekTo(returnedPosition);
+// //     if (!_controller.value.isPlaying) {
+// //       _controller.play();
+// //     }
+// //   }
+// // }
+
+//   @override
+//   @override
+// void dispose() {
+//   _progressTimer?.cancel();
+
+//   // نعمل dispose هنا بس، لما الصفحة تتدمر فعلاً (مش لما نطلع من فول سكرين)
+//   _controller.removeListener(_playerListener); // مهم جدًا
+//   _controller.dispose();
+
+//   super.dispose();
+// }
+//   // void dispose() {
+//   //   _progressTimer?.cancel();
+
+//   //   // ← الحل السحري: ما نعملش dispose إلا لو مش في الفول سكرين
+//   //   // if (!_isInFullscreen) {
+//   //   //   _controller.dispose();
+//   //   // }
+//   //   // لو كنا في الفول سكرين، الـ FullscreenYouTubePlayer هي اللي هتعمل dispose لما تطلع
+
+//   //   super.dispose();
+//   // }
+//   // ✅ Enter fullscreen WITHOUT restarting video
+//   // Future<void> _enterFullscreen() async {
+//   //   // Save current position and playing state
+//   //   final currentPosition = _controller.value.position;
+//   //   final wasPlaying = _controller.value.isPlaying;
+    
+//   //   print('📍 Saving position: ${currentPosition.inSeconds}s, playing: $wasPlaying');
+
+//   //   // Navigate to fullscreen
+//   //   await Navigator.of(context).push(
+//   //     MaterialPageRoute(
+//   //       builder: (context) => FullscreenYouTubePlayer(
+//   //         controller: _controller,
+//   //       ),
+//   //     ),
+//   //   );
+
+//   //   // After returning from fullscreen, ensure video continues from same position
+//   //   print('🔙 Returned from fullscreen');
+    
+//   //   if (mounted) {
+//   //     // Small delay to ensure controller is ready
+//   //     await Future.delayed(const Duration(milliseconds: 300));
+      
+//   //     // Restore position if needed
+//   //     if (_controller.value.position != currentPosition) {
+//   //       _controller.seekTo(currentPosition);
+//   //     }
+      
+//   //     // Resume playing if it was playing before
+//   //     if (wasPlaying && !_controller.value.isPlaying) {
+//   //       _controller.play();
+//   //     }
+//   //   }
+//   // }
+// // Future<void> _enterFullscreen() async {
+// //   final currentPosition = _controller.value.position;
+// //   print('📍 Entering fullscreen at ${currentPosition.inSeconds}s');
+
+// //   final returnedPosition = await Navigator.of(context).push<Duration>(
+// //     MaterialPageRoute(
+// //       builder: (context) => FullscreenYouTubePlayer(
+// //         controller: _controller,  // نفس الـ controller
+// //         startAt: currentPosition,
+// //       ),
+// //     ),
+// //   );
+
+// //   // لما نرجع، نضمن الـ position والتشغيل
+// //   if (returnedPosition != null && mounted) {
+// //     print('🔙 Returned from fullscreen at ${returnedPosition.inSeconds}s');
+// //     _controller.seekTo(returnedPosition);
+// //     if (!_controller.value.isPlaying) {
+// //       _controller.play();
+
+// //     }
+// //   }
+// // }
+
+// //   @override
+// //   void dispose() {
+// //     _progressTimer?.cancel();
+// //     _controller.dispose();
+// //     super.dispose();
+// //   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return YoutubePlayerBuilder(
+//       player: YoutubePlayer(
+//         controller: _controller,
+//         showVideoProgressIndicator: true,
+//         progressIndicatorColor: const Color(0xFF1E3A8A),
+//         progressColors: const ProgressBarColors(
+//           playedColor: Color(0xFF1E3A8A),
+//           handleColor: Color(0xFF1E3A8A),
+//           bufferedColor: Colors.grey,
+//           backgroundColor: Colors.white24,
+//         ),
+//         topActions: const [],
+//         bottomActions: [
+//           CurrentPosition(),
+//           const SizedBox(width: 10),
+//           ProgressBar(
+//             isExpanded: true,
+//             colors: const ProgressBarColors(
+//               playedColor: Color(0xFF1E3A8A),
+//               handleColor: Color(0xFF1E3A8A),
+//               bufferedColor: Colors.grey,
+//               backgroundColor: Colors.white24,
+//             ),
+//           ),
+//           const SizedBox(width: 10),
+//           RemainingDuration(),
+//           const SizedBox(width: 10),
+//           IconButton(
+//             icon: const Icon(
+//               Icons.fullscreen,
+//               color: Colors.white,
+//               size: 28,
+//             ),
+//             onPressed: _enterFullscreen,
+//           ),
+//         ],
+//         onReady: () {
+//           print('✅ YouTube player ready');
+//         },
+//         onEnded: (metadata) {
+//           print('🏁 Video ended');
+//         },
+//       ),
+//       builder: (context, player) {
+//         return Container(
+//           color: Colors.black,
+//           child: player,
+//         );
+//       },
+//     );
+//   }
+
+//   // Public methods
+//   Future<void> seekTo(Duration position) async {
+//     _controller.seekTo(position);
+//   }
+
+//   Future<void> play() async {
+//     _controller.play();
+//   }
+
+//   Future<void> pause() async {
+//     _controller.pause();
+//   }
+
+//   bool get isPlaying => _controller.value.isPlaying;
+// }
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_android/webview_flutter_android.dart';
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:prime_academy/presentation/widgets/modulesWidgets/fullscreen_youtube_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YouTubeWebViewPlayer extends StatefulWidget {
   final String videoId;
   final bool autoPlay;
+  final bool showControls;
   final VoidCallback? onReady;
-  final VoidCallback? onEnded;
-  final Function(int)? onTimeUpdate;
+  final Function(String)? onError;
+  final Function(Duration position, Duration duration)? onProgress;
+  final VoidCallback? onVideoEnd;
 
   const YouTubeWebViewPlayer({
     Key? key,
     required this.videoId,
     this.autoPlay = true,
+    this.showControls = true,
     this.onReady,
-    this.onEnded,
-    this.onTimeUpdate,
+    this.onError,
+    this.onProgress,
+    this.onVideoEnd,
   }) : super(key: key);
 
   @override
@@ -26,340 +326,219 @@ class YouTubeWebViewPlayer extends StatefulWidget {
 }
 
 class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
-  late final WebViewController _controller;
-  bool _isLoading = true;
+  late YoutubePlayerController _controller;
   bool _isReady = false;
+  Timer? _progressTimer;
+  bool _isInFullscreen = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeWebView();
-  }
-
-  void _initializeWebView() {
-    late final PlatformWebViewControllerCreationParams params;
+    print('🎬 Initializing YouTube player for: ${widget.videoId}');
     
-    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
-      params = WebKitWebViewControllerCreationParams(
-        allowsInlineMediaPlayback: true,
-        mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
-      );
-    } else {
-      params = const PlatformWebViewControllerCreationParams();
-    }
-
-    final WebViewController controller = WebViewController.fromPlatformCreationParams(params);
-
-    controller
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) {
-            if (mounted) {
-              setState(() {
-                _isLoading = true;
-              });
-            }
-          },
-          onPageFinished: (String url) {
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
-          },
-          onWebResourceError: (WebResourceError error) {
-            print('WebView error: ${error.description}');
-          },
-        ),
-      )
-      ..addJavaScriptChannel(
-        'VideoEvents',
-        onMessageReceived: (JavaScriptMessage message) {
-          _handleVideoEvents(message.message);
-        },
-      )
-      ..loadRequest(Uri.parse(_buildHtmlContent()));
-
-    if (controller.platform is AndroidWebViewController) {
-      AndroidWebViewController.enableDebugging(true);
-      (controller.platform as AndroidWebViewController).setMediaPlaybackRequiresUserGesture(false);
-    }
-
-    _controller = controller;
-  }
-
-  String _buildHtmlContent() {
-    final autoplayParam = widget.autoPlay ? '1' : '0';
-    final origin = Platform.isIOS ? 'https://primeacademy.education' : 'https://localhost';
-    
-    // ✅ ALL FLAGS FROM YOUR IFRAME - EXACT MATCH
-    final iframeSrc = 'https://www.youtube-nocookie.com/embed/${widget.videoId}'
-        '?rel=0'                          // No related videos
-        '&autoplay=$autoplayParam'        // Auto play control
-        '&cc_lang_pref=ar'                // Arabic captions preference
-        '&cc_load_policy=undefined'       // ✅ NO CAPTIONS WATERMARK
-        '&color=red'                      // Progress bar color
-        '&controls=0'                     // ✅ HIDE YOUTUBE CONTROLS (removes watermark)
-        '&disablekb=1'                    // Disable keyboard controls
-        '&enablejsapi=1'                  // Enable JavaScript API
-        '&fs=1'                           // Allow fullscreen
-        '&hl=ar'                          // Arabic interface
-        '&iv_load_policy=3'               // Hide video annotations
-        '&mute=0'                         // Not muted
-// primeacademy.education
-// Prime Academy
-
-'&playsinline=1'                  // Play inline on iOS
-        '&origin=${Uri.encodeComponent(origin)}'; // Required for API
-    
-    return Uri.dataFromString(
-      '''
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-          <style>
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            body, html {
-              width: 100%;
-              height: 100%;
-              background-color: #000;
-              overflow: hidden;
-            }
-            .video-container {
-              position: relative;
-              width: 100%;
-              height: 100%;
-            }
-            iframe.vds-youtube {
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              border: none;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="video-container">
-            <iframe 
-              id="ytplayer"
-              class="vds-youtube" 
-              tabindex="-1" 
-              aria-hidden="true" 
-              data-no-controls="" 
-              frameborder="0" 
-              allow="autoplay; fullscreen; encrypted-media; picture-in-picture; accelerometer; gyroscope" 
-              src="$iframeSrc"
-              allowfullscreen>
-            </iframe>
-          </div>
-          
-          <script>
-            var player;
-            var currentTime = 0;
-            var isReady = false;
-            
-            // YouTube IFrame API
-            var tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
-            var firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-            
-            function onYouTubeIframeAPIReady() {
-              player = new YT.Player('ytplayer', {
-                events: {
-                  'onReady': onPlayerReady,
-                  'onStateChange': onPlayerStateChange,
-                  'onError': onPlayerError
-                }
-              });
-            }
-            
-            function onPlayerReady(event) {
-              isReady = true;
-              VideoEvents.postMessage(JSON.stringify({type: 'ready'}));
-              startTimeTracking();
-            }
-            
-            function onPlayerStateChange(event) {
-              if (event.data == YT.PlayerState.ENDED) {
-                VideoEvents.postMessage(JSON.stringify({type: 'ended'}));
-              } else if (event.data == YT.PlayerState.PLAYING) {
-                VideoEvents.postMessage(JSON.stringify({type: 'playing'}));
-              } else if (event.data == YT.PlayerState.PAUSED) {
-                VideoEvents.postMessage(JSON.stringify({type: 'paused'}));
-              }
-            }
-            
-            function onPlayerError(event) {
-              VideoEvents.postMessage(JSON.stringify({
-                type: 'error',
-                code: event.data
-              }));
-            }
-            
-            function startTimeTracking() {
-              setInterval(function() {
-                if (player && player.getCurrentTime && isReady) {
-                  try {
-                    currentTime = Math.floor(player.getCurrentTime());
-                    VideoEvents.postMessage(JSON.stringify({
-                      type: 'timeUpdate',
-                      currentTime: currentTime
-                    }));
-                  } catch(e) {
-                    console.error('Error getting current time:', e);
-                  }
-                }
-              }, 1000);
-            }
-function playVideo() {
-              if (player && player.playVideo && isReady) {
-                try {
-                  player.playVideo();
-                } catch(e) {
-                  console.error('Error playing video:', e);
-                }
-              }
-            }
-            
-            function pauseVideo() {
-              if (player && player.pauseVideo && isReady) {
-                try {
-                  player.pauseVideo();
-                } catch(e) {
-                  console.error('Error pausing video:', e);
-                }
-              }
-            }
-            
-            function getCurrentTime() {
-              if (player && player.getCurrentTime && isReady) {
-                try {
-                  return Math.floor(player.getCurrentTime());
-                } catch(e) {
-                  console.error('Error getting current time:', e);
-                  return 0;
-                }
-              }
-              return 0;
-            }
-            
-            function seekTo(seconds) {
-              if (player && player.seekTo && isReady) {
-                try {
-                  player.seekTo(seconds, true);
-                } catch(e) {
-                  console.error('Error seeking:', e);
-                }
-              }
-            }
-          </script>
-        </body>
-      </html>
-      ''',
-      mimeType: 'text/html',
-      encoding: Encoding.getByName('utf-8'),
-    ).toString();
-  }
-
-  void _handleVideoEvents(String message) {
-    try {
-      final data = jsonDecode(message);
-      final type = data['type'];
-      
-      switch (type) {
-        case 'ready':
-          if (mounted) {
-            setState(() {
-              _isReady = true;
-            });
-            widget.onReady?.call();
-          }
-          break;
-        case 'ended':
-          widget.onEnded?.call();
-          break;
-        case 'timeUpdate':
-          final time = data['currentTime'] as int;
-          widget.onTimeUpdate?.call(time);
-          break;
-        case 'error':
-          print('YouTube Player Error: ${data['code']}');
-          break;
-      }
-    } catch (e) {
-      print('Error handling video event: $e');
-    }
-  }
-
-  Future<void> play() async {
-    if (_isReady) {
-      try {
-        await _controller.runJavaScript('playVideo()');
-      } catch (e) {
-        print('Error playing video: $e');
-      }
-    }
-  }
-
-  Future<void> pause() async {
-    if (_isReady) {
-      try {
-        await _controller.runJavaScript('pauseVideo()');
-      } catch (e) {
-        print('Error pausing video: $e');
-      }
-    }
-  }
-
-  Future<int> getCurrentTime() async {
-    if (!_isReady) return 0;
-    
-    try {
-      final result = await _controller.runJavaScriptReturningResult('getCurrentTime()');
-      return int.tryParse(result.toString()) ?? 0;
-    } catch (e) {
-      print('Error getting current time: $e');
-      return 0;
-    }
-  }
-
-  Future<void> seekTo(int seconds) async {
-    if (_isReady) {
-      try {
-        await _controller.runJavaScript('seekTo($seconds)');
-      } catch (e) {
-        print('Error seeking: $e');
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        WebViewWidget(controller: _controller),
-        if (_isLoading)
-          const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ),
-      ],
+    _controller = YoutubePlayerController(
+      initialVideoId: widget.videoId,
+      flags: YoutubePlayerFlags(
+        autoPlay: widget.autoPlay,
+        mute: false,
+        enableCaption: false,
+        controlsVisibleAtStart: widget.showControls,
+        hideThumbnail: true,
+        showLiveFullscreenButton: false,
+        forceHD: false,
+        useHybridComposition: true,
+      ),
     );
+
+    _controller.addListener(_playerListener);
+  }
+
+  void _playerListener() {
+    if (!mounted || _isInFullscreen) return;
+
+    final state = _controller.value.playerState;
+    
+    if (!_isReady && state == PlayerState.playing) {
+      _isReady = true;
+      widget.onReady?.call();
+      _startProgressTracking();
+    }
+
+    if (state == PlayerState.ended) {
+      widget.onVideoEnd?.call();
+      _progressTimer?.cancel();
+    }
+
+    if (state == PlayerState.playing && _progressTimer == null) {
+      _startProgressTracking();
+    } else if (state != PlayerState.playing) {
+      _progressTimer?.cancel();
+      _progressTimer = null;
+    }
+  }
+
+  void _startProgressTracking() {
+    _progressTimer?.cancel();
+    _progressTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || !_controller.value.isReady || _isInFullscreen) return;
+
+      final position = _controller.value.position;
+      final duration = _controller.metadata.duration;
+
+      widget.onProgress?.call(position, duration);
+    });
+  }
+
+  Future<void> _enterFullscreen() async {
+    if (_isInFullscreen) return;
+
+    setState(() {
+      _isInFullscreen = true;
+    });
+
+    _progressTimer?.cancel();
+
+    // ✅ حفظ الحالة الحالية
+    final currentPosition = _controller.value.position;
+    final wasPlaying = _controller.value.isPlaying;
+
+    print('📍 Entering fullscreen at ${currentPosition.inSeconds}s, playing: $wasPlaying');
+
+    // ✅ إنشاء controller جديد للـ fullscreen
+    final fullscreenController = YoutubePlayerController(
+      initialVideoId: widget.videoId,
+      flags: YoutubePlayerFlags(
+        autoPlay: false, // مش هنشغله أوتوماتيك
+        startAt: currentPosition.inSeconds, // ✅ نبدأ من الـ position الصحيح
+        mute: false,
+        enableCaption: false,
+        controlsVisibleAtStart: widget.showControls,
+        hideThumbnail: true,
+        showLiveFullscreenButton: false,
+        forceHD: false,
+        useHybridComposition: true,
+      ),
+    );
+
+    final returnedData = await Navigator.of(context).push<Map<String, dynamic>>(
+      MaterialPageRoute(
+        builder: (context) => FullscreenYouTubePlayer(
+          controller: fullscreenController,
+          wasPlaying: wasPlaying,
+        ),
+      ),
+    );
+
+    // ✅ تنظيف الـ fullscreen controller
+    fullscreenController.dispose();
+
+    setState(() {
+      _isInFullscreen = false;
+    });
+
+    if (!mounted) return;
+
+    // ✅ استعادة الـ position من fullscreen
+    final returnedPosition = returnedData?['position'] as Duration?;
+    final shouldPlay = returnedData?['wasPlaying'] as bool? ?? wasPlaying;
+
+    print('🔙 Returned from fullscreen at ${returnedPosition?.inSeconds ?? 0}s, shouldPlay: $shouldPlay');
+
+    if (returnedPosition != null) {
+      // ✅ نوقف الفيديو، نعمل seek، ثم نشغله
+      _controller.pause();
+      await Future.delayed(const Duration(milliseconds: 200));
+      
+      _controller.seekTo(returnedPosition);
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      if (shouldPlay && mounted) {
+        _controller.play();
+        _startProgressTracking();
+      }
+    }
   }
 
   @override
   void dispose() {
+    _progressTimer?.cancel();
+    _controller.removeListener(_playerListener);
+    _controller.dispose();
     super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return YoutubePlayerBuilder(
+      player: YoutubePlayer(
+        controller: _controller,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: const Color(0xFF1E3A8A),
+        progressColors: const ProgressBarColors(
+          playedColor: Color(0xFF1E3A8A),
+          handleColor: Color(0xFF1E3A8A),
+          bufferedColor: Colors.grey,
+          backgroundColor: Colors.white24,
+        ),
+        topActions: const [],
+        bottomActions: [
+          CurrentPosition(),
+          const SizedBox(width: 10),
+          ProgressBar(
+            isExpanded: true,
+            colors: const ProgressBarColors(
+              playedColor: Color(0xFF1E3A8A),
+              handleColor: Color(0xFF1E3A8A),
+              bufferedColor: Colors.grey,
+              backgroundColor: Colors.white24,
+            ),
+          ),
+          const SizedBox(width: 10),
+          RemainingDuration(),
+          const SizedBox(width: 10),
+          IconButton(
+            icon: const Icon(
+              Icons.fullscreen,
+              color: Colors.white,
+              size: 28,
+            ),
+            onPressed: _isInFullscreen ? null : _enterFullscreen,
+          ),
+        ],
+        onReady: () {
+          print('✅ YouTube player ready');
+        },
+        onEnded: (metadata) {
+          print('🏁 Video ended');
+        },
+      ),
+      builder: (context, player) {
+        return Container(
+          color: Colors.black,
+          child: player,
+        );
+      },
+    );
+  }
+
+  // Public methods
+  Future<void> seekTo(Duration position) async {
+    if (!_isInFullscreen) {
+      _controller.seekTo(position);
+    }
+  }
+
+  Future<void> play() async {
+    if (!_isInFullscreen) {
+      _controller.play();
+    }
+  }
+
+  Future<void> pause() async {
+    if (!_isInFullscreen) {
+      _controller.pause();
+    }
+  }
+
+  bool get isPlaying => _controller.value.isPlaying;
 }
