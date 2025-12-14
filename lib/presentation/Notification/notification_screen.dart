@@ -271,7 +271,7 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
       : size.width * 0.03;
 
   final paddingSize = deviceType == DeviceType.mobile ? 16.0 : 20.0;
-  final marginSize = deviceType == DeviceType.mobile ? 10.0 : 15.0;
+  final marginSize = deviceType == DeviceType.mobile ? 5.0 : 10.0;
   final borderRadiusSize = deviceType == DeviceType.mobile ? 12.0 : 16.0;
 
   showDialog(
@@ -393,16 +393,11 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                                     return;
                                   }
 
-                                  // ===========================================================
-                                  // 2) فتح درس جديد NEW_LESSON
-                                  // ===========================================================
                                   if (type == "NEW_LESSON" && link != null) {
                                     try {
-                                      // مثال: /course/2/module/56?lessonId=300&active_tab=videos
                                       final uri = Uri.parse(link);
 
-                                      final segments = uri
-                                          .pathSegments; // [course, 2, module, 56]
+                                      final segments = uri.pathSegments;
                                       final courseId = int.tryParse(
                                         segments[1],
                                       );
@@ -422,7 +417,15 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                                           MaterialPageRoute(
                                             builder: (_) => BlocProvider(
                                               create: (context) =>
-                                                  ModuleLessonsCubit(context.read<ModulesLessonsRepo>(),)..emitModuleLessonsStates(moduleId, courseId),
+                                                  ModuleLessonsCubit(
+                                                    context
+                                                        .read<
+                                                          ModulesLessonsRepo
+                                                        >(),
+                                                  )..emitModuleLessonsStates(
+                                                    moduleId,
+                                                    courseId,
+                                                  ),
                                               child: ViewModule(
                                                 moduleId: moduleId,
                                                 courseId: courseId,
@@ -442,9 +445,6 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                                     return;
                                   }
 
-                                  // ===========================================================
-                                  // 3) فتح الامتحان EXTERNAL_SOURCE
-                                  // ===========================================================
                                   if (type == "EXTERNAL_SOURCE" &&
                                       link != null) {
                                     launchUrlString(link);
@@ -463,7 +463,7 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                                         decoration: BoxDecoration(
                                           color: noti.isRead
                                               ? Mycolors.grey
-                                              : Colors.orange,
+                                              : Color(0xFFFF9933),
                                           borderRadius: BorderRadius.circular(
                                             borderRadiusSize,
                                           ),
@@ -511,7 +511,7 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                                             size: iconSize,
                                             color: noti.isRead
                                                 ? Colors.grey
-                                                : Colors.orange,
+                                                : Color(0xFFFF9933),
                                           ),
                                         ],
                                       ),

@@ -296,6 +296,7 @@
 
 //   bool get isPlaying => _controller.value.isPlaying;
 // }
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/fullscreen_youtube_player.dart';

@@ -16,7 +16,7 @@ class Mycolors {
   static const blue = Color(0xFF1F70DC);
   static const orange = Color(0xffbd742b);
   static const module_card =  LinearGradient(
-                  colors: [Color(0xff0F3890),Color(0xFF1B202F)],
+                colors: [Color(0xFF0e3995), Color(0xFF1b2130)],
                 );
  static const module_card_olive =  LinearGradient(
                   colors: [Color(0xFF3F471F), Color(0xFF1B202F)],

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_type.dart';
@@ -34,11 +33,19 @@ class LessonItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: isSelected
-              ? Mycolors.cardColor1.withOpacity(0.3)
-              : Mycolors.cardColor1.withOpacity(.8),
+        
+          gradient: isSelected
+              ? const LinearGradient(
+                  colors: [Mycolors.cardColor1, Color(0xff1a1a2e)],
+                )
+              : LinearGradient(
+                  colors: [
+                    Mycolors.cardColor1.withOpacity(.6),
+                    Mycolors.cardColor1.withOpacity(.5),
+                  ],
+                ),
           border: Border(
-            top: const BorderSide(color: Colors.white12, width: 1.0),
+            // top: const BorderSide(color: Colors.white12, width: 1.0),
             right: isSelected
                 ? const BorderSide(color: Colors.white, width: 3.0)
                 : BorderSide.none,
@@ -52,7 +59,6 @@ class LessonItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           textDirection: TextDirection.rtl,
           children: [
-           
             Icon(
               type == LessonType.video
                   ? Icons.play_circle_fill
@@ -63,7 +69,6 @@ class LessonItem extends StatelessWidget {
 
             SizedBox(width: isTablet ? 12 : 8),
 
-           
             if (isSelected) ...[
               Container(
                 width: isTablet ? 10 : 8,
@@ -76,7 +81,6 @@ class LessonItem extends StatelessWidget {
               SizedBox(width: isTablet ? 12 : 8),
             ],
 
-          
             Expanded(
               child: Text(
                 title,
@@ -97,7 +101,6 @@ class LessonItem extends StatelessWidget {
 
             SizedBox(width: isTablet ? 16 : 12),
 
-           
             // if (type == LessonType.video) ...[
             //   Column(
             //     children: [
@@ -152,7 +155,7 @@ class LessonItem extends StatelessWidget {
             //       ),
             //     ],
             //   ),
-           // ],
+            // ],
           ],
         ),
       ),

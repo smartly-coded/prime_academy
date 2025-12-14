@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:device_preview/device_preview.dart';
+ import 'package:device_preview/device_preview.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/core/networking/api_service.dart';
 import 'package:prime_academy/core/routing/app_routes.dart';
@@ -38,8 +38,8 @@ void main() async {
   await setupGetIt();
   await FirebaseNotificationService.initializeFirebaseMessaging();
 
-  // runApp(DevicePreview(enabled: true, builder: (context) => const MyApp()));
-  runApp(const MyApp());
+   runApp(DevicePreview(enabled: true, builder: (context) => const MyApp()));
+  // runApp(const MyApp());
 
 }
 
@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           useInheritedMediaQuery: true,
-          // builder: DevicePreview.appBuilder,
+           builder: DevicePreview.appBuilder,
           onGenerateRoute: AppRoutes().generateRoute,
           home: const CustomSplashScreen(),
           theme: ThemeData(

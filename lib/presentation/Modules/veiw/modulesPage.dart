@@ -14,12 +14,13 @@ import 'package:prime_academy/presentation/widgets/modulesWidgets/module_tile.da
 class ModulesPage extends StatelessWidget {
   final int courseId;
   final String courseName;
-    final LoginResponse user;
+  final LoginResponse user;
 
   const ModulesPage({
     super.key,
     required this.courseId,
-    required this.courseName,required this.user,
+    required this.courseName,
+    required this.user,
   });
 
   @override
@@ -29,14 +30,14 @@ class ModulesPage extends StatelessWidget {
           ModulesCubit(ModulesRepository())..loadModules(courseId),
       child: Scaffold(
         backgroundColor: Mycolors.backgroundColor,
-          appBar: CustomAppBar(
-        user: user,
-         onLogoPressed: () => Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => AppLayout(user: user)),
-          (route) => false,
+        appBar: CustomAppBar(
+          user: user,
+          onLogoPressed: () => Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => AppLayout(user: user)),
+            (route) => false,
+          ),
         ),
-      ),
         body: BlocBuilder<ModulesCubit, ModulesState>(
           builder: (context, state) {
             if (state is ModulesLoading) {
@@ -47,14 +48,14 @@ class ModulesPage extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 50),
                     Container(
                       padding: const EdgeInsets.all(10),
                       width: double.infinity,
                       height: 60,
                       decoration: BoxDecoration(
                         gradient: Mycolors.module_card,
-                        borderRadius: BorderRadius.circular(20),
+                        // borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(
                         child: Text(
@@ -67,11 +68,32 @@ class ModulesPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    ...course.modules.map(
-                      (module) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: ModuleTile(module: module, courseId: courseId, user: user, ),
+                    const SizedBox(height: 50),
+
+                    Container(
+                      padding: const EdgeInsets.only(top: 90),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF12161f),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Column(
+                        children: course.modules
+                            .asMap()
+                            .entries
+                            .map(
+                              (entry) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
+                                child: ModuleTile(
+                                  module: entry.value,
+                                  courseId: courseId,
+                                  user: user,
+                                  index: entry.key,
+                                ),
+                              ),
+                            )
+                            .toList(),
                       ),
                     ),
                   ],

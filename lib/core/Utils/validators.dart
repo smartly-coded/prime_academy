@@ -39,17 +39,23 @@ class Validators {
   }
 
   
-  static String? validateKuwaitPhone(String? value) {
-    if (value == null || value.isEmpty) {
-      return "رقم الهاتف مطلوب";
-    }
-   
-    final kuwaitPhoneRegex = RegExp(r'^\+965[0-9]{8}$');
-    if (!kuwaitPhoneRegex.hasMatch(value)) {
-      return "رقم الهاتف غير صحيح، يجب أن يبدأ بـ +965 ويتكون من 8 أرقام";
-    }
-    return null;
+static String? validateKuwaitPhone(String? value) {
+  if (value == null || value.isEmpty) {
+    return "رقم الهاتف مطلوب";
   }
+
+  // إزالة أي مسافات
+  final phone = value.replaceAll(' ', '');
+
+  // رقم كويتي = 8 أرقام فقط
+  final kuwaitPhoneRegex = RegExp(r'^[0-9]{8}$');
+
+  if (!kuwaitPhoneRegex.hasMatch(phone)) {
+    return "رقم الهاتف غير صحيح، يجب أن يتكون من 8 أرقام فقط";
+  }
+
+  return null;
+}
 
   
   static String? validateMessage(String? value) {
