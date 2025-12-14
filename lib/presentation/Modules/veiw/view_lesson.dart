@@ -840,11 +840,63 @@ class _ViewModuleState extends State<ViewModule> {
     );
   }
 
-  Widget _buildLessonsList(List<dynamic> items, DeviceType deviceType) {
+  Widget _buildLessonItemContent(
+    List<dynamic> items,
+    int index,
+    DeviceType deviceType,
+  ) {
+    final item = items[index] as Item;
+    final isLesson = item.lesson != null;
+    final title = isLesson ? item.lesson!.title : item.externalSource!.title;
+    final duration = isLesson
+        ? _formatVideoLength(item.lesson!.videoLength)
+        : 'رابط';
+    final thumbnailUrl = isLesson ? item.lesson!.thumbnail : null;
+    final accessWithoutEnrollment = isLesson
+        ? item.lesson!.accessWithoutEnrollment
+        : false;
+    final watched = isLesson ? item.lesson!.watched : false;
+    final cupColor = watched ? Colors.amber : Colors.grey;
+
+    return _buildCustomLessonItem(
+      title: title,
+      duration: duration,
+      thumbnailUrl: thumbnailUrl,
+      isVideo: isLesson,
+      isSelected: _currentSelectedItemId == item.id,
+      isRewarded: accessWithoutEnrollment,
+      videoUrl: isLesson ? item.lesson?.externalUrl : null,
+      index: index,
+      onTap: () {
+        setState(() {
+          _currentSelectedItemId = item.id;
+          if (isLesson) {
+            _currentLessonTitle = item.lesson!.title;
+          }
+        });
+        if (isLesson) {
+          _questionCheckTimer?.cancel();
+          context.read<LessonDetailsCubit>().emitLessonDetailsStates(item.id);
+        } else {
+          _openExternalLink(item.externalSource!.url);
+        }
+      },
+      deviceType: deviceType,
+      cupColor: isLesson ? cupColor : null,
+    );
+  }
+
+  Widget _buildLessonsList(
+    List<dynamic> items,
+    DeviceType deviceType, {
+    bool isInRow = false,
+  }) {
     double borderRadius;
     EdgeInsets contentPadding;
     double fontSize;
     double titleFontSize;
+    double containerHeight;
+    double listHeight;
     ValueNotifier<bool> lineFlip = ValueNotifier(false);
 
     switch (deviceType) {
@@ -853,29 +905,38 @@ class _ViewModuleState extends State<ViewModule> {
         contentPadding = const EdgeInsets.all(16);
         fontSize = 14;
         titleFontSize = 24;
+        containerHeight = 500;
+        listHeight = 400;
         break;
       case DeviceType.mobileLandscape:
         borderRadius = 16;
         contentPadding = const EdgeInsets.all(12);
         fontSize = 12;
         titleFontSize = 18;
+        containerHeight = isInRow ? double.infinity : 400;
+        listHeight = isInRow ? double.infinity : 300;
         break;
       case DeviceType.tablet:
         borderRadius = 24;
         contentPadding = const EdgeInsets.all(20);
         fontSize = 16;
         titleFontSize = 24;
+        containerHeight = isInRow ? double.infinity : 500;
+        listHeight = isInRow ? double.infinity : 400;
         break;
       case DeviceType.desktop:
         borderRadius = 28;
         contentPadding = const EdgeInsets.all(24);
         fontSize = 18;
         titleFontSize = 26;
+        containerHeight = isInRow ? double.infinity : 600;
+        listHeight = isInRow ? double.infinity : 500;
         break;
     }
 
     return Container(
-      height: 500,
+      height: isInRow ? null : containerHeight,
+      constraints: isInRow ? BoxConstraints(minHeight: 300) : null,
       decoration: BoxDecoration(
         color: Mycolors.cardColor1.withOpacity(0.8),
         borderRadius: BorderRadius.only(
@@ -937,62 +998,74 @@ class _ViewModuleState extends State<ViewModule> {
             ],
           ),
           SizedBox(height: 15),
-          SizedBox(
-            height: deviceType == DeviceType.mobilePortrait
-                ? 400
-                : deviceType == DeviceType.mobileLandscape
-                ? 300
-                : 500,
-            child: ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index] as Item;
-                final isLesson = item.lesson != null;
-                final title = isLesson
-                    ? item.lesson!.title
-                    : item.externalSource!.title;
-                final duration = isLesson
-                    ? _formatVideoLength(item.lesson!.videoLength)
-                    : 'رابط';
-                final thumbnailUrl = isLesson ? item.lesson!.thumbnail : null;
-                final accessWithoutEnrollment = isLesson
-                    ? item.lesson!.accessWithoutEnrollment
-                    : false;
-                final watched = isLesson ? item.lesson!.watched : false;
-                final cupColor = watched ? Colors.amber : Colors.grey;
 
-                return _buildCustomLessonItem(
-                  title: title,
-                  duration: duration,
-                  thumbnailUrl: thumbnailUrl,
-                  isVideo: isLesson,
-                  isSelected: _currentSelectedItemId == item.id,
-                  isRewarded: accessWithoutEnrollment,
-                  videoUrl: isLesson ? item.lesson?.externalUrl : null,
+          isInRow
+              ? Expanded(
+                  child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return _buildLessonItemContent(items, index, deviceType);
+                    },
+                  ),
+                )
+              : SizedBox(
+                  height: deviceType == DeviceType.mobilePortrait
+                      ? 400
+                      : deviceType == DeviceType.mobileLandscape
+                      ? 300
+                      : 500,
+                  child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index] as Item;
+                      final isLesson = item.lesson != null;
+                      final title = isLesson
+                          ? item.lesson!.title
+                          : item.externalSource!.title;
+                      final duration = isLesson
+                          ? _formatVideoLength(item.lesson!.videoLength)
+                          : 'رابط';
+                      final thumbnailUrl = isLesson
+                          ? item.lesson!.thumbnail
+                          : null;
+                      final accessWithoutEnrollment = isLesson
+                          ? item.lesson!.accessWithoutEnrollment
+                          : false;
+                      final watched = isLesson ? item.lesson!.watched : false;
+                      final cupColor = watched ? Colors.amber : Colors.grey;
 
-                  index: index,
-                  onTap: () {
-                    setState(() {
-                      _currentSelectedItemId = item.id;
-                      if (isLesson) {
-                        _currentLessonTitle = item.lesson!.title;
-                      }
-                    });
-                    if (isLesson) {
-                      _questionCheckTimer?.cancel();
-                      context
-                          .read<LessonDetailsCubit>()
-                          .emitLessonDetailsStates(item.id);
-                    } else {
-                      _openExternalLink(item.externalSource!.url);
-                    }
-                  },
-                  deviceType: deviceType,
-                  cupColor: isLesson ? cupColor : null,
-                );
-              },
-            ),
-          ),
+                      return _buildCustomLessonItem(
+                        title: title,
+                        duration: duration,
+                        thumbnailUrl: thumbnailUrl,
+                        isVideo: isLesson,
+                        isSelected: _currentSelectedItemId == item.id,
+                        isRewarded: accessWithoutEnrollment,
+                        videoUrl: isLesson ? item.lesson?.externalUrl : null,
+
+                        index: index,
+                        onTap: () {
+                          setState(() {
+                            _currentSelectedItemId = item.id;
+                            if (isLesson) {
+                              _currentLessonTitle = item.lesson!.title;
+                            }
+                          });
+                          if (isLesson) {
+                            _questionCheckTimer?.cancel();
+                            context
+                                .read<LessonDetailsCubit>()
+                                .emitLessonDetailsStates(item.id);
+                          } else {
+                            _openExternalLink(item.externalSource!.url);
+                          }
+                        },
+                        deviceType: deviceType,
+                        cupColor: isLesson ? cupColor : null,
+                      );
+                    },
+                  ),
+                ),
         ],
       ),
     );
@@ -1445,12 +1518,12 @@ class _ViewModuleState extends State<ViewModule> {
                     [];
 
                 if (isLandscape && deviceType != DeviceType.mobilePortrait) {
-                  return SingleChildScrollView(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 3,
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: SingleChildScrollView(
                           child: Column(
                             children: [
                               videoHeader(
@@ -1463,16 +1536,16 @@ class _ViewModuleState extends State<ViewModule> {
                             ],
                           ),
                         ),
-                        Expanded(
-                          flex: 2,
-                          child: Column(
-                            children: [
-                              _buildLessonsList(module.items ?? [], deviceType),
-                            ],
-                          ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: _buildLessonsList(
+                          module.items ?? [],
+                          deviceType,
+                          isInRow: true,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 } else {
                   return SingleChildScrollView(
