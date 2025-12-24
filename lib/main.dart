@@ -38,11 +38,9 @@ void main() async {
   await setupGetIt();
   await FirebaseNotificationService.initializeFirebaseMessaging();
 
-<<<<<<< HEAD
-  //  runApp(DevicePreview(enabled: true, builder: (context) => const MyApp()));
-=======
    // runApp(DevicePreview(enabled: true, builder: (context) => const MyApp()));
    runApp(const MyApp());
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -92,11 +90,8 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           useInheritedMediaQuery: true,
-<<<<<<< HEAD
-          //  builder: DevicePreview.appBuilder,
-=======
+
            // builder: DevicePreview.appBuilder,
->>>>>>> 9d87fb4220f17eb3493748f2fb3c169d6da5a2aa
           onGenerateRoute: AppRoutes().generateRoute,
           home: const CustomSplashScreen(),
           theme: ThemeData(
@@ -113,3 +108,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
