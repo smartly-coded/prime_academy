@@ -71,6 +71,53 @@ class MessageModel {
   }
 }
 
+// class MediaModel {
+//   final int? id;
+//   final String? filename;
+//   final String? url;
+//   final String? mimeType;
+//   final int? size;
+//   final DateTime? createdAt;
+//   final DateTime? updatedAt;
+
+//   MediaModel({
+//     this.id,
+//     this.filename,
+//     this.url,
+//     this.mimeType,
+//     this.size,
+//     this.createdAt,
+//     this.updatedAt,
+//   });
+
+//   factory MediaModel.fromJson(Map<String, dynamic> json) {
+//     return MediaModel(
+//       id: json['id'] as int?,
+//       filename: json['filename'] as String?,
+//       url: json['url'] as String?,
+//       mimeType: json['mime_type'] as String?,
+//       size: json['size'] as int?,
+//       createdAt: json['created_at'] != null
+//           ? DateTime.tryParse(json['created_at'])
+//           : null,
+//       updatedAt: json['updated_at'] != null
+//           ? DateTime.tryParse(json['updated_at'])
+//           : null,
+//     );
+//   }
+
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'filename': filename,
+//       'url': url,
+//       'mime_type': mimeType,
+//       'size': size,
+//       'created_at': createdAt?.toIso8601String(),
+//       'updated_at': updatedAt?.toIso8601String(),
+//     };
+//   }
+// }
 class MediaModel {
   final int? id;
   final String? filename;
@@ -80,6 +127,10 @@ class MediaModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  // ⭐ حقول جديدة للموجات الصوتية
+  final List<double>? amplitudes; // بيانات الموجات
+  final int? duration; // مدة التسجيل بالثواني
+
   MediaModel({
     this.id,
     this.filename,
@@ -88,6 +139,8 @@ class MediaModel {
     this.size,
     this.createdAt,
     this.updatedAt,
+    this.amplitudes, // ⭐
+    this.duration, // ⭐
   });
 
   factory MediaModel.fromJson(Map<String, dynamic> json) {
@@ -103,6 +156,11 @@ class MediaModel {
       updatedAt: json['updated_at'] != null
           ? DateTime.tryParse(json['updated_at'])
           : null,
+      // ⭐ Parse amplitudes من JSON
+      amplitudes: json['amplitudes'] != null
+          ? List<double>.from(json['amplitudes'].map((x) => x.toDouble()))
+          : null,
+      duration: json['duration'] as int?, // ⭐
     );
   }
 
@@ -115,6 +173,8 @@ class MediaModel {
       'size': size,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'amplitudes': amplitudes, // ⭐
+      'duration': duration, // ⭐
     };
   }
 }

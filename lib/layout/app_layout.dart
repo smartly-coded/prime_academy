@@ -321,9 +321,8 @@ class _AppLayoutState extends State<AppLayout> {
       providers: [
         BlocProvider(
           create: (_) =>
-             StartScreenCubit(getIt<StartScreenRepo>())
-    ..emitAllStudentsState(),
-
+              StartScreenCubit(getIt<StartScreenRepo>())
+                ..emitAllStudentsState(),
         ),
         BlocProvider(
           create: (context) =>
@@ -394,147 +393,143 @@ class _AppLayoutState extends State<AppLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Mycolors.backgroundColor,
+      appBar: AppBar(
         backgroundColor: Mycolors.backgroundColor,
-        appBar: AppBar(
-          backgroundColor: Mycolors.backgroundColor,
-          elevation: 0,
-          title: Image.asset("assets/images/footer-logo.webp", height: 40),
-          actions: [
-            Container(
-              padding: EdgeInsets.all(2),
-              width: 70,
-              height: 40,
+        elevation: 0,
+        title: Image.asset("assets/images/footer-logo.webp", height: 40),
+        actions: [
+          Container(
+            padding: EdgeInsets.all(2),
+            width: 70,
+            height: 40,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: Mycolors.primary_color.colors),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              width: 50,
+              height: 30,
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: Mycolors.primary_color.colors),
+                // color: Color(0XFF0f1217),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Container(
-                width: 50,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: Color(0XFF0f1217),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextButton(
-                  onPressed: _handleAccountButton,
-                  child: const Text(
-                    "حسابي",
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
+              child: TextButton(
+                onPressed: _handleAccountButton,
+                child: const Text(
+                  "حسابي",
+                  style: TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ),
             ),
-            const SizedBox(width: 10),
+          ),
+          const SizedBox(width: 10),
 
-            //   Container(
-            //   margin: EdgeInsets.only(left: 6, top: 8, bottom: 8),
-            //   padding: EdgeInsets.all(2),
-            //   decoration: BoxDecoration(
-            //     gradient: LinearGradient(
-            //       colors:Mycolors.primary_color.colors,
-            //     ),
-            //     borderRadius: BorderRadius.circular(18),
-            //   ),
-            //   child: Container(
-            //     padding: EdgeInsets.symmetric(horizontal: 8),
-            //     decoration: BoxDecoration(
-            //       color: Color(0XFF0f1217),
-            //       borderRadius: BorderRadius.circular(16),
-            //     ),
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: [
-            //         Icon(Icons.location_on, color: Colors.white, size: 14),
-            //         const SizedBox(width: 3),
-            //         const Text(
-            //           "الكويت",
-            //           style: TextStyle(
-            //             color: Colors.white,
-            //             fontSize: 12,
-            //             fontWeight: FontWeight.w500,
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
-            if (_currentUser != null)
-              BlocBuilder<NotificationCubit, NotificationState>(
-                builder: (context, state) {
-                  bool hasUnread = false;
+          //   Container(
+          //   margin: EdgeInsets.only(left: 6, top: 8, bottom: 8),
+          //   padding: EdgeInsets.all(2),
+          //   decoration: BoxDecoration(
+          //     gradient: LinearGradient(
+          //       colors:Mycolors.primary_color.colors,
+          //     ),
+          //     borderRadius: BorderRadius.circular(18),
+          //   ),
+          //   child: Container(
+          //     padding: EdgeInsets.symmetric(horizontal: 8),
+          //     decoration: BoxDecoration(
+          //       color: Color(0XFF0f1217),
+          //       borderRadius: BorderRadius.circular(16),
+          //     ),
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       mainAxisSize: MainAxisSize.min,
+          //       children: [
+          //         Icon(Icons.location_on, color: Colors.white, size: 14),
+          //         const SizedBox(width: 3),
+          //         const Text(
+          //           "الكويت",
+          //           style: TextStyle(
+          //             color: Colors.white,
+          //             fontSize: 12,
+          //             fontWeight: FontWeight.w500,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          if (_currentUser != null)
+            BlocBuilder<NotificationCubit, NotificationState>(
+              builder: (context, state) {
+                bool hasUnread = false;
 
-                  if (state is NotificationLoaded) {
-                    hasUnread = state.notifications.any(
-                      (n) => n.isRead == false,
-                    );
-                  }
+                if (state is NotificationLoaded) {
+                  hasUnread = state.notifications.any((n) => n.isRead == false);
+                }
 
-                  return Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(2),
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: Mycolors.primary_color.colors,
-                          ),
-                          borderRadius: BorderRadius.circular(50),
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(2),
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: Mycolors.primary_color.colors,
                         ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0XFF0f1217),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Center(
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.notifications_none,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                showNotificationsDialog(context, _currentUser!);
-                              },
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0XFF0f1217),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.notifications_none,
+                              color: Colors.white,
+                              size: 20,
                             ),
+                            onPressed: () {
+                              showNotificationsDialog(context, _currentUser!);
+                            },
                           ),
                         ),
                       ),
+                    ),
 
-                      // النقطة الحمرا لو فيه إشعارات جديدة
-                      if (hasUnread)
-                        Positioned(
-                          right: 4,
-                          top: -1,
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
+                    // النقطة الحمرا لو فيه إشعارات جديدة
+                    if (hasUnread)
+                      Positioned(
+                        right: 4,
+                        top: -1,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
                           ),
                         ),
-                    ],
-                  );
-                },
-              ),
-          ],
-        ),
-        body: _pages[_currentIndex],
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.orange,
-          unselectedItemColor: Colors.white70,
-          backgroundColor: Colors.black,
-          items: bottomNavItems,
-        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+        ],
+      ),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.orange,
+        unselectedItemColor: Colors.white70,
+        backgroundColor: Colors.black,
+        items: bottomNavItems,
       ),
     );
   }

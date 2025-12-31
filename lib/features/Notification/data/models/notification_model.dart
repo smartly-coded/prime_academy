@@ -32,6 +32,7 @@ class NotificationModel {
   Map<String, dynamic> toJson() {
     return {
       "id": id,
+      
       "user_id": userId,
       "type": type,
       "data": data,
@@ -42,5 +43,5 @@ class NotificationModel {
   }
 
   @override
-  String toString() => toJson().toString(); // ✅ عشان الطباعة
+  String toString() => toJson().toString(); 
 }

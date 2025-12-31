@@ -80,39 +80,44 @@ class ChatRepo {
     }
   }
 
-
-
-  /// 7- Send Media Message (Image/Video/Audio)
   Future<MessageModel> sendMedia(
     int chatId,
     File file, {
     String? message,
+    List<double>? amplitudes, 
+    int? duration, 
   }) async {
-    // تحديد MIME type بناءً على امتداد الملف
+    
     String mimeType = _getMimeTypeForFile(file);
 
-    // Step 1: Get presigned URL & key from backend
     final presigned = await getPresignedUrl(mimeType);
     final url = presigned['url'];
     final key = presigned['key'];
 
-    // Step 2: Upload file to R2
     await uploadToPresignedUrl(url, file, mimeType);
 
-    // Step 3: Build payload exactly as backend schema
+    final Map<String, dynamic> mediaData = {
+      "key": key,
+      "name": file.path.split('/').last,
+      "mime_type": mimeType,
+      "size": await file.length(),
+    };
+
+    // ⭐ أضف amplitudes و duration لو موجودين (للملفات الصوتية فقط)
+    if (amplitudes != null && amplitudes.isNotEmpty) {
+      mediaData["amplitudes"] = amplitudes;
+    }
+    if (duration != null) {
+      mediaData["duration"] = duration;
+    }
+
     final response = await _dio.post(
       '${ApiConstants.apiBaseUrl}chats/$chatId',
       data: {
         "message": message ?? "",
-        "media": {
-          "key": key,
-          "name": file.path.split('/').last,
-          "mime_type": mimeType,
-          "size": await file.length(),
-        },
+        "media": mediaData, // ⭐ استخدم الـ mediaData المعدل
       },
     );
-
 
     return MessageModel.fromJson(response.data);
   }

@@ -37,7 +37,10 @@ class MarkAnsweredCubit extends Cubit<MarkAnsweredState> {
       questionId,
       requestBody,
     );
-
+    print(
+      "----------------------------------------------------------------------------------------",
+    );
+    print(response);
     response.when(
       success: (markAnsweredResponseModel) async {
         emit(MarkAnsweredState.success(markAnsweredResponseModel));

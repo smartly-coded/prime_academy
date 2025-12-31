@@ -7,6 +7,7 @@ import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
 import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/lesson_details_response.dart';
+import 'package:prime_academy/features/CoursesModules/data/repo/modules_lessons_repo.dart';
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/lesson_details_state.dart';
 import 'package:prime_academy/features/CoursesModules/logic/mark_answered_cubit.dart';
@@ -20,6 +21,7 @@ import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubi
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_state.dart';
 import 'package:prime_academy/layout/app_layout.dart';
 import 'package:prime_academy/layout/custom_app_bar.dart';
+import 'package:prime_academy/presentation/Chat/ChatPage1.dart';
 import 'package:prime_academy/presentation/Chat/chatPage.dart';
 import 'package:prime_academy/presentation/Modules/veiw/video_header.dart';
 import 'package:prime_academy/presentation/Notification/notification_screen.dart';
@@ -600,7 +602,7 @@ class _ViewModuleState extends State<ViewModule> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child:
+        // child:
             // HLSVideoPlayer(
             //   key: _playerKey,
             //   videoId: _currentVideoId!,
@@ -625,7 +627,7 @@ class _ViewModuleState extends State<ViewModule> {
             //     print('🏁 Video ended');
             //   },
             // ),
-            YouTubeWebViewPlayer(
+            child: YouTubeWebViewPlayer(
               key: _playerKey,
               videoId: _currentVideoId!,
               autoPlay: true,
@@ -649,6 +651,21 @@ class _ViewModuleState extends State<ViewModule> {
                 print('🏁 Video ended');
               },
             ),
+//             child: YouTubeWebViewPlayer(
+//   key: _playerKey,
+//   videoId: _currentVideoId!,
+//   autoPlay: true,
+//   onReady: () {
+//     if (!mounted || _isDisposing) return;
+
+//     setState(() {
+//       _isPlayerReady = true;
+//     });
+
+//     _showRatingPopupIfNeeded();
+//   },
+// ),
+
       ),
     );
   }
@@ -664,7 +681,11 @@ class _ViewModuleState extends State<ViewModule> {
     }
   }
 
-  Widget _buildActionButtons(DeviceType deviceType) {
+  Widget _buildActionButtons(
+    DeviceType deviceType,
+    int moduleId,
+    int courseId,
+  ) {
     double fontSize;
     EdgeInsets padding;
     double spacing;
@@ -779,14 +800,29 @@ class _ViewModuleState extends State<ViewModule> {
                     MaterialPageRoute(
                       builder: (_) => BlocProvider(
                         create: (context) => ChatCubit(
-                          context.read<ChatRepo>(),
-                          _currentChatId,
-                          widget.user,
+                          chatRepo: context.read<ChatRepo>(),
+                          modulesLessonsRepo: context
+                              .read<ModulesLessonsRepo>(),
+                          chatId: _currentChatId,
+                          moduleId: widget.moduleId,
+                          courseId: widget.courseId,
+                          user: widget.user,
+                          // ChatCubit(
+                          //   context.read<ChatRepo>(),
+                          //      _currentChatId,
+                          // widget.user,
                         )..loadChat(),
                         child: ChatScreen(
                           chatId: _currentChatId,
+                          moduleId: moduleId,
+                          courseId: courseId,
                           user: widget.user,
                         ),
+
+                        // ChatScreen(
+                        //   chatId: _currentChatId,
+                        //   user: widget.user,
+                        // ),
                       ),
                     ),
                   );
@@ -1365,6 +1401,9 @@ class _ViewModuleState extends State<ViewModule> {
 
   @override
   Widget build(BuildContext context) {
+    print(
+      'pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp____________________________________________________________________________+${widget.moduleId}"0000000000"${widget.courseId}',
+    );
     final deviceType = _getDeviceType(context);
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
@@ -1532,7 +1571,11 @@ class _ViewModuleState extends State<ViewModule> {
                                 deviceType,
                               ),
                               _buildVideoPlayer(deviceType),
-                              _buildActionButtons(deviceType),
+                              _buildActionButtons(
+                                deviceType,
+                                widget.courseId,
+                                widget.moduleId,
+                              ),
                             ],
                           ),
                         ),
@@ -1553,7 +1596,11 @@ class _ViewModuleState extends State<ViewModule> {
                       children: [
                         videoHeader(_currentLessonTitle, context, deviceType),
                         _buildVideoPlayer(deviceType),
-                        _buildActionButtons(deviceType),
+                        _buildActionButtons(
+                          deviceType,
+                          widget.courseId,
+                          widget.moduleId,
+                        ),
                         SizedBox(height: 40),
                         _buildLessonsList(module.items ?? [], deviceType),
                       ],

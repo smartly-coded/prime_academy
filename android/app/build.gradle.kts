@@ -23,8 +23,8 @@ android {
         applicationId = "com.smartlycoded.prime_academy"
         minSdk = 24
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 10
+        versionName = "1.0.9"
     }
 
     compileOptions {

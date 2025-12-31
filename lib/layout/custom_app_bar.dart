@@ -94,9 +94,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Mycolors.backgroundColor,
       elevation: 0,
       automaticallyImplyLeading:
-          automaticallyImplyLeading, // 🔥 التحكم في الظهور
+          automaticallyImplyLeading,
       iconTheme: IconThemeData(
-        color: backArrowColor, // 🔥 تغيير لون سهم الرجوع
+        color: backArrowColor, 
       ),
       title: GestureDetector(
         onTap: onLogoPressed,

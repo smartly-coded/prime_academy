@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 
 class LogoutButton extends StatelessWidget {
   final bool isMobile;
@@ -17,16 +18,16 @@ class LogoutButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xffa76433), Color(0xff4f2349)],
+          gradient: LinearGradient(
+            colors: Mycolors.primary_color.colors,
+            begin: Alignment.topRight,
+            end: Alignment.bottomCenter,
           ),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.logout, color: Colors.white, size: 18),
-            const SizedBox(width: 5),
             Text(
               "تسجيل الخروج",
               style: TextStyle(
@@ -34,10 +35,9 @@ class LogoutButton extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            
-           
+            const SizedBox(width: 5),
 
-           
+            const Icon(Icons.logout, color: Colors.white, size: 18),
           ],
         ),
       ),

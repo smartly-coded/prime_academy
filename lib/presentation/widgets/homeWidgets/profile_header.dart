@@ -139,7 +139,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
 
-    // ✅ استخدم دالتك لبناء الرابط الصحيح من الـ API response
     final imageUrl = _buildImageUrl(widget.user.image?.url);
 
     return Row(
