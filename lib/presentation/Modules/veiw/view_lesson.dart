@@ -603,69 +603,69 @@ class _ViewModuleState extends State<ViewModule> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         // child:
-            // HLSVideoPlayer(
-            //   key: _playerKey,
-            //   videoId: _currentVideoId!,
-            //   autoPlay: true,
-            //   onReady: () {
-            //     if (!mounted || _isDisposing) return;
-            //     setState(() {
-            //       _isPlayerReady = true;
-            //     });
-            //     _showRatingPopupIfNeeded();
-            //   },
-            //   onError: (error) {
-            //     print('❌ Video error: $error');
-            //   },
-            //   onProgress: (position, duration) {
-            //     if (!mounted || _isDisposing || !_isPlayerReady) return;
-            //     // ✅ Just check for questions based on position
-            //     _checkForQuestionsAtPosition(position);
-            //   },
-            //   onVideoEnd: () {
-            //     if (!mounted || _isDisposing) return;
-            //     print('🏁 Video ended');
-            //   },
-            // ),
-            child: YouTubeWebViewPlayer(
-              key: _playerKey,
-              videoId: _currentVideoId!,
-              autoPlay: true,
-              showControls: true,
-              onReady: () {
-                if (!mounted || _isDisposing) return;
-                setState(() {
-                  _isPlayerReady = true;
-                });
-                _showRatingPopupIfNeeded();
-              },
-              onError: (error) {
-                print('❌ Video error: $error');
-              },
-              onProgress: (position, duration) {
-                if (!mounted || _isDisposing || !_isPlayerReady) return;
-                _checkForQuestionsAtPosition(position);
-              },
-              onVideoEnd: () {
-                if (!mounted || _isDisposing) return;
-                print('🏁 Video ended');
-              },
-            ),
-//             child: YouTubeWebViewPlayer(
-//   key: _playerKey,
-//   videoId: _currentVideoId!,
-//   autoPlay: true,
-//   onReady: () {
-//     if (!mounted || _isDisposing) return;
+        // HLSVideoPlayer(
+        //   key: _playerKey,
+        //   videoId: _currentVideoId!,
+        //   autoPlay: true,
+        //   onReady: () {
+        //     if (!mounted || _isDisposing) return;
+        //     setState(() {
+        //       _isPlayerReady = true;
+        //     });
+        //     _showRatingPopupIfNeeded();
+        //   },
+        //   onError: (error) {
+        //     print('❌ Video error: $error');
+        //   },
+        //   onProgress: (position, duration) {
+        //     if (!mounted || _isDisposing || !_isPlayerReady) return;
+        //     // ✅ Just check for questions based on position
+        //     _checkForQuestionsAtPosition(position);
+        //   },
+        //   onVideoEnd: () {
+        //     if (!mounted || _isDisposing) return;
+        //     print('🏁 Video ended');
+        //   },
+        // ),
+        child: YouTubeWebViewPlayer(
+          key: _playerKey,
+          videoId: _currentVideoId!,
+          autoPlay: true,
+          showControls: true,
+          onReady: () {
+            if (!mounted || _isDisposing) return;
+            setState(() {
+              _isPlayerReady = true;
+            });
+            _showRatingPopupIfNeeded();
+          },
+          onError: (error) {
+            print('❌ Video error: $error');
+          },
+          onProgress: (position, duration) {
+            if (!mounted || _isDisposing || !_isPlayerReady) return;
+            _checkForQuestionsAtPosition(position);
+          },
+          onVideoEnd: () {
+            if (!mounted || _isDisposing) return;
+            print('🏁 Video ended');
+          },
+        ),
 
-//     setState(() {
-//       _isPlayerReady = true;
-//     });
+        //             child: YouTubeWebViewPlayer(
+        //   key: _playerKey,
+        //   videoId: _currentVideoId!,
+        //   autoPlay: true,
+        //   onReady: () {
+        //     if (!mounted || _isDisposing) return;
 
-//     _showRatingPopupIfNeeded();
-//   },
-// ),
+        //     setState(() {
+        //       _isPlayerReady = true;
+        //     });
 
+        //     _showRatingPopupIfNeeded();
+        //   },
+        // ),
       ),
     );
   }

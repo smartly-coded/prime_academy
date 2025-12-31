@@ -510,13 +510,12 @@ Future<void> _loadWaveformData() async {
   @override
   Widget build(BuildContext context) {
     final isCurrentlyPlaying = widget.audioPlayerManager.isCurrentlyPlaying(widget.fullUrl);
-    
-    // Calculate total bars for bar-by-bar animation
+   
     final screenWidth = MediaQuery.of(context).size.width;
     final audioWidth = screenWidth * 0.7;
     final barWidth = 2.5;
     final spacing = 3.0;
-    final totalBars = ((audioWidth - 32) / (barWidth + spacing)).floor(); // minus padding
+    final totalBars = ((audioWidth - 32) / (barWidth + spacing)).floor(); 
     
     final progress = widget.audioPlayerManager.getProgress(widget.fullUrl, totalBars: totalBars);
     final actualDuration = _getAudioDuration();
@@ -559,7 +558,7 @@ Future<void> _loadWaveformData() async {
                     size: Size.infinite,
                     painter: AudioWaveformPainter(
                       progress: progress,
-                      waveformData: _waveformData, // ⭐ Pass actual waveform data
+                      waveformData: _waveformData, 
                     ),
                   ),
                 ),

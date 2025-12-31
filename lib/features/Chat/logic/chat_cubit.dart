@@ -241,32 +241,32 @@ import 'package:prime_academy/features/authScreen/data/models/login_response.dar
 import 'package:prime_academy/features/CoursesModules/data/repo/modules_lessons_repo.dart'; // ⭐ إضافة
 
 class ChatCubit extends Cubit<ChatState> {
-   static ChatCubit? instance;
+  static ChatCubit? instance;
   final ChatRepo chatRepo;
-  final ModulesLessonsRepo modulesLessonsRepo; 
+  final ModulesLessonsRepo modulesLessonsRepo;
   final int chatId;
-  final int moduleId; 
-  final int courseId; 
+  int? moduleId;
+  int? courseId;
   final LoginResponse user;
 
   List<MessageModel> messages = [];
   final SSEService _sseService = SSEService();
 
-  ChatCubit( { 
+  ChatCubit({
     required this.chatRepo,
     required this.modulesLessonsRepo,
     required this.chatId,
-    required this.moduleId,
-    required this.courseId,
+    this.moduleId,
+    this.courseId,
     required this.user,
   }) : super(ChatInitial()) {
-     instance = this;
+    instance = this;
   }
 
   Future<void> loadChat() async {
     print('🟡 CHAT CUBIT REQUEST');
-print('moduleId = $moduleId');
-print('courseId = $courseId');
+    print('moduleId = $moduleId');
+    print('courseId = $courseId');
 
     // ⭐ بدل ChatLoading، emit الـ ChatInfo فوراً عشان الشاشة تفتح
     final chatInfo = ChatInfoModel.fromLoginResponse(user);
@@ -275,59 +275,45 @@ print('courseId = $courseId');
     try {
       // ⭐ جيب بيانات المعلم من modules endpoint
       ChatInfoModel updatedChatInfo = chatInfo;
+      if (moduleId != null && courseId != null) {
+        try {
+          final moduleResult = await modulesLessonsRepo.getModuleLessons(
+            courseId!,
+            moduleId!,
+          );
 
-      try {
-        final moduleResult = await modulesLessonsRepo.getModuleLessons(
-  courseId, moduleId,
- 
-);
+          moduleResult.when(
+            success: (moduleData) {
+              print('✅ MODULE DATA: $moduleData');
 
-moduleResult.when(
-  success: (moduleData) {
-    print('✅ MODULE DATA: $moduleData');
+              // اطبعي بيانات المعلم بالتحديد
+              print('👨‍🏫 TEACHER RAW: ${moduleData.teacher}');
+              print('👨‍🏫 TEACHER ID: ${moduleData.teacher?.id}');
+              print(
+                '👨‍🏫 TEACHER FIRSTNAME: ${moduleData.teacher?.firstname}',
+              );
+              print('👨‍🏫 TEACHER LASTNAME: ${moduleData.teacher?.lastname}');
+              print('👨‍🏫 TEACHER IMAGE: ${moduleData.teacher?.image?.url}');
 
-    // اطبعي بيانات المعلم بالتحديد
-    print('👨‍🏫 TEACHER RAW: ${moduleData.teacher}');
-    print('👨‍🏫 TEACHER ID: ${moduleData.teacher?.id}');
-    print('👨‍🏫 TEACHER FIRSTNAME: ${moduleData.teacher?.firstname}');
-    print('👨‍🏫 TEACHER LASTNAME: ${moduleData.teacher?.lastname}');
-    print('👨‍🏫 TEACHER IMAGE: ${moduleData.teacher?.image?.url}');
+              if (moduleData.teacher != null) {
+                updatedChatInfo = chatInfo.copyWithTeacher(moduleData.teacher!);
+              } else {
+                print('⚠️ teacher = null');
+              }
+            },
+            failure: (error) {
+              print(
+                '❌ Failed to load teacher data: ${error.apiErrorModel.message}',
+              );
+            },
+          );
 
-    if (moduleData.teacher != null) {
-      updatedChatInfo = chatInfo.copyWithTeacher(moduleData.teacher!);
-    } else {
-      print('⚠️ teacher = null');
-    }
-  },
-  failure: (error) {
-    print(
-      '❌ Failed to load teacher data: ${error.apiErrorModel.message}',
-    );
-  },
-);
-
-        // final moduleResult = await modulesLessonsRepo.getModuleLessons(
-        //   moduleId,
-        //   courseId,
-        // );
-
-        // moduleResult.when(
-        //   success: (moduleData) {
-        //     // ⭐ أضف بيانات المعلم للـ chatInfo
-        //     updatedChatInfo = chatInfo.copyWithTeacher(moduleData.teacher);
-        //   },
-        //   failure: (error) {
-        //     print(
-        //       'Failed to load teacher data: ${error.apiErrorModel.message}',
-        //     );
-        //     // استمر بدون بيانات المعلم
-        //   },
-        // );
-      } catch (e) {
-        print('Error fetching teacher data: $e');
-        // استمر بدون بيانات المعلم
+         
+        } catch (e) {
+          print('Error fetching teacher data: $e');
+          // استمر بدون بيانات المعلم
+        }
       }
-
       // ⭐ اعكس الرسائل بعد ما تجيبها
       final fetchedMessages = await chatRepo.getMessages(chatId, page: 1);
       messages = fetchedMessages.reversed.toList(); // عكس الترتيب هنا

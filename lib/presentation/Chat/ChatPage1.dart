@@ -932,15 +932,15 @@ import 'package:prime_academy/presentation/widgets/Chat_Widgets/media_file_recor
 
 class ChatScreen extends StatefulWidget {
   final int chatId;
-  final int moduleId; 
-  final int courseId;
+  final int? moduleId; 
+  final int? courseId;
   final LoginResponse user;
 
   const ChatScreen({
     super.key,
     required this.chatId,
-    required this.moduleId, 
-    required this.courseId, 
+     this.moduleId, 
+     this.courseId, 
     required this.user,
   });
 

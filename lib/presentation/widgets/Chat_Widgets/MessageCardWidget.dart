@@ -379,6 +379,7 @@ class MessageCardWidget extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildHeader(
     bool isStudent,
     String userName,
@@ -388,7 +389,7 @@ class MessageCardWidget extends StatelessWidget {
   ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.end, 
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         if (isStudent)
           Container(
@@ -455,13 +456,24 @@ class MessageCardWidget extends StatelessWidget {
             // const SizedBox(width: 6),
             CircleAvatar(
               radius: 32,
+
               backgroundImage: _buildProfileImage(userImageUrl),
               backgroundColor: Colors.grey[800],
-              child:
-               userImageUrl == null || userImageUrl.isEmpty
+              child: userImageUrl == null || userImageUrl.isEmpty
                   ? isStudent
-                      ? const Icon(Icons.person, color: Colors.white, size: 20)
-                      :  Image.asset('assets/images/teacher.jpeg')
+                        ? const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 20,
+                          )
+                        : ClipOval(
+                            child: Image.asset(
+                              'assets/images/teacher.jpeg',
+                              width: 64,
+                              height: 64,
+                              fit: BoxFit.cover,
+                            ),
+                          )
                   //  const Icon(Icons.person, color: Colors.white, size: 20)
                   : null,
             ),
