@@ -12,7 +12,7 @@ class LessonItem extends StatelessWidget {
   final LessonType type;
   final VoidCallback? onTap;
   final bool isSelected;
-
+  final bool isSpecial;
   const LessonItem({
     super.key,
     required this.title,
@@ -20,6 +20,7 @@ class LessonItem extends StatelessWidget {
     required this.type,
     required this.onTap,
     this.isSelected = false,
+    required this.isSpecial,
   });
 
   @override
@@ -33,15 +34,23 @@ class LessonItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-        
           gradient: isSelected
               ? const LinearGradient(
                   colors: [Mycolors.cardColor1, Color(0xff1a1a2e)],
                 )
+              : isSpecial
+              ? LinearGradient(
+                  colors: [
+                    Color(0xFF6a760c).withOpacity(.6),
+                    Mycolors.cardColor1.withOpacity(.2),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                )
               : LinearGradient(
                   colors: [
-                    Mycolors.cardColor1.withOpacity(.6),
-                    Mycolors.cardColor1.withOpacity(.5),
+                    Mycolors.cardColor1.withOpacity(.1),
+                    Mycolors.cardColor1.withOpacity(.2),
                   ],
                 ),
           border: Border(

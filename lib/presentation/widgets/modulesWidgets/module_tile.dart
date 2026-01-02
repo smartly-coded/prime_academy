@@ -195,6 +195,7 @@ class _ModuleTileState extends State<ModuleTile> {
                             title: item.title,
                             time: item.time,
                             type: item.type,
+                            isSpecial: widget.module.special,
                             onTap: () async {
                               if (item.type == LessonType.link &&
                                   item.url != null) {

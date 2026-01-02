@@ -564,8 +564,10 @@
 //     },
 //   );
 // }
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
 import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
@@ -686,28 +688,53 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
                                     final chatId = data?['chatId'];
                                     if (chatId != null) {
                                       Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => BlocProvider(
-                                            create: (context) => ChatCubit(
-                                              chatRepo: context
-                                                  .read<ChatRepo>(),
-                                              modulesLessonsRepo: context
-                                                  .read<ModulesLessonsRepo>(),
-                                              chatId: chatId,
-                                              // moduleId: 1,
-                                              // courseId: 2,
-                                              user: user,
-                                            )..loadChat(),
-                                            child: ChatScreen(
-                                              chatId: chatId,
-                                              user: user,
-                                              // moduleId: ,
-                                              // courseId: 2,
-                                            ),
-                                          ),
-                                        ),
-                                      );
+  context,
+  MaterialPageRoute(
+    builder: (_) => BlocProvider(
+      create: (context) => ChatCubit(
+        chatRepo: getIt<ChatRepo>(),
+        chatId: chatId,
+        user: user,
+      )..loadChat(),
+      child: ChatScreen(  // ⭐ أضفنا الـ child
+        chatId: chatId,
+        user: user,
+      ),
+    ),
+  ),
+);
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (_) =>
+                                      //         // BlocProvider(
+                                      //         //   create: (context) => ChatCubit(
+                                      //         //     chatRepo: context
+                                      //         //         .read<ChatRepo>(),
+                                      //         //     modulesLessonsRepo: context
+                                      //         //         .read<ModulesLessonsRepo>(),
+                                      //         //     chatId: chatId,
+                                      //         //     // moduleId: 1,
+                                      //         //     // courseId: 2,
+                                      //         //     user: user,
+                                      //         //   )..loadChat(),
+                                      //         //   child: ChatScreen(
+                                      //         //     chatId: chatId,
+                                      //         //     user: user,
+                                      //         //     // moduleId: ,
+                                      //         //     // courseId: 2,
+                                      //         //   ),
+                                      //         // ),
+                                      //         BlocProvider(
+                                      //           create: (context) => ChatCubit(
+                                      //             chatRepo: getIt<ChatRepo>(),
+                                      //             // modulesLessonsRepo مش مطلوب هنا
+                                      //             chatId: chatId,
+                                      //             user: user,
+                                      //           )..loadChat(),
+                                      //         ),
+                                      //   ),
+                                      // );
                                     }
                                     return;
                                   }

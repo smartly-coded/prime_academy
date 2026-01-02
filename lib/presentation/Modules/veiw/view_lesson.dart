@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
 import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
@@ -800,32 +801,62 @@ class _ViewModuleState extends State<ViewModule> {
                     MaterialPageRoute(
                       builder: (_) => BlocProvider(
                         create: (context) => ChatCubit(
-                          chatRepo: context.read<ChatRepo>(),
-                          modulesLessonsRepo: context
-                              .read<ModulesLessonsRepo>(),
-                          chatId: _currentChatId,
-                          moduleId: widget.moduleId,
-                          courseId: widget.courseId,
-                          user: widget.user,
-                          // ChatCubit(
-                          //   context.read<ChatRepo>(),
-                          //      _currentChatId,
-                          // widget.user,
-                        )..loadChat(),
-                        child: ChatScreen(
+                          chatRepo: getIt<ChatRepo>(),
+                          modulesLessonsRepo: getIt<ModulesLessonsRepo>(),
                           chatId: _currentChatId,
                           moduleId: moduleId,
                           courseId: courseId,
                           user: widget.user,
+                        )..loadChat(),
+                        child: ChatScreen(
+                          // ⭐ أضفنا الـ child
+                          chatId: _currentChatId,
+                          user: widget.user,
                         ),
-
-                        // ChatScreen(
-                        //   chatId: _currentChatId,
-                        //   user: widget.user,
-                        // ),
                       ),
                     ),
                   );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (_) => BlocProvider(
+                  //       create: (context) => ChatCubit(
+                  //         chatRepo: getIt<ChatRepo>(),
+                  //         modulesLessonsRepo: getIt<ModulesLessonsRepo>(),
+                  //         chatId: _currentChatId,
+                  //         moduleId: moduleId,
+                  //         courseId: courseId,
+                  //         user: widget.user,
+                  //       )..loadChat(),
+                  //     ),
+                  // BlocProvider(
+                  //   create: (context) => ChatCubit(
+                  //     chatRepo: context.read<ChatRepo>(),
+                  //     modulesLessonsRepo: context
+                  //         .read<ModulesLessonsRepo>(),
+                  //     chatId: _currentChatId,
+                  //     moduleId: widget.moduleId,
+                  //     courseId: widget.courseId,
+                  //     user: widget.user,
+                  //     // ChatCubit(
+                  //     //   context.read<ChatRepo>(),
+                  //     //      _currentChatId,
+                  //     // widget.user,
+                  //   )..loadChat(),
+                  //   child: ChatScreen(
+                  //     chatId: _currentChatId,
+                  //     moduleId: moduleId,
+                  //     courseId: courseId,
+                  //     user: widget.user,
+                  //   ),
+
+                  // ChatScreen(
+                  //   chatId: _currentChatId,
+                  //   user: widget.user,
+                  // ),
+                  // ),
+                  //   ),
+                  // );
                 },
                 fontSize,
                 padding,

@@ -362,7 +362,7 @@ class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
         YoutubePlayerController(
           initialVideoId: widget.videoId,
           flags: YoutubePlayerFlags(
-            // autoPlay: widget.autoPlay,
+            autoPlay: false,
 
             mute: false,
             controlsVisibleAtStart: false,
@@ -566,8 +566,6 @@ class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
 
   bool get isPlaying => _controller.value.isPlaying;
 }
-
-
 
 // import 'dart:async';
 // import 'package:flutter/material.dart';
