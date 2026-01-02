@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:prime_academy/core/Utils/validators.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/contact_us/data/models/inquery_model.dart';
 import 'package:prime_academy/features/contact_us/logic/inquery_cubit.dart';
 import 'package:prime_academy/features/contact_us/logic/inquiry_state.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ContactUsPage extends StatelessWidget {
   ContactUsPage({super.key});
@@ -327,18 +330,40 @@ class ContactUsPage extends StatelessWidget {
             style: TextStyle(
               fontSize: isMobile ? 14 : 16,
               color: Colors.white70,
-              // fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildSocialIcon(Icons.facebook, 'Facebook'),
+              _buildSocialIcon(
+                FontAwesomeIcons.whatsapp,
+                'WhatsApp',
+                const Color(0xFF25D366),
+                const Color(0xFF25D366),
+                const Color(0xFF25D366),
+                'https://wa.me/96556651979',
+              ),
+
               const SizedBox(width: 15),
-              _buildSocialIcon(Icons.chat, 'WhatsApp'),
+
+              _buildSocialIcon(
+                FontAwesomeIcons.instagram,
+                'Instagram',
+                const Color(0xFFE4405F),
+                const Color.fromARGB(255, 191, 54, 206),
+                const Color.fromARGB(255, 230, 191, 50),
+                'https://www.instagram.com/primeacademy.co',
+              ),
               const SizedBox(width: 15),
-              _buildSocialIcon(Icons.camera_alt, 'Instagram'),
+              _buildSocialIcon(
+                FontAwesomeIcons.facebookF,
+                'Facebook',
+                const Color(0xFF1877F2),
+                const Color(0xFF1877F2),
+                const Color(0xFF1877F2),
+                'https://www.facebook.com/primeacademy.co',
+              ),
             ],
           ),
         ],
@@ -346,20 +371,44 @@ class ContactUsPage extends StatelessWidget {
     ),
   );
 
-  Widget _buildSocialIcon(IconData icon, String tooltip) {
+  Widget _buildSocialIcon(
+    IconData icon,
+    String tooltip,
+    Color brandColor,
+    Color brandColor2,
+    Color brandColor3,
+    String url,
+  ) {
     return Container(
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: const Color(0xFF2a2d34),
+        gradient: LinearGradient(
+          colors: [brandColor, brandColor2, brandColor3],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: brandColor.withOpacity(0.4),
+            blurRadius: 8,
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: IconButton(
-        icon: Icon(icon, color: Colors.white, size: 24),
-        onPressed: () {},
+        icon: FaIcon(icon, color: Colors.white, size: 25),
+        onPressed: () => _launchURL(url),
         tooltip: tooltip,
       ),
     );
+  }
+
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      print('Could not launch $urlString');
+    }
   }
 }

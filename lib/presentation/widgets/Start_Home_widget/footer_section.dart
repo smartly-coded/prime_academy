@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:prime_academy/core/Utils/validators.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/start_CommRequest/logic/CommRequest_cubit.dart';
@@ -29,11 +30,11 @@ class FooterSection extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/images/footer-logo.webp',
-                width: 154, // زاد 4px
-                height: 154, // زاد 4px
+                width: 154,
+                height: 154,
                 errorBuilder: (context, error, stackTrace) => Container(
-                  width: 124, // زاد 4px
-                  height: 124, // زاد 4px
+                  width: 124,
+                  height: 124,
                   decoration: BoxDecoration(
                     color: Colors.orange,
                     shape: BoxShape.circle,
@@ -41,48 +42,54 @@ class FooterSection extends StatelessWidget {
                   child: const Icon(
                     Icons.school,
                     color: Colors.white,
-                    size: 64, // زاد 4px
+                    size: 64,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 14), // زاد 4px
+              const SizedBox(height: 14),
 
               Text(
                 "مكان التعلم الشامل والتجربة التعليمية المميزة،\nنحن نلتزم بتوفير بيئة تعلم محفزة تمكّن الطلاب\nوتمنحهم الفرصة لتحقيق أهدافهم التعليمية والمهنية",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: isMobile ? 18 : 20, // زاد 4px
+                  fontSize: isMobile ? 18 : 20,
                   color: Colors.white70,
                   height: 1.6,
                 ),
               ),
 
-              const SizedBox(height: 34), // زاد 4px
+              const SizedBox(height: 34),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildSocialIcon(
-                    Icons.facebook,
+                    FontAwesomeIcons.facebookF,
                     'Facebook',
                     'https://www.facebook.com/primeacademy.co',
+                    Colors.white,
+                    Colors.black,
+                    24,
                   ),
-                  const SizedBox(width: 19), // زاد 4px
+                  const SizedBox(width: 19),
                   _buildSocialIcon(
-                    Icons.play_arrow,
+                    FontAwesomeIcons.youtube,
                     'YouTube',
                     'https://www.youtube.com/channel/UCYvdLyU752m0ln637tW540Q',
+                    Colors.black,
+                    Colors.white,
+                    32,
                   ),
                 ],
               ),
 
-              const SizedBox(height: 34), // زاد 4px
+              const SizedBox(height: 34),
 
               Text(
                 "الكورسات",
                 style: TextStyle(
-                  fontSize: 24, // زاد 4px
+                  fontSize: 24,
                   // fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -90,14 +97,14 @@ class FooterSection extends StatelessWidget {
               Divider(
                 color: Mycolors.orange,
                 thickness: 2,
-                indent: 104, // زاد 4px
-                endIndent: 104, // زاد 4px
+                indent: 104,
+                endIndent: 104,
               ),
-              const SizedBox(height: 19), // زاد 4px
+              const SizedBox(height: 19),
               Wrap(
                 direction: Axis.vertical,
-                spacing: 14, // زاد 4px
-                runSpacing: 14, // زاد 4px
+                spacing: 14,
+                runSpacing: 14,
                 children: [
                   _buildCourseItem("اللغة العربية"),
                   _buildCourseItem("اللغة الإنجليزية"),
@@ -106,12 +113,12 @@ class FooterSection extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 34), // زاد 4px
+              const SizedBox(height: 34),
 
               Text(
                 "المناهج",
                 style: TextStyle(
-                  fontSize: 24, // زاد 4px
+                  fontSize: 24,
                   // fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -273,10 +280,8 @@ class FooterSection extends StatelessWidget {
                       builder: (context, isFlipped, _) {
                         return GestureDetector(
                           onTap: () {
-                           
                             gradientFlipped3.value = !gradientFlipped3.value;
 
-                           
                             final phone = phoneController.text.trim();
                             if (Validators.validateKuwaitPhone(phone) == null) {
                               context.read<CommRequestCubit>().sendRequest(
@@ -361,25 +366,32 @@ class FooterSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialIcon(IconData icon, String tooltip, String url) {
+  Widget _buildSocialIcon(
+    IconData icon,
+    String tooltip,
+    String url,
+    Color container_color,
+    Color icon_color,
+    double size_icon,
+  ) {
     return Container(
-      width: 54, // زاد 4px
-      height: 54, // زاد 4px
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(0, 42, 45, 52),
-        shape: BoxShape.circle,
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: Colors.white, size: 28), // زاد 4px
-        tooltip: tooltip,
-        onPressed: () async {
-          final uri = Uri.parse(url);
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-          } else {
-            debugPrint('Could not launch $url');
-          }
-        },
+      width: 35, // زاد 4px
+      height: 35, // زاد 4px
+
+      decoration: BoxDecoration(color: container_color, shape: BoxShape.circle),
+      child: Center(
+        child: IconButton(
+          icon: Icon(icon, color: icon_color, size: size_icon), // زاد 4px
+          tooltip: tooltip,
+          onPressed: () async {
+            final uri = Uri.parse(url);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            } else {
+              debugPrint('Could not launch $url');
+            }
+          },
+        ),
       ),
     );
   }
