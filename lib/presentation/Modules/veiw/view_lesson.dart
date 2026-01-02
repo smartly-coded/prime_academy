@@ -802,14 +802,13 @@ class _ViewModuleState extends State<ViewModule> {
                       builder: (_) => BlocProvider(
                         create: (context) => ChatCubit(
                           chatRepo: getIt<ChatRepo>(),
-                          modulesLessonsRepo: getIt<ModulesLessonsRepo>(),
+                          modulesLessonsRepo: getIt<ModulesLessonsRepo>(),            
                           chatId: _currentChatId,
                           moduleId: moduleId,
                           courseId: courseId,
-                          user: widget.user,
+                          user: widget.user,              
                         )..loadChat(),
                         child: ChatScreen(
-                          // ⭐ أضفنا الـ child
                           chatId: _currentChatId,
                           user: widget.user,
                         ),
