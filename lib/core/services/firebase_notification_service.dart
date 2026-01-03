@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:io';
 
 class FirebaseNotificationService {
   static final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
@@ -9,10 +10,8 @@ class FirebaseNotificationService {
   static Future<void> initializeFirebaseMessaging() async {
     await Firebase.initializeApp();
 
-    // 📩 handler للرسائل في الخلفية
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    // 🔔 إنشاء قناة High Importance (Heads-up)
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
@@ -22,38 +21,32 @@ class FirebaseNotificationService {
 
     await _localNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
-    // ⚙️ إعداد تهيئة الإشعارات المحلية
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
 
     await _localNotificationsPlugin.initialize(initializationSettings);
 
-    // 🟢 طلب إذن الإشعارات
-    NotificationSettings settings =
-        await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    NotificationSettings settings = await FirebaseMessaging.instance
+        .requestPermission(alert: true, badge: true, sound: true);
     print('🔔 User granted permission: ${settings.authorizationStatus}');
 
-    // 💬 استقبال الإشعارات أثناء عمل التطبيق
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final notification = message.notification;
       final android = message.notification?.android;
@@ -79,13 +72,23 @@ class FirebaseNotificationService {
       }
     });
 
-    // 🔥 عرض الـ Token في الكونسول
-    final token = await FirebaseMessaging.instance.getToken();
-    print('🔥 FCM Token: $token');
+    String? apnsToken;
+    if (Platform.isIOS) {
+      apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      print('🍏 APNS Token: $apnsToken');
+    }
+
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      print('🔥 FCM Token: $fcmToken');
+    } catch (e) {
+      print('⚠️ Failed to get FCM token: $e');
+    }
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
+    RemoteMessage message,
+  ) async {
     await Firebase.initializeApp();
     print('📩 Received background message: ${message.notification?.title}');
   }
