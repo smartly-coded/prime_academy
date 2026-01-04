@@ -200,7 +200,7 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(builder: (context) => AppLayout(user: widget.user)),
           (route) => false,
-        ),
+        ), showBackArrow: true,
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

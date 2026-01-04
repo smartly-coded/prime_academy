@@ -38,7 +38,7 @@ class _AllStudentsPageState extends State<AllStudentsPage> {
           context,
           MaterialPageRoute(builder: (context) => const AppLayout(user: null)),
           (route) => false,
-        ),
+        ), showBackArrow: true,
       ),
       body: CustomScrollView(
         slivers: [

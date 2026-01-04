@@ -76,7 +76,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
           context,
           MaterialPageRoute(builder: (context) => AppLayout(user: null)),
           (route) => false,
-        ),
+        ), showBackArrow: true,
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

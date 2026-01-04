@@ -86,7 +86,7 @@ class _GifSectionState extends State<GifSection>
                 widget.title,
                 "",
                 context,
-                containerWidth: widget.titleWidth ?? width * 0.5,
+                containerWidth: widget.titleWidth ?? width * 0.9,
               ),
             ),
 

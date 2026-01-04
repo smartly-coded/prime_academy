@@ -1446,7 +1446,7 @@ class _ViewModuleState extends State<ViewModule> {
           context,
           MaterialPageRoute(builder: (context) => AppLayout(user: widget.user)),
           (route) => false,
-        ),
+        ), showBackArrow: true,
       ),
       body: MultiBlocListener(
         listeners: [
