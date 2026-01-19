@@ -5,6 +5,7 @@ import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/studentsTestimonals/data/models/students_testimonals_response.dart';
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubit.dart';
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_state.dart';
+import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_withoutImage.dart';
 
 class TestimonialsSection extends StatefulWidget {
   const TestimonialsSection({super.key});
@@ -333,40 +334,47 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                 onTap: () {
                   gradientFlipped.value = !gradientFlipped.value;
                 },
-                child: Container(
-                  padding: const EdgeInsets.all(3),
-                  margin: const EdgeInsets.only(bottom: 30),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: LinearGradient(
-                      colors: Mycolors.primary_color.colors,
-                      begin: isFlipped
-                          ? Alignment.topLeft
-                          : Alignment.bottomRight,
-                      end: isFlipped
-                          ? Alignment.bottomRight
-                          : Alignment.topLeft,
-                    ),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Mycolors.darkblue,
-                    ),
-                    child: const Text(
-                      "ماذا قالوا عنا الطلاب",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                child: buildTextWithBorder(
+                  "ماذا قالوا عنا الطلاب",
+                  "",
+                  context,
+                  containerWidth: 250,
                 ),
+
+                //  Container(
+                //   padding: const EdgeInsets.all(3),
+                //   margin: const EdgeInsets.only(bottom: 30),
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(12),
+                //     gradient: LinearGradient(
+                //       colors: Mycolors.primary_color.colors,
+                //       begin: isFlipped
+                //           ? Alignment.topLeft
+                //           : Alignment.bottomRight,
+                //       end: isFlipped
+                //           ? Alignment.bottomRight
+                //           : Alignment.topLeft,
+                //     ),
+                //   ),
+                //   child: Container(
+                //     padding: const EdgeInsets.symmetric(
+                //       horizontal: 16,
+                //       vertical: 10,
+                //     ),
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(12),
+                //       color: Mycolors.darkblue,
+                //     ),
+                //     child: const Text(
+                //       "ماذا قالوا عنا الطلاب",
+                //       style: TextStyle(
+                //         fontSize: 20,
+                //         fontWeight: FontWeight.bold,
+                //         color: Colors.white,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               );
             },
           ),

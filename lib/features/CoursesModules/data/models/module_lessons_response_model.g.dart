@@ -87,9 +87,9 @@ Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(
   createdAt: DateTime.parse(json['created_at'] as String),
   updatedAt: DateTime.parse(json['updated_at'] as String),
   accessWithoutEnrollment: json['access_without_enrollment'] as bool,
-  externalUrl: json['external_url'] as String?,
+  externalUrl: json['external_url'],
   watched: json['watched'] as bool,
-  thumbnail: json['thumbnail'] as String?,
+  thumbnail: json['thumbnail'],
 );
 
 Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
@@ -165,7 +165,9 @@ Teacher _$TeacherFromJson(Map<String, dynamic> json) => Teacher(
   firstname: json['firstname'] as String,
   lastname: json['lastname'] as String,
   role: (json['role'] as num).toInt(),
-  image: TeacherImage.fromJson(json['image'] as Map<String, dynamic>),
+  image: json['image'] == null
+      ? null
+      : TeacherImage.fromJson(json['image'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$TeacherToJson(Teacher instance) => <String, dynamic>{
@@ -173,7 +175,7 @@ Map<String, dynamic> _$TeacherToJson(Teacher instance) => <String, dynamic>{
   'firstname': instance.firstname,
   'lastname': instance.lastname,
   'role': instance.role,
-  'image': instance.image.toJson(),
+  'image': instance.image?.toJson(),
 };
 
 TeacherImage _$TeacherImageFromJson(Map<String, dynamic> json) => TeacherImage(

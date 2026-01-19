@@ -20,6 +20,6 @@ class Mycolors {
     colors: [Color(0xFF3F471F), Color(0xFF1B202F)],
   );
   static const primary_color = LinearGradient(
-    colors: [Color(0xff450486), Color(0xffa76433)],
+    colors: [Color(0xFFFF9933), Color(0xFF450486)],
   );
 }

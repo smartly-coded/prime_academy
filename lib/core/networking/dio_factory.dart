@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:prime_academy/core/networking/Interceptor.dart';
 
 class DioFactory {
-  /// private constructor as I don't want to allow creating an instance of this class
   DioFactory._();
 
   static Dio? dio;
@@ -31,7 +31,7 @@ class DioFactory {
   static void addDioInterceptor() {
     final storage = const FlutterSecureStorage();
     dio?.interceptors.addAll([
-      // 1. Interceptor خاص بالتعامل مع التوكن
+      LoadingInterceptor(),
       InterceptorsWrapper(
         onResponse: (response, handler) async {
           final cookies = response.headers['Set-Cookie'];
@@ -58,27 +58,51 @@ class DioFactory {
           return handler.next(response);
         },
         onRequest: (options, handler) async {
-          final accessToken = await storage.read(key: "accessToken");
-          final refreshToken = await storage.read(key: "refreshToken");
+  final accessToken = await storage.read(key: "accessToken");
+  final refreshToken = await storage.read(key: "refreshToken");
 
-          if (accessToken != null) {
-            options.headers['Authorization'] = 'Bearer $accessToken';
-          }
+ 
+  final deviceIdentifier =
+      await storage.read(key: 'device_fingerprint');
 
-          if (accessToken != null && refreshToken != null) {
-            options.headers['Cookie'] =
-                'accessToken=$accessToken; refreshToken=$refreshToken';
-          }
+  if (deviceIdentifier != null && deviceIdentifier.isNotEmpty) {
+    options.headers['X-Device-Identifier'] = deviceIdentifier;
+  }
 
-          return handler.next(options);
-        },
+  if (accessToken != null) {
+    options.headers['Authorization'] = 'Bearer $accessToken';
+  }
+
+  if (accessToken != null && refreshToken != null) {
+    options.headers['Cookie'] =
+        'accessToken=$accessToken; refreshToken=$refreshToken';
+  }
+
+  return handler.next(options);
+},
+
+        // onRequest: (options, handler) async {
+        //   final accessToken = await storage.read(key: "accessToken");
+        //   final refreshToken = await storage.read(key: "refreshToken");
+
+        //   if (accessToken != null) {
+        //     options.headers['Authorization'] = 'Bearer $accessToken';
+        //   }
+
+        //   if (accessToken != null && refreshToken != null) {
+        //     options.headers['Cookie'] =
+        //         'accessToken=$accessToken; refreshToken=$refreshToken';
+        //   }
+
+        //   return handler.next(options);
+        // },
       ),
 
-      // 2. Interceptor خاص بالـ Logging
       PrettyDioLogger(
         requestBody: true,
         requestHeader: true,
         responseHeader: true,
+        responseBody: true,
       ),
     ]);
   }

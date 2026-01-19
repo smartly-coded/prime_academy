@@ -92,9 +92,9 @@ class Lesson {
   @JsonKey(name: 'access_without_enrollment')
   final bool accessWithoutEnrollment;
   @JsonKey(name: 'external_url')
-  final String? externalUrl;
+  final dynamic externalUrl;
   final bool watched;
-  final String? thumbnail;
+  final dynamic thumbnail;
 
   Lesson({
     required this.id,
@@ -195,14 +195,15 @@ class Teacher {
   final String firstname;
   final String lastname;
   final int role;
-  final TeacherImage image;
+  @JsonKey(name: 'image')
+  final TeacherImage? image; // CHANGED: Made nullable
 
   Teacher({
     required this.id,
     required this.firstname,
     required this.lastname,
     required this.role,
-    required this.image,
+    this.image, // CHANGED: Made nullable
   });
 
   factory Teacher.fromJson(Map<String, dynamic> json) =>

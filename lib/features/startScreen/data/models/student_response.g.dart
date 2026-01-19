@@ -23,7 +23,7 @@ Student _$StudentFromJson(Map<String, dynamic> json) => Student(
   lastname: json['lastname'] as String,
   email: json['email'] as String,
   username: json['username'] as String,
-  points: (json['points'] as num).toInt(),
+  points: (json['points'] as num?)?.toInt(),
   createdAt: DateTime.parse(json['created_at'] as String),
   image: json['image'] == null
       ? null

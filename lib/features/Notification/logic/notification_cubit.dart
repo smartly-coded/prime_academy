@@ -1,7 +1,5 @@
-// notification_cubit.dart
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:prime_academy/core/services/notification_eventsource.dart';
 import 'package:prime_academy/features/Notification/data/repos/notification_repo.dart';
 import '../data/models/notification_model.dart';
 
@@ -9,13 +7,10 @@ part 'notification_state.dart';
 
 class NotificationCubit extends Cubit<NotificationState> {
   final NotificationRepository repository;
-  final NotificationSSEService sseService;
-  StreamSubscription<NotificationModel>? _sseSubscription;
 
-  NotificationCubit(this.repository, this.sseService) : super(NotificationInitial()) {
-  
+  NotificationCubit(this.repository) : super(NotificationInitial()) {
     fetchNotifications();
-   sseService.connect(this);
+    // ⚠️ SSE connection is now handled by UnifiedSSEService in main.dart
   }
 
   Future<void> fetchNotifications() async {
@@ -27,36 +22,6 @@ class NotificationCubit extends Cubit<NotificationState> {
       emit(NotificationError(e.toString()));
     }
   }
-
-//   void _listenSSE() {
-//   _sseSubscription = repository.connectSSE().listen((newNoti) {
-//     print("📩 SSE Received: ${newNoti.toJson()}"); // ✅ هتطبع أي حاجة جاية
-
-//     // نتأكد إن فيه محتوى
-//     final hasContent = (newNoti.data?['title']?.toString().trim().isNotEmpty ?? false) ||
-//         (newNoti.data?['message']?.toString().trim().isNotEmpty ?? false);
-
-//     if (!hasContent) {
-//       print("⏳ Ignored heartbeat (no title/message)");
-//       return; // نخرج
-//     }
-
-//     if (state is NotificationLoaded) {
-//       final current = List<NotificationModel>.from(
-//         (state as NotificationLoaded).notifications,
-//       );
-//       current.insert(0, newNoti);
-//       emit(NotificationLoaded(current));
-//       print("✅ Added new notification");
-//     } else {
-//       emit(NotificationLoaded([newNoti]));
-//       print("✅ First notification added");
-//     }
-//   }, onError: (e) {
-//     print("❌ SSE Error: $e");
-//   });
-// }
-
 
   Future<void> markNotificationAsRead(int id) async {
     if (state is NotificationLoaded) {
@@ -81,7 +46,7 @@ class NotificationCubit extends Cubit<NotificationState> {
     try {
       await repository.markAsRead([id]);
     } catch (_) {
-      // ممكن تعمل rollback لو عايزة
+      // Rollback if needed
     }
   }
 
@@ -105,22 +70,23 @@ class NotificationCubit extends Cubit<NotificationState> {
       emit(NotificationLoaded(current));
     }
   }
-  void addNotification(NotificationModel newNoti) {
-  if (state is NotificationLoaded) {
-    final current = List<NotificationModel>.from(
-      (state as NotificationLoaded).notifications,
-    );
-    current.insert(0, newNoti);
-    emit(NotificationLoaded(current));
-  } else {
-    emit(NotificationLoaded([newNoti]));
-  }
-}
 
+  /// Called by UnifiedSSEService when new notification arrives
+  void addNotification(NotificationModel newNoti) {
+    if (state is NotificationLoaded) {
+      final current = List<NotificationModel>.from(
+        (state as NotificationLoaded).notifications,
+      );
+      current.insert(0, newNoti);
+      emit(NotificationLoaded(current));
+    } else {
+      emit(NotificationLoaded([newNoti]));
+    }
+  }
 
   @override
   Future<void> close() {
-    _sseSubscription?.cancel();
+    // ⚠️ No need to close SSE here - it's managed globally
     return super.close();
   }
 }

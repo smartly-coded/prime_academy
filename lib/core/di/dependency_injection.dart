@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import 'package:get_it/get_it.dart';
+import 'package:prime_academy/core/Utils/GlobalLoadingCubit.dart';
 import 'package:prime_academy/core/networking/api_service.dart';
 import 'package:prime_academy/features/CoursesModules/data/repo/lesson_details_repo.dart';
 import 'package:prime_academy/features/CoursesModules/data/repo/mark_answered_repo.dart';
@@ -23,9 +24,12 @@ import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubi
 import '../networking/dio_factory.dart';
 
 final getIt = GetIt
-    .instance; //Simple direct Service Locator that allows to decouple the interface from a concrete implementation and to access the concrete implementation from everywhere in your App
+    .instance; 
 
 Future<void> setupGetIt() async {
+  getIt.registerLazySingleton<GlobalLoadingCubit>(
+    () => GlobalLoadingCubit(),
+  );
   // Dio & ApiService
   Dio dio = DioFactory.getDio();
   getIt.registerLazySingleton<ApiService>(

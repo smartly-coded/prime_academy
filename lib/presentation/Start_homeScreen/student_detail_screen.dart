@@ -175,9 +175,6 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                                       ),
                                       const SizedBox(height: 50),
 
-                                      // ============================
-                                      //     AUTO SCROLL PAGEVIEW
-                                      // ============================
                                       SizedBox(
                                         height: isMobile ? 220 : 250,
                                         child: PageView.builder(

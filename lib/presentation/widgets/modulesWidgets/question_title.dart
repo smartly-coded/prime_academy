@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 Widget questionTitle(String questionTitle) {
   return Container(
-    width: double.infinity,
+    // width: double.infinity,
     padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 10),
     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
     decoration: BoxDecoration(
@@ -25,6 +25,8 @@ Widget questionTitle(String questionTitle) {
         height: 1.4,
       ),
       textAlign: TextAlign.center,
+       maxLines: 3, 
+      overflow: TextOverflow.ellipsis,
     ),
   );
 }

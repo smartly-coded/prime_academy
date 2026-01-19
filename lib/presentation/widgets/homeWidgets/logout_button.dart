@@ -16,29 +16,54 @@ class LogoutButton extends StatelessWidget {
         Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
       },
       child: Container(
-        padding: const EdgeInsets.all(10),
+        width: 150,
+        height: 44,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: Mycolors.primary_color.colors,
-            begin: Alignment.topRight,
-            end: Alignment.bottomCenter,
+          gradient: const LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color(0xFFD67944), // Orange on left
+              Color(0xFF863868), // Medium purple-pink in middle
+              Color(0xFF51255B), // Dark purple on right
+            ],
           ),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "تسجيل الخروج",
-              style: TextStyle(
-                fontSize: isMobile ? 14 : 16,
-                color: Colors.white,
-              ),
+          borderRadius: BorderRadius.circular(100), // rounded-full
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              offset: Offset(0, 10),
+              blurRadius: 15,
+              spreadRadius: -3,
             ),
-            const SizedBox(width: 5),
-
-            const Icon(Icons.logout, color: Colors.white, size: 18),
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              offset: Offset(0, 4),
+              blurRadius: 6,
+              spreadRadius: -4,
+            ),
           ],
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text(
+                  "تسجيل الخروج",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(width: 8),
+                Icon(Icons.logout, color: Colors.white, size: 20),
+              ],
+            ),
+          ),
         ),
       ),
     );

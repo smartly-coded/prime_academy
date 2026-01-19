@@ -9,7 +9,7 @@ import 'package:prime_academy/features/CoursesModules/data/models/mark_answered_
 class MarkAnsweredRepo {
   final ApiService _apiService; //مسئول عن ارسال الطلبات لل api
 
-  MarkAnsweredRepo(this._apiService); //dependency injection
+  MarkAnsweredRepo(this._apiService); 
 
   Future<ApiResult<MarkAnsweredResponseModel>> getLessonRewardStatus(
     int questionId,

@@ -188,26 +188,20 @@ class CourseCard extends StatelessWidget {
                                     vertical: 8,
                                   ),
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: Mycolors.primary_color.colors,
-                                      begin: isFlipped
-                                          ? Alignment.bottomRight
-                                          : Alignment.topLeft,
-                                      end: isFlipped
-                                          ? Alignment.topLeft
-                                          : Alignment.bottomRight,
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        Color(0xFFD67944), // Orange on left
+                                        Color(
+                                          0xFF863868,
+                                        ), // Medium purple-pink in middle
+                                        Color(
+                                          0xFF51255B,
+                                        ), // Dark purple on right
+                                      ],
                                     ),
                                     borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(
-                                          0xffa76433,
-                                        ).withOpacity(0.3),
-                                        spreadRadius: 1,
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
                                   ),
                                   child: Text(
                                     courseName,

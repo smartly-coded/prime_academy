@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:prime_academy/core/Utils/GlobalLoadingCubit.dart';
 import 'package:prime_academy/core/di/dependency_injection.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
@@ -15,26 +15,19 @@ import 'package:prime_academy/features/CoursesModules/logic/mark_answered_cubit.
 import 'package:prime_academy/features/CoursesModules/logic/mark_answered_state.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_cubit.dart';
 import 'package:prime_academy/features/CoursesModules/logic/module_lessons_state.dart';
-import 'package:prime_academy/features/Notification/logic/notification_cubit.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
-import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_cubit.dart';
 import 'package:prime_academy/features/studentsTestimonals/logic/testimonal_state.dart';
 import 'package:prime_academy/layout/app_layout.dart';
 import 'package:prime_academy/layout/custom_app_bar.dart';
 import 'package:prime_academy/presentation/Chat/ChatPage1.dart';
-import 'package:prime_academy/presentation/Chat/chatPage.dart';
 import 'package:prime_academy/presentation/Modules/veiw/video_header.dart';
-import 'package:prime_academy/presentation/Notification/notification_screen.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/course_rating_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/essay_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/fill_question_dialog.dart';
-// import 'package:prime_academy/presentation/widgets/modulesWidgets/hls_video_player.dart';
-import 'package:prime_academy/presentation/widgets/modulesWidgets/lesson_item.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/choose_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/match_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/materials.dart';
-import 'package:prime_academy/presentation/widgets/modulesWidgets/recorded_lesson_items.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/reorder_question_dialog.dart';
 import 'package:prime_academy/presentation/widgets/modulesWidgets/youtube_webview_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -111,7 +104,6 @@ class _ViewModuleState extends State<ViewModule> {
   void initState() {
     super.initState();
     _currentSelectedItemId = widget.itemId;
-
     context.read<ModuleLessonsCubit>().emitModuleLessonsStates(
       widget.moduleId,
       widget.courseId,
@@ -214,7 +206,7 @@ class _ViewModuleState extends State<ViewModule> {
         _currentVideoId = videoId;
         _isPlayerReady = false;
         _playerKey =
-            GlobalKey<YouTubeWebViewPlayerState>(); // ✅ Changed this line
+            GlobalKey<YouTubeWebViewPlayerState>(); 
       });
     }
   }
@@ -483,7 +475,6 @@ class _ViewModuleState extends State<ViewModule> {
         _shownQuestionsGlobally.add(questionKey);
         _saveShownQuestions();
 
-        // Pause the HLS video player
         _playerKey?.currentState?.pause();
 
         Navigator.of(context).push(
@@ -508,7 +499,7 @@ class _ViewModuleState extends State<ViewModule> {
       print('Raw groupedQuestions: ${lessonDetails.groupedQuestions}');
 
       lessonDetails.groupedQuestions.forEach((timestampKey, questionsData) {
-        print('Processing timestamp: $timestampKey with data: $questionsData');
+        // print('Processing timestamp: $timestampKey with data: $questionsData');
 
         int timestamp;
         try {
@@ -521,7 +512,7 @@ class _ViewModuleState extends State<ViewModule> {
         if (questionsData is List) {
           for (var questionData in questionsData) {
             try {
-              print('Processing question data: $questionData');
+              // print('Processing question data: $questionData');
 
               if (questionData is Map<String, dynamic>) {
                 if (!questionData.containsKey('timestamp')) {
@@ -802,11 +793,11 @@ class _ViewModuleState extends State<ViewModule> {
                       builder: (_) => BlocProvider(
                         create: (context) => ChatCubit(
                           chatRepo: getIt<ChatRepo>(),
-                          modulesLessonsRepo: getIt<ModulesLessonsRepo>(),            
+                          modulesLessonsRepo: getIt<ModulesLessonsRepo>(),
                           chatId: _currentChatId,
                           moduleId: moduleId,
                           courseId: courseId,
-                          user: widget.user,              
+                          user: widget.user,
                         )..loadChat(),
                         child: ChatScreen(
                           chatId: _currentChatId,
@@ -815,47 +806,6 @@ class _ViewModuleState extends State<ViewModule> {
                       ),
                     ),
                   );
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (_) => BlocProvider(
-                  //       create: (context) => ChatCubit(
-                  //         chatRepo: getIt<ChatRepo>(),
-                  //         modulesLessonsRepo: getIt<ModulesLessonsRepo>(),
-                  //         chatId: _currentChatId,
-                  //         moduleId: moduleId,
-                  //         courseId: courseId,
-                  //         user: widget.user,
-                  //       )..loadChat(),
-                  //     ),
-                  // BlocProvider(
-                  //   create: (context) => ChatCubit(
-                  //     chatRepo: context.read<ChatRepo>(),
-                  //     modulesLessonsRepo: context
-                  //         .read<ModulesLessonsRepo>(),
-                  //     chatId: _currentChatId,
-                  //     moduleId: widget.moduleId,
-                  //     courseId: widget.courseId,
-                  //     user: widget.user,
-                  //     // ChatCubit(
-                  //     //   context.read<ChatRepo>(),
-                  //     //      _currentChatId,
-                  //     // widget.user,
-                  //   )..loadChat(),
-                  //   child: ChatScreen(
-                  //     chatId: _currentChatId,
-                  //     moduleId: moduleId,
-                  //     courseId: courseId,
-                  //     user: widget.user,
-                  //   ),
-
-                  // ChatScreen(
-                  //   chatId: _currentChatId,
-                  //   user: widget.user,
-                  // ),
-                  // ),
-                  //   ),
-                  // );
                 },
                 fontSize,
                 padding,
@@ -911,45 +861,71 @@ class _ViewModuleState extends State<ViewModule> {
     int index,
     DeviceType deviceType,
   ) {
-    final item = items[index] as Item;
-    final isLesson = item.lesson != null;
-    final title = isLesson ? item.lesson!.title : item.externalSource!.title;
-    final duration = isLesson
-        ? _formatVideoLength(item.lesson!.videoLength)
-        : 'رابط';
-    final thumbnailUrl = isLesson ? item.lesson!.thumbnail : null;
-    final accessWithoutEnrollment = isLesson
-        ? item.lesson!.accessWithoutEnrollment
-        : false;
-    final watched = isLesson ? item.lesson!.watched : false;
-    final cupColor = watched ? Colors.amber : Colors.grey;
+    print('📋 _buildLessonItemContent - Index: $index');
 
-    return _buildCustomLessonItem(
-      title: title,
-      duration: duration,
-      thumbnailUrl: thumbnailUrl,
-      isVideo: isLesson,
-      isSelected: _currentSelectedItemId == item.id,
-      isRewarded: accessWithoutEnrollment,
-      videoUrl: isLesson ? item.lesson?.externalUrl : null,
-      index: index,
-      onTap: () {
-        setState(() {
-          _currentSelectedItemId = item.id;
+    try {
+      final item = items[index] as Item;
+      final isLesson = item.lesson != null;
+
+      print('📋 Item ID: ${item.id}');
+      print('📋 Is Lesson: $isLesson');
+
+      if (isLesson) {
+        print(
+          '📋 Lesson externalUrl type: ${item.lesson?.externalUrl.runtimeType}',
+        );
+        print('📋 Lesson externalUrl value: ${item.lesson?.externalUrl}');
+      }
+
+      final title = isLesson ? item.lesson!.title : item.externalSource!.title;
+      final duration = isLesson
+          ? _formatVideoLength(item.lesson!.videoLength)
+          : 'رابط';
+      final thumbnailUrl = isLesson
+          ? _extractThumbnailUrl(item.lesson!.thumbnail)
+          : null;
+      final accessWithoutEnrollment = isLesson
+          ? item.lesson!.accessWithoutEnrollment
+          : false;
+      final watched = isLesson ? item.lesson!.watched : false;
+      final cupColor = watched ? Colors.amber : Colors.grey;
+
+      final videoUrl = isLesson
+          ? _extractUrlFromDynamic(item.lesson?.externalUrl)
+          : null;
+      print('📋 Extracted videoUrl: $videoUrl (type: ${videoUrl.runtimeType})');
+
+      return _buildCustomLessonItem(
+        title: title,
+        duration: duration,
+        thumbnailUrl: thumbnailUrl,
+        isVideo: isLesson,
+        isSelected: _currentSelectedItemId == item.id,
+        isRewarded: accessWithoutEnrollment,
+        videoUrl: videoUrl, 
+        index: index,
+        onTap: () {
+          setState(() {
+            _currentSelectedItemId = item.id;
+            if (isLesson) {
+              _currentLessonTitle = item.lesson!.title;
+            }
+          });
           if (isLesson) {
-            _currentLessonTitle = item.lesson!.title;
+            _questionCheckTimer?.cancel();
+            context.read<LessonDetailsCubit>().emitLessonDetailsStates(item.id);
+          } else {
+            _openExternalLink(item.externalSource!.url);
           }
-        });
-        if (isLesson) {
-          _questionCheckTimer?.cancel();
-          context.read<LessonDetailsCubit>().emitLessonDetailsStates(item.id);
-        } else {
-          _openExternalLink(item.externalSource!.url);
-        }
-      },
-      deviceType: deviceType,
-      cupColor: isLesson ? cupColor : null,
-    );
+        },
+        deviceType: deviceType,
+        cupColor: isLesson ? cupColor : null,
+      );
+    } catch (e, stackTrace) {
+      print('❌❌❌ ERROR in _buildLessonItemContent: $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
+    }
   }
 
   Widget _buildLessonsList(
@@ -1083,52 +1059,94 @@ class _ViewModuleState extends State<ViewModule> {
                   child: ListView.builder(
                     itemCount: items.length,
                     itemBuilder: (context, index) {
-                      final item = items[index] as Item;
-                      final isLesson = item.lesson != null;
-                      final title = isLesson
-                          ? item.lesson!.title
-                          : item.externalSource!.title;
-                      final duration = isLesson
-                          ? _formatVideoLength(item.lesson!.videoLength)
-                          : 'رابط';
-                      final thumbnailUrl = isLesson
-                          ? item.lesson!.thumbnail
-                          : null;
-                      final accessWithoutEnrollment = isLesson
-                          ? item.lesson!.accessWithoutEnrollment
-                          : false;
-                      final watched = isLesson ? item.lesson!.watched : false;
-                      final cupColor = watched ? Colors.amber : Colors.grey;
+                      print('📱 ListView.builder - Index: $index');
 
-                      return _buildCustomLessonItem(
-                        title: title,
-                        duration: duration,
-                        thumbnailUrl: thumbnailUrl,
-                        isVideo: isLesson,
-                        isSelected: _currentSelectedItemId == item.id,
-                        isRewarded: accessWithoutEnrollment,
-                        videoUrl: isLesson ? item.lesson?.externalUrl : null,
+                      try {
+                        final item = items[index] as Item;
+                        final isLesson = item.lesson != null;
 
-                        index: index,
-                        onTap: () {
-                          setState(() {
-                            _currentSelectedItemId = item.id;
+                        print('📱 Item ID: ${item.id}');
+                        print('📱 Is Lesson: $isLesson');
+
+                        if (isLesson) {
+                          print(
+                            '📱 Lesson externalUrl type: ${item.lesson?.externalUrl.runtimeType}',
+                          );
+                          print(
+                            '📱 Lesson externalUrl value: ${item.lesson?.externalUrl}',
+                          );
+                        }
+
+                        final title = isLesson
+                            ? item.lesson!.title
+                            : item.externalSource!.title;
+                        final duration = isLesson
+                            ? _formatVideoLength(item.lesson!.videoLength)
+                            : 'رابط';
+                        final thumbnailUrl = isLesson
+                            ? _extractThumbnailUrl(item.lesson!.thumbnail)
+                            : null;
+
+                        final accessWithoutEnrollment = isLesson
+                            ? item.lesson!.accessWithoutEnrollment
+                            : false;
+                        final watched = isLesson ? item.lesson!.watched : false;
+                        final cupColor = watched ? Colors.amber : Colors.grey;
+
+                        final videoUrl = isLesson
+                            ? _extractUrlFromDynamic(item.lesson?.externalUrl)
+                            : null;
+                        print(
+                          '📱 Extracted videoUrl: $videoUrl (type: ${videoUrl.runtimeType})',
+                        );
+
+                        return _buildCustomLessonItem(
+                          title: title,
+                          duration: duration,
+                          thumbnailUrl: thumbnailUrl,
+                          isVideo: isLesson,
+                          isSelected: _currentSelectedItemId == item.id,
+                          isRewarded: accessWithoutEnrollment,
+                          videoUrl: videoUrl, 
+                          index: index,
+                          onTap: () {
+                            setState(() {
+                              _currentSelectedItemId = item.id;
+                              if (isLesson) {
+                                _currentLessonTitle = item.lesson!.title;
+                              }
+                            });
                             if (isLesson) {
-                              _currentLessonTitle = item.lesson!.title;
+                              _questionCheckTimer?.cancel();
+                              context
+                                  .read<LessonDetailsCubit>()
+                                  .emitLessonDetailsStates(item.id);
+                            } else {
+                              _openExternalLink(item.externalSource!.url);
                             }
-                          });
-                          if (isLesson) {
-                            _questionCheckTimer?.cancel();
-                            context
-                                .read<LessonDetailsCubit>()
-                                .emitLessonDetailsStates(item.id);
-                          } else {
-                            _openExternalLink(item.externalSource!.url);
-                          }
-                        },
-                        deviceType: deviceType,
-                        cupColor: isLesson ? cupColor : null,
-                      );
+                          },
+                          deviceType: deviceType,
+                          cupColor: isLesson ? cupColor : null,
+                        );
+                      } catch (e, stackTrace) {
+                        print('❌❌❌ ERROR in ListView.builder itemBuilder: $e');
+                        print('Stack trace: $stackTrace');
+                        
+                        return Container(
+                          height: 110,
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
+                          color: Colors.red.withOpacity(0.3),
+                          child: Center(
+                            child: Text(
+                              'Error loading item $index',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ),
@@ -1234,68 +1252,8 @@ class _ViewModuleState extends State<ViewModule> {
     );
   }
 
-  // Widget _buildVideoThumbnailWithDuration({
-  //   required String? thumbnailUrl,
-  //   required String duration,
-  //   required bool isVideo,
-  //   required double iconSize,
-  // }) {
-  //   if (isVideo && thumbnailUrl != null && thumbnailUrl.isNotEmpty) {
-  //     thumbnailUrl =
-  //         "https://cdn.primeacademy.education/primeacademy$thumbnailUrl";
-  //     return Container(
-  //       width: 100,
-  //       height: 95,
-  //       child: Stack(
-  //         children: [
-  //           ClipRRect(
-  //             borderRadius: BorderRadius.circular(8),
-  //             child: Image.network(
-  //               thumbnailUrl,
-  //               width: 100,
-  //               height: 95,
-  //               fit: BoxFit.cover,
-  //               errorBuilder: (context, error, stackTrace) {
-  //                 return _buildPlaceholderThumbnail(
-  //                   isVideo,
-  //                   iconSize,
-  //                   duration,
-  //                 );
-  //               },
-  //               loadingBuilder: (context, child, loadingProgress) {
-  //                 if (loadingProgress == null) return child;
-  //                 return _buildPlaceholderThumbnail(
-  //                   isVideo,
-  //                   iconSize,
-  //                   duration,
-  //                 );
-  //               },
-  //             ),
-  //           ),
-  //           Positioned(
-  //             bottom: 4,
-  //             left: 4,
-  //             child: Container(
-  //               padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-  //               decoration: BoxDecoration(
-  //                 color: Colors.black.withOpacity(0.8),
-  //                 borderRadius: BorderRadius.circular(4),
-  //               ),
-  //               child: Text(
-  //                 duration,
-  //                 style: TextStyle(color: Colors.white, fontSize: 10),
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     );
-  //   } else {
-  //     return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
-  //   }
-  // }
-
-  String? extractYouTubeId(String url) {
+  String? extractYouTubeId(String? url) {
+    if (url == null || url.isEmpty) return null;
     final Uri? uri = Uri.tryParse(url);
     if (uri == null) return null;
 
@@ -1310,36 +1268,97 @@ class _ViewModuleState extends State<ViewModule> {
     return null;
   }
 
+  String? _extractThumbnailUrl(dynamic thumbnail) {
+    if (thumbnail == null) return null;
+    if (thumbnail is String) return thumbnail;
+    if (thumbnail is Map<String, dynamic>) {
+      return thumbnail['url'] as String?;
+    }
+    return null;
+  }
+
+  String? _extractUrlFromDynamic(dynamic externalUrl) {
+    print('🔍 _extractUrlFromDynamic called');
+    print('🔍 Input type: ${externalUrl.runtimeType}');
+    print('🔍 Input value: $externalUrl');
+
+    if (externalUrl == null) {
+      print('✅ externalUrl is null - returning null');
+      return null;
+    }
+
+    if (externalUrl is String) {
+      print('✅ externalUrl is String: $externalUrl');
+      return externalUrl;
+    }
+
+    if (externalUrl is Map<String, dynamic>) {
+      print('✅ externalUrl is Map - keys: ${externalUrl.keys.toList()}');
+      final url =
+          externalUrl['url'] as String? ??
+          externalUrl['videoUrl'] as String? ??
+          externalUrl['link'] as String?;
+      print('✅ Extracted URL from Map: $url');
+      return url;
+    }
+
+    print('⚠️ Unknown type: ${externalUrl.runtimeType}');
+    return null;
+  }
+
   Widget _buildVideoThumbnailWithDuration({
     required String? thumbnailUrl,
     required String duration,
     required bool isVideo,
     required double iconSize,
-    String? videoUrl, // ⭐ أضفنا الفيديو يو آر إل هنا
+    String? videoUrl,
   }) {
-    // لو في thumbnail من السيرفر
-    if (isVideo && thumbnailUrl != null && thumbnailUrl.isNotEmpty) {
-      thumbnailUrl =
-          "https://cdn.primeacademy.education/primeacademy$thumbnailUrl";
+    print('🎬 _buildVideoThumbnailWithDuration called');
+    print('🎬 videoUrl type: ${videoUrl.runtimeType}');
+    print('🎬 videoUrl value: $videoUrl');
+    print('🎬 thumbnailUrl: $thumbnailUrl');
 
-      return _buildNetworkThumb(thumbnailUrl, duration, iconSize, isVideo);
-    }
+    try {
+      if (isVideo && thumbnailUrl != null && thumbnailUrl.isNotEmpty) {
+        print('✅ Using server thumbnail');
+        thumbnailUrl =
+            "https://cdn.primeacademy.education/primeacademy$thumbnailUrl";
 
-    // ⭐ لو مفيش thumbnail و الفيديو من يوتيوب
-    if (isVideo && videoUrl != null) {
-      final videoId = extractYouTubeId(videoUrl);
-      if (videoId != null) {
-        final ytThumb = "https://img.youtube.com/vi/$videoId/hqdefault.jpg";
-
-        return _buildNetworkThumb(ytThumb, duration, iconSize, isVideo);
+        return _buildNetworkThumb(thumbnailUrl, duration, iconSize, isVideo);
       }
-    }
 
-    // لو ولا thumbnail ولا فيديو يوتيوب → صورة افتراضية
-    return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+      if (isVideo && videoUrl != null) {
+        print('🎬 Attempting to extract YouTube ID from: $videoUrl');
+
+        
+        if (videoUrl is! String) {
+          print(
+            '❌ ERROR: videoUrl is not a String! Type: ${videoUrl.runtimeType}',
+          );
+          return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+        }
+
+        final videoId = extractYouTubeId(videoUrl);
+        print('🎬 Extracted YouTube ID: $videoId');
+
+        if (videoId != null) {
+          final ytThumb = "https://img.youtube.com/vi/$videoId/hqdefault.jpg";
+          print('✅ Using YouTube thumbnail: $ytThumb');
+          return _buildNetworkThumb(ytThumb, duration, iconSize, isVideo);
+        }
+      }
+
+     
+      print('ℹ️ Using placeholder thumbnail');
+      return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+    } catch (e, stackTrace) {
+      print('❌❌❌ ERROR in _buildVideoThumbnailWithDuration: $e');
+      print('Stack trace: $stackTrace');
+      return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
+    }
   }
 
-  // ⭐ فصلتلك دي عشان تتكرر مرتين
+
   Widget _buildNetworkThumb(
     String url,
     String duration,
@@ -1431,9 +1450,9 @@ class _ViewModuleState extends State<ViewModule> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-      'pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp____________________________________________________________________________+${widget.moduleId}"0000000000"${widget.courseId}',
-    );
+    print('🏗️ BUILD METHOD STARTED');
+    print('🏗️ Current selected item: $_currentSelectedItemId');
+    print('🏗️ Current video ID: $_currentVideoId');
     final deviceType = _getDeviceType(context);
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
@@ -1446,10 +1465,12 @@ class _ViewModuleState extends State<ViewModule> {
           context,
           MaterialPageRoute(builder: (context) => AppLayout(user: widget.user)),
           (route) => false,
-        ), showBackArrow: true,
+        ),
+        showBackArrow: true,
       ),
       body: MultiBlocListener(
         listeners: [
+          // 🔧 FIXED VERSION - Replace lines 1453-1487 in view_lesson.dart
           BlocListener<LessonDetailsCubit, LessonDetailsState>(
             listener: (context, state) {
               if (!mounted || _isDisposing) return;
@@ -1459,25 +1480,71 @@ class _ViewModuleState extends State<ViewModule> {
                 success: (lessonDetails) {
                   _updateLessonQuestions(lessonDetails);
                   _currentChatId = lessonDetails.chatId;
-                  final url = lessonDetails.externalUrl;
                   _updateCurrentLessonTitle(lessonDetails.title ?? "");
+
+                  // ✅ FIX: Handle both String and Map types for externalUrl
+                  String? url;
+
+                  // Debug logging to understand the data structure
+                  print(
+                    '🔍 externalUrl type: ${lessonDetails.externalUrl.runtimeType}',
+                  );
+                  print('🔍 externalUrl value: ${lessonDetails.externalUrl}');
+
+                  if (lessonDetails.externalUrl != null) {
+                    if (lessonDetails.externalUrl is String) {
+                      // Case 1: Direct YouTube URL string
+                      url = lessonDetails.externalUrl as String;
+                      print('✅ Extracted URL as String: $url');
+                    } else if (lessonDetails.externalUrl is Map) {
+                      // Case 2: URL wrapped in an object
+                      final urlMap =
+                          lessonDetails.externalUrl as Map<String, dynamic>;
+                      // Try multiple possible keys
+                      url =
+                          urlMap['url'] as String? ??
+                          urlMap['videoUrl'] as String? ??
+                          urlMap['link'] as String? ??
+                          urlMap['external_url'] as String?;
+                      print('✅ Extracted URL from Map: $url');
+                      print('🔍 Map keys available: ${urlMap.keys.toList()}');
+                    } else {
+                      print(
+                        '⚠️ Unknown externalUrl type: ${lessonDetails.externalUrl.runtimeType}',
+                      );
+                    }
+                  }
 
                   if (url != null && url.isNotEmpty) {
                     final videoId = _extractYouTubeId(url);
                     if (videoId != null) {
-                      print('Changing video to: $videoId');
+                      print('✅ YouTube video detected - ID: $videoId');
+
                       _changeVideo(url);
                     } else {
-                      print('Invalid YouTube URL: $url');
+                      print('⚠️ Non-YouTube URL or invalid format: $url');
+                      // TODO: Handle non-YouTube videos (HLS, MP4, etc.)
+                      // For now, show an error or alternative player
+                      if (mounted && !_isDisposing) {
+                        
+                        _showErrorDialog(
+                          'هذا الفيديو غير مدعوم حالياً. يدعم التطبيق فقط مقاطع يوتيوب.',
+                        );
+                      }
                     }
+                    
                   } else {
-                    print('No URL found in lesson details');
+                    print('❌ No valid URL found in lesson details');
+                    
                   }
+                  
                 },
                 loading: () {
+                  
                   print('Loading lesson details...');
                 },
                 error: (msg) {
+                 
                   print('Error loading lesson: $msg');
                   if (mounted && !_isDisposing) {
                     _showErrorDialog("فشل تحميل تفاصيل الدرس: $msg");
@@ -1486,6 +1553,7 @@ class _ViewModuleState extends State<ViewModule> {
               );
             },
           ),
+
           BlocListener<MarkAnsweredCubit, MarkAnsweredState>(
             listener: (context, state) {
               state.when(
@@ -1543,8 +1611,13 @@ class _ViewModuleState extends State<ViewModule> {
           ),
           BlocListener<ModuleLessonsCubit, ModuleLessonsState>(
             listener: (context, state) {
+              print('🔔 ModuleLessonsState changed: $state');
+
               state.whenOrNull(
                 success: (module) {
+                  print('🎯🎯🎯 SUCCESS CALLBACK STARTED');
+                  print('🎯🎯🎯 module is null: ${module == null}');
+                  print('🎯🎯🎯 module type: ${module.runtimeType}');
                   if (_currentSelectedItemId == widget.itemId &&
                       _playerKey == null) {
                     print(
@@ -1561,78 +1634,126 @@ class _ViewModuleState extends State<ViewModule> {
         ],
         child: BlocBuilder<ModuleLessonsCubit, ModuleLessonsState>(
           builder: (context, state) {
+            print('🏗️ BlocBuilder state: ${state.runtimeType}');
             return state.when(
-              initial: () => const Center(
-                child: Text(
-                  "جاري تحميل الدروس...",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              loading: () => const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              ),
+              initial: () {
+                return Center(
+                  child: Text(
+                    "جاري تحميل الدروس...",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                );
+              },
+              loading: () {
+                print('📱 State: LOADING');
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                );
+              },
               success: (module) {
-                final lessons =
-                    module.items
-                        ?.where((item) => item.lesson != null)
-                        .toList() ??
-                    [];
-                _checkIfFirstVideo(lessons);
-                final externalSources =
-                    module.items
-                        ?.where((item) => item.externalSource != null)
-                        .toList() ??
-                    [];
+                print('🎯🎯🎯 BUILDER SUCCESS STARTED');
+                print('🎯🎯🎯 module is null: ${module == null}');
+                print('🎯🎯🎯 module type: ${module.runtimeType}');
+                try {
+                  print('🎯 Accessing module.items...');
 
-                if (isLandscape && deviceType != DeviceType.mobilePortrait) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              videoHeader(
-                                _currentLessonTitle,
-                                context,
-                                deviceType,
-                              ),
-                              _buildVideoPlayer(deviceType),
-                              _buildActionButtons(
-                                deviceType,
-                                widget.courseId,
-                                widget.moduleId,
-                              ),
-                            ],
+                  if (module.items != null) {
+                    for (var i = 0; i < module.items!.length; i++) {
+                      final item = module.items![i];
+                      print(
+                        '🎯 Item $i: id=${item.id}, lesson=${item.lesson != null}',
+                      );
+                      if (item.lesson != null) {
+                        print('🎯   Lesson title: ${item.lesson!.title}');
+                        print(
+                          '🎯   externalUrl type: ${item.lesson!.externalUrl.runtimeType}',
+                        );
+                        print(
+                          '🎯   externalUrl value: ${item.lesson!.externalUrl}',
+                        );
+                      }
+                    }
+                  }
+                  final lessons =
+                      module.items
+                          ?.where((item) => item.lesson != null)
+                          .toList() ??
+                      [];
+
+                  print('🎯 Filtered lessons count: ${lessons.length}');
+                  _checkIfFirstVideo(lessons);
+                  print('🎯 _checkIfFirstVideo completed');
+                  final externalSources =
+                      module.items
+                          ?.where((item) => item.externalSource != null)
+                          .toList() ??
+                      [];
+                  print('🎯 External sources count: ${externalSources.length}');
+                  if (isLandscape && deviceType != DeviceType.mobilePortrait) {
+                    print('🎯 Building landscape layout');
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                videoHeader(
+                                  _currentLessonTitle,
+                                  context,
+                                  deviceType,
+                                ),
+                                _buildVideoPlayer(deviceType),
+                                _buildActionButtons(
+                                  deviceType,
+                                  widget.courseId,
+                                  widget.moduleId,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: _buildLessonsList(
-                          module.items ?? [],
-                          deviceType,
-                          isInRow: true,
+                        Expanded(
+                          flex: 2,
+                          child: _buildLessonsList(
+                            module.items ?? [],
+                            deviceType,
+                            isInRow: true,
+                          ),
                         ),
+                      ],
+                    );
+                  } else {
+                    print('🎯 Building portrait layout');
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          videoHeader(_currentLessonTitle, context, deviceType),
+                          _buildVideoPlayer(deviceType),
+                          _buildActionButtons(
+                            deviceType,
+                            widget.courseId,
+                            widget.moduleId,
+                          ),
+                          SizedBox(height: 40),
+                          _buildLessonsList(module.items ?? [], deviceType),
+                        ],
                       ),
-                    ],
-                  );
-                } else {
-                  return SingleChildScrollView(
+                    );
+                  }
+                } catch (e, stackTrace) {
+                  print('❌❌❌ ERROR in ModuleLessonsState.success: $e');
+                  print('Stack trace: $stackTrace');
+                  return Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        videoHeader(_currentLessonTitle, context, deviceType),
-                        _buildVideoPlayer(deviceType),
-                        _buildActionButtons(
-                          deviceType,
-                          widget.courseId,
-                          widget.moduleId,
-                        ),
-                        SizedBox(height: 40),
-                        _buildLessonsList(module.items ?? [], deviceType),
+                        Icon(Icons.error, color: Colors.red, size: 48),
+                        SizedBox(height: 16),
+                        Text('Error: $e', style: TextStyle(color: Colors.red)),
                       ],
                     ),
                   );

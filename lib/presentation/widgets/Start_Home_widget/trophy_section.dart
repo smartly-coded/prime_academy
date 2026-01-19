@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -67,39 +65,31 @@ class TrophySection extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
-
         children: [
           tablet
-              ? IntrinsicHeight(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 50),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: const Text(
-                            "هدفنا إخراج جيل جديد",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                        ),
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 50),
+                      child: Text(
+                        "هدفنا إخراج جيل جديد",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
+                    ),
+                    const SizedBox(width: 15),
 
-                      const SizedBox(width: 15),
-                      SizedBox(
-                        width: borderWidth,
-                        child: Center(
-                          child: buildTextWithBorder(
-                            "نافس و تعلم",
-                            "",
-                            context,
-                            containerWidth: borderWidth,
-                          ),
-                        ),
+                    SizedBox(
+                      width: borderWidth * 1.25,
+                      child: buildTextWithBorder(
+                        "نافس و تعلم",
+                        "",
+                        context,
+                        containerWidth: borderWidth * 1.25,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 )
               : buildTextWithBorder(
                   "نافس و تعلم",
@@ -110,10 +100,6 @@ class TrophySection extends StatelessWidget {
 
           const SizedBox(height: 15),
 
-          // --------------------------
-          //   اعرف أكثر + ابدأ الآن
-          //   (زي ما هما بدون ولا تعديل)
-          // --------------------------
           Row(
             children: [
               Row(
@@ -127,9 +113,9 @@ class TrophySection extends StatelessWidget {
                   Container(
                     width: 50,
                     height: 50,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: const LinearGradient(
+                      gradient: LinearGradient(
                         colors: [
                           Color(0xffd67944),
                           Color(0xff51255b),
@@ -163,32 +149,75 @@ class TrophySection extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: 20),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xffd67944),
-                      Color(0xff863868),
-                      Color(0xff51255b),
-                    ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextButton(
-                  onPressed: () => _handleStartButton(context),
-                  style: TextButton.styleFrom(
-                    shadowColor: const Color(0XFF222633),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 25,
-                      vertical: 12,
+
+              SizedBox(
+                width: 120,
+                height: 66,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        width: 120,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2b2b6b).withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0xFF060709),
+                              offset: Offset(7, 7),
+                              blurRadius: 15,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    "ابدأ الآن",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xffd67944),
+                              Color(0xff863868),
+                              Color(0xff51255b),
+                            ],
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomLeft,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: TextButton(
+                          onPressed: () => _handleStartButton(context),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 25,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Text(
+                            "ابدأ الآن",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

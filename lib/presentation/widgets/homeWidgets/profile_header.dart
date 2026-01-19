@@ -140,7 +140,10 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     final isMobile = width < 600;
 
     final imageUrl = _buildImageUrl(widget.user.image?.url);
-
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('📸 User Image Object: ${widget.user.image}');
+    print('📸 Image URL from user: ${widget.user.image?.url}');
+  
     return Row(
       children: [
         GestureDetector(
@@ -181,7 +184,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             Text(
               "${widget.user.firstname} ${widget.user.lastname}",
               style: TextStyle(
-                fontSize: isMobile ?20 : 24,
+                fontSize: isMobile ? 20 : 24,
                 // fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -193,7 +196,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   }
 }
 
-/// ✅ دالة بناء رابط الصورة (نفس منطق الجوائز)
 String _buildImageUrl(String? imagePath) {
   if (imagePath == null || imagePath.isEmpty) return "";
 

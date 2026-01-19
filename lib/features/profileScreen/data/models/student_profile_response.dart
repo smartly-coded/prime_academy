@@ -20,7 +20,7 @@ class StudentProfileResponse {
   int? loginAttempts;
   UserImage? image;
   List<Courses>? courses;
-  List<Trophy>? trophies; // إضافة قائمة الجوائز
+  List<Trophy>? trophies; 
 
   StudentProfileResponse({
     this.id,

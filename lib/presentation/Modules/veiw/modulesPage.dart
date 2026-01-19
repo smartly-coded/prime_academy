@@ -110,6 +110,7 @@
 //     );
 //   }
 // }
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
@@ -148,7 +149,8 @@ class ModulesPage extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => AppLayout(user: user)),
             (route) => false,
-          ), showBackArrow: true,
+          ),
+          showBackArrow: true,
         ),
         body: BlocBuilder<ModulesCubit, ModulesState>(
           builder: (context, state) {
@@ -198,31 +200,29 @@ class ModulesPage extends StatelessWidget {
                         vertical: 80,
                         horizontal: 24,
                       ),
-                      child: Center(
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 896),
-                          child: Column(
-                            children: course.modules
-                                .asMap()
-                                .entries
-                                .map(
-                                  (entry) => Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom:
-                                          entry.key < course.modules.length - 1
-                                          ? 16
-                                          : 0,
-                                    ),
-                                    child: ModuleTile(
-                                      module: entry.value,
-                                      courseId: courseId,
-                                      user: user,
-                                      index: entry.key,
-                                    ),
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 896),
+                        child: Column(
+                          children: course.modules
+                              .asMap()
+                              .entries
+                              .map(
+                                (entry) => Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom:
+                                        entry.key < course.modules.length - 1
+                                        ? 16
+                                        : 0,
                                   ),
-                                )
-                                .toList(),
-                          ),
+                                  child: ModuleTile(
+                                    module: entry.value,
+                                    courseId: courseId,
+                                    user: user,
+                                    index: entry.key,
+                                  ),
+                                ),
+                              )
+                              .toList(),
                         ),
                       ),
                     ),

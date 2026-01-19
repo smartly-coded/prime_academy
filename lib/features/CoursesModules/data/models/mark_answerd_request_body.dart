@@ -120,7 +120,7 @@ class QuestionAnswerHelper {
   }) {
     return MarkAnsweredRequestBody.choiceAnswers(
       lessonId: lessonId,
-      questionType: "choose",
+      questionType: "mcq",
       selectedChoices: selectedChoices,
     );
   }
@@ -132,7 +132,7 @@ class QuestionAnswerHelper {
   }) {
     return MarkAnsweredRequestBody.textAnswers(
       lessonId: lessonId,
-      questionType: "fill",
+      questionType: "fill-blank",
       textAnswers: [answer], // String في List
     );
   }

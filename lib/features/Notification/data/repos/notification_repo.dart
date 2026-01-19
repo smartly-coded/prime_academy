@@ -35,21 +35,18 @@ class NotificationRepository {
         for (final line in data.split("\n")) {
           final trimmed = line.trim();
 
-          
           if (trimmed.isEmpty || trimmed.startsWith(":")) continue;
 
           if (trimmed.startsWith("data:")) {
             try {
               final jsonData = jsonDecode(trimmed.substring(5).trim());
 
-             
               if (jsonData["title"] == null && jsonData["message"] == null) {
                 continue;
               }
 
               yield NotificationModel.fromJson(jsonData);
             } catch (e) {
-             
               continue;
             }
           }

@@ -1,5 +1,3 @@
-
-
 // import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 // import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model.dart';
 
@@ -7,7 +5,7 @@
 //   final int id;
 //   final String name;
 //   final String? imageUrl;
-  
+
 //   // ⭐ بيانات المعلم
 //   final int? teacherId;
 //   final String? teacherName;
@@ -59,7 +57,7 @@ class ChatInfoModel {
   final int id;
   final String name;
   final String? imageUrl;
-  
+
   final int? teacherId;
   final String? teacherName;
   final String? teacherImageUrl;
@@ -97,7 +95,7 @@ class ChatInfoModel {
       imageUrl: imageUrl,
       teacherId: teacher.id,
       teacherName: "${teacher.firstname} ${teacher.lastname}".trim(),
-      teacherImageUrl: teacher.image.url,
+      teacherImageUrl: teacher.image?.url ?? 'default_image_url',
     );
   }
 

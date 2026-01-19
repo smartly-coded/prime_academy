@@ -16,7 +16,7 @@ class TeacherCacheService {
       'firstname': teacher.firstname,
       'lastname': teacher.lastname,
       'role': teacher.role,
-      'imageUrl': teacher.image.url,
+      'imageUrl': teacher.image?.url?? 'default_image_url',
     };
     
     await prefs.setString(key, jsonEncode(data));

@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:prime_academy/core/Utils/validators.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/start_CommRequest/logic/CommRequest_cubit.dart';
@@ -16,54 +16,111 @@ class FooterSection extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
     ValueNotifier<bool> gradientFlipped3 = ValueNotifier(false);
-
+final formKey = GlobalKey<FormState>();
+ValueNotifier<bool> hasError = ValueNotifier(false);
     return Container(
       color: Mycolors.backgroundColor,
-      padding: const EdgeInsets.symmetric(
-        vertical: 44,
-        horizontal: 24,
-      ), // زاد 4px
+      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1000),
           child: Column(
             children: [
+              // Logo - Updated size to match web (200×66)
               Image.asset(
                 'assets/images/footer-logo.webp',
-                width: 154,
-                height: 154,
+                width: 190,
+                height: 64,
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) => Container(
-                  width: 124,
-                  height: 124,
+                  width: 200,
+                  height: 66,
                   decoration: BoxDecoration(
                     color: Colors.orange,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.school,
                     color: Colors.white,
-                    size: 64,
+                    size: 40,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
+              // Description - Updated line height to 1.3
               Text(
-                "مكان التعلم الشامل والتجربة التعليمية المميزة،\nنحن نلتزم بتوفير بيئة تعلم محفزة تمكّن الطلاب\nوتمنحهم الفرصة لتحقيق أهدافهم التعليمية والمهنية",
+                "مكان التعلم الشامل والتجربة\n التعليمية المميزة، نحن نلتزم\n بتوفير بيئة تعلم محفزة تمكِّن \nالطلاب وتمنحهم الفرصة لتحقيق\n أهدافهم التعليمية والمهنية",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: isMobile ? 18 : 20,
-                  color: Colors.white70,
-                  height: 1.6,
+                  fontSize: isMobile ? 16 : 18,
+                  color: const Color.fromARGB(
+                    255,
+                    207,
+                    207,
+                    207,
+                  ), // text-text color
+                  height: 1.3, // Reduced from 1.6
                 ),
               ),
 
-              const SizedBox(height: 34),
+              const SizedBox(height: 24),
 
+              // "Follow us" header - ADDED (was missing)
+              const Text(
+                "تابعنا على",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600, // font-semibold
+                  color: Mycolors.orange, // text-secondary
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Social Icons Row - Updated with all 5 icons
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  _buildSocialIcon(
+                    FontAwesomeIcons.xTwitter,
+                    'X (Twitter)',
+                    'https://twitter.com/primeacademy', // Update with actual URL if available
+                    Colors.black,
+                    Colors.white,
+                    24,
+                  ),
+                  const SizedBox(width: 16),
+                  _buildSocialIcon(
+                    FontAwesomeIcons.youtube,
+                    'YouTube',
+                    'https://www.youtube.com/channel/UCYvdLyU752m0ln637tW540Q',
+                    Colors.black,
+                    Colors.white,
+                    30,
+                  ),
+                  const SizedBox(width: 16),
+                  _buildSocialIcon(
+                    FontAwesomeIcons.tiktok,
+                    'TikTok',
+                    'https://www.tiktok.com/@primeacademy4tiktok',
+                    Colors.black,
+                    Colors.white,
+                    26,
+                  ),
+                  const SizedBox(width: 16),
+
+                  _buildSocialIcon(
+                    FontAwesomeIcons.instagram,
+                    'Instagram',
+                    'https://www.instagram.com/primeacademy4insta/',
+                    Colors.black,
+                    Colors.white,
+                    28,
+                  ),
+
+                  const SizedBox(width: 16),
                   _buildSocialIcon(
                     FontAwesomeIcons.facebookF,
                     'Facebook',
@@ -72,78 +129,74 @@ class FooterSection extends StatelessWidget {
                     Colors.black,
                     24,
                   ),
-                  const SizedBox(width: 19),
-                  _buildSocialIcon(
-                    FontAwesomeIcons.youtube,
-                    'YouTube',
-                    'https://www.youtube.com/channel/UCYvdLyU752m0ln637tW540Q',
-                    Colors.black,
-                    Colors.white,
-                    32,
-                  ),
                 ],
               ),
 
-              const SizedBox(height: 34),
+              
+              const SizedBox(height: 32),
 
-              Text(
+              const Text(
                 "الكورسات",
                 style: TextStyle(
                   fontSize: 24,
-                  // fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600, 
                   color: Colors.white,
                 ),
               ),
-              Divider(
+              const Divider(
                 color: Mycolors.orange,
                 thickness: 2,
-                indent: 104,
-                endIndent: 104,
+                indent: 100,
+                endIndent: 100,
               ),
-              const SizedBox(height: 19),
-              Wrap(
-                direction: Axis.vertical,
-                spacing: 14,
-                runSpacing: 14,
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildCourseItem("اللغة العربية"),
+                  const SizedBox(height: 16),
                   _buildCourseItem("اللغة الإنجليزية"),
+                  const SizedBox(height: 16),
                   _buildCourseItem("اللغة الألمانية"),
+                  const SizedBox(height: 16),
                   _buildCourseItem("لغات البرمجة"),
                 ],
               ),
 
-              const SizedBox(height: 34),
+              const SizedBox(height: 32),
 
-              Text(
+              // Curricula Section - Fixed to use Column with center alignment
+              const Text(
                 "المناهج",
                 style: TextStyle(
                   fontSize: 24,
-                  // fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600, // Added font-semibold
                   color: Colors.white,
                 ),
               ),
-              Divider(
+              const Divider(
                 color: Mycolors.orange,
                 thickness: 2,
-                indent: 104, // زاد 4px
-                endIndent: 104, // زاد 4px
+                indent: 120,
+                endIndent: 120,
               ),
-              const SizedBox(height: 19), // زاد 4px
-              Wrap(
-                direction: Axis.vertical,
-                spacing: 14, // زاد 4px
-                runSpacing: 14, // زاد 4px
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildCourseItem("تأسيس"),
+                  const SizedBox(height: 16),
                   _buildCourseItem("التعليم الابتدائي"),
+                  const SizedBox(height: 16),
                   _buildCourseItem("التعليم المتوسط"),
+                  const SizedBox(height: 16),
                   _buildCourseItem("التعليم الثانوي"),
                 ],
               ),
 
-              const SizedBox(height: 44), // زاد 4px
+              const SizedBox(height: 40),
 
+              // Contact Form Section
               BlocListener<CommRequestCubit, CommRequestState>(
                 listener: (context, state) {
                   if (state is CommRequestSuccess) {
@@ -164,117 +217,73 @@ class FooterSection extends StatelessWidget {
                 },
                 child: Column(
                   children: [
-                    Text(
-                      "ابقى على تواصل !",
+                    const Text(
+                      "! ابقى على تواصل",
                       style: TextStyle(
-                        fontSize: 26, // زاد 4px
-                        // fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600, // Added font-semibold
                         color: Colors.white,
                       ),
                     ),
-                    Divider(
+                    const Divider(
                       color: Mycolors.orange,
                       thickness: 2,
-                      indent: 64, // زاد 4px
-                      endIndent: 64, // زاد 4px
+                      indent: 60,
+                      endIndent: 60,
                     ),
-                    const SizedBox(height: 14), // زاد 4px
+                    const SizedBox(height: 16),
                     Text(
-                      "للحصول على حصص مجانية وامتنابعة اخر الأخبار\nادخل رقم هاتفك المحمول",
+                      "للحصول على حصص مجانية \nولمتابعة اخر الاخبار ادخل رقم\n هاتفك المحمول",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 20, // زاد 4px
+                        fontSize: isMobile ? 16 : 18,
                         color: Colors.white,
-                        height: 1.5,
+                        height: 1.3, 
                       ),
                     ),
-                    const SizedBox(height: 24), // زاد 4px
+                    const SizedBox(height: 24),
+
                     Container(
-                      width: isMobile ? width * 0.8 : width * 0.5,
+                      width: isMobile ? width * 0.55 : width * 0.65,
+                      height: width * 0.08,
                       decoration: BoxDecoration(
                         color: Mycolors.backgroundColor,
-                        borderRadius: BorderRadius.circular(24), // زاد 4px
-                        border: Border.all(color: Colors.white, width: 1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Color(0xFFECEEF0),
+                          width: 1.6,
+                        ),
                       ),
                       child: TextFormField(
                         controller: phoneController,
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.right,
                         validator: Validators.validateKuwaitPhone,
                         decoration: const InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.phone,
-                            color: Color.fromARGB(255, 229, 228, 228),
-                            size: 28, // زاد 4px
+                          suffixIcon: Icon(
+                            FontAwesomeIcons.phoneFlip,
+                            color: Color(0xFFB0B3BA),
+                            size: 18,
                           ),
                           hintText: "رقم هاتفك المحمول",
                           hintStyle: TextStyle(
-                            color: Color.fromARGB(255, 229, 228, 228),
-                            fontSize: 18, // زاد 4px
+                            color: Color(0xFFB0B3BA),
+                            fontSize: 16,
                           ),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 18,
-                          ), // زاد 4px
+                          
+                          isDense: true, 
                         ),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18, // زاد 4px
+                          fontSize: 16,
                         ),
                         keyboardType: TextInputType.phone,
                       ),
                     ),
-                    const SizedBox(height: 19), // زاد 4px
-                    // GestureDetector(
-                    //   onTap: () {
-                    //     final phone = phoneController.text.trim();
-                    //     if (Validators.validateKuwaitPhone(phone) == null) {
-                    //       context.read<CommRequestCubit>().sendRequest(phone);
-                    //     } else {
-                    //       ScaffoldMessenger.of(context).showSnackBar(
-                    //         const SnackBar(
-                    //           content: Text("❌ أدخل رقم هاتف صحيح"),
-                    //         ),
-                    //       );
-                    //     }
-                    //   },
-                    //   child: Container(
-                    //     padding: const EdgeInsets.all(4), // زاد 1px
-                    //     decoration: BoxDecoration(
-                    //       gradient:  LinearGradient(
-                    //         colors:Mycolors.primary_color.colors,
-                    //         begin: Alignment.topLeft,
-                    //         end: Alignment.bottomRight,
-                    //       ),
-                    //       borderRadius: BorderRadius.circular(19),
-                    //     ),
-                    //     child: Container(
-                    //       padding: const EdgeInsets.all(19),
-                    //       decoration: BoxDecoration(
-                    //         color: const Color.fromARGB(255, 28, 31, 48),
-                    //         borderRadius: BorderRadius.circular(19),
-                    //       ),
-                    //       child:
-                    //           BlocBuilder<CommRequestCubit, CommRequestState>(
-                    //             builder: (context, state) {
-                    //               if (state is CommRequestLoading) {
-                    //                 return const Center(
-                    //                   child: CircularProgressIndicator(
-                    //                     color: Colors.white,
-                    //                   ),
-                    //                 );
-                    //               }
-                    //               return Text(
-                    //                 "ارسال",
-                    //                 style: TextStyle(
-                    //                   color: Colors.white,
-                    //                   fontSize: 20,
-                    //                 ),
-                    //               );
-                    //             },
-                    //           ),
-                    //     ),
-                    //   ),
-                    // ),
+                    const SizedBox(height: 16),
+
+                    // Submit Button - Kept as requested (DO NOT CHANGE)
                     ValueListenableBuilder<bool>(
                       valueListenable: gradientFlipped3,
                       builder: (context, isFlipped, _) {
@@ -305,11 +314,11 @@ class FooterSection extends StatelessWidget {
                               gradient: LinearGradient(
                                 colors: Mycolors.primary_color.colors,
                                 begin: isFlipped
-                                    ? Alignment.bottomRight
-                                    : Alignment.topLeft,
+                                    ? Alignment.bottomLeft
+                                    : Alignment.topRight,
                                 end: isFlipped
-                                    ? Alignment.topLeft
-                                    : Alignment.bottomRight,
+                                    ? Alignment.topRight
+                                    : Alignment.bottomLeft,
                               ),
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -350,15 +359,7 @@ class FooterSection extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 34), // زاد 4px
-
-              Text(
-                "© 2025 PRIME ACADEMY. جميع الحقوق محفوظة",
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 18, // زاد 4px
-                ),
-              ),
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -370,27 +371,70 @@ class FooterSection extends StatelessWidget {
     IconData icon,
     String tooltip,
     String url,
-    Color container_color,
-    Color icon_color,
-    double size_icon,
+    Color containerColor,
+    Color iconColor,
+    double iconSize,
   ) {
-    return Container(
-      width: 35, // زاد 4px
-      height: 35, // زاد 4px
+    return GestureDetector(
+      onTap: () async {
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          debugPrint('Could not launch $url');
+        }
+      },
+      child: AnimatedScale(
+        scale: 1.0,
+        duration: const Duration(milliseconds: 300),
+        child: Container(
+          width: 35,
+          height: 35,
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: containerColor,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: FaIcon(icon, color: iconColor, size: iconSize),
+          ),
+        ),
+      ),
+    );
+  }
 
-      decoration: BoxDecoration(color: container_color, shape: BoxShape.circle),
-      child: Center(
-        child: IconButton(
-          icon: Icon(icon, color: icon_color, size: size_icon), // زاد 4px
-          tooltip: tooltip,
-          onPressed: () async {
-            final uri = Uri.parse(url);
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(uri, mode: LaunchMode.externalApplication);
-            } else {
-              debugPrint('Could not launch $url');
-            }
-          },
+  // NEW: Store button widget
+  Widget _buildStoreButton(String assetPath, String url) {
+    return GestureDetector(
+      onTap: () async {
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          debugPrint('Could not launch $url');
+        }
+      },
+      child: AnimatedScale(
+        scale: 1.0,
+        duration: const Duration(milliseconds: 300),
+        child: Image.asset(
+          assetPath,
+          height: 40,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => Container(
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade800,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Center(
+              child: Text(
+                'Download',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -398,12 +442,9 @@ class FooterSection extends StatelessWidget {
 
   Widget _buildCourseItem(String text) {
     return Text(
-      textAlign: TextAlign.end,
       text,
-      style: const TextStyle(
-        fontSize: 20, // زاد 4px
-        color: Colors.white70,
-      ),
+      textAlign: TextAlign.center, // FIXED: Changed from end to center
+      style: const TextStyle(fontSize: 18, color: Colors.white),
     );
   }
 }

@@ -167,155 +167,166 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
   }
 
   Widget _buildHeader() {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: questionTitle(widget.question.title),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGridContent(bool isLandscape, bool isTablet) {
-    return SingleChildScrollView(
+    return Flexible(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // العمود الأول: الأسئلة
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: List.generate(_prompts.length, (index) {
-                final prompt = _prompts[index];
-                final isMatched = _matches.containsKey(index);
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: isMatched
-                      ? // 🔥 حل المشكلة الأولى: إظهار مربع فارغ بدلاً من SizedBox
-                        _buildEmptyQuestionSlot(index, isTablet)
-                      : Draggable<int>(
-                          data: index,
-                          feedback: _buildQuestionCard(
-                            prompt,
-                            index,
-                            false,
-                            null,
-                            isTablet,
-                            isDragging: true,
-                          ),
-                          childWhenDragging:
-                              // 🔥 حل المشكلة الأولى: إظهار مربع فارغ أثناء السحب
-                              _buildEmptyQuestionSlot(index, isTablet),
-                          child: _buildQuestionCard(
-                            prompt,
-                            index,
-                            false,
-                            null,
-                            isTablet,
-                          ),
-                          // 🔥 حل المشكلة الأولى: إرجاع السؤال لمكانه الأصلي عند الإلغاء
-                          onDragEnd: (details) {
-                            // إذا لم يتم إسقاط السؤال في مكان صحيح، يرجع لمكانه
-                            if (!details.wasAccepted) {
-                              // لا نحتاج لفعل شيء لأن الـ state لن يتغير
-                              setState(() {}); // فقط لإعادة البناء
-                            }
-                          },
-                        ),
-                );
-              }),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(20),
             ),
-          ),
-
-          SizedBox(width: 20),
-
-          // العمود الثاني: الإجابات
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: List.generate(_responses.length, (index) {
-                final response = _responses[index];
-                final isUsed = _matches.containsValue(index);
-                final isHovered = _responseHovered[index] ?? false;
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: DragTarget<int>(
-                    builder: (context, candidateData, rejectedData) {
-                      return Container(
-                        padding: EdgeInsets.all(isTablet ? 12 : 8),
-                        decoration: BoxDecoration(
-                          color: Color(0xff3f0627),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: candidateData.isNotEmpty
-                                ? Colors.green
-                                : isHovered
-                                ? Colors.green
-                                : Colors.white.withOpacity(0.3),
-                            width: candidateData.isNotEmpty || isHovered
-                                ? 3
-                                : 2,
-                          ),
-                        ),
-                        child: isUsed
-                            ? _buildDraggableQuestionInResponse(
-                                // نعرض السؤال اللي اتعمله drop بنفس لونه ولكن قابل للسحب
-                                _prompts[_matches.entries
-                                    .firstWhere((entry) => entry.value == index)
-                                    .key],
-                                _matches.entries
-                                    .firstWhere((entry) => entry.value == index)
-                                    .key,
-                                index,
-                                isTablet,
-                              )
-                            : _buildResponseCard(response, isTablet),
-                      );
-                    },
-                    // 🔥 حل المشكلة الثانية: منع وضع أكثر من سؤال في نفس المكان
-                    onWillAcceptWithDetails: (promptIndex) {
-                      return !_matches.containsValue(
-                        index,
-                      ); // يرفض إذا كان المكان مُستخدم
-                    },
-                    // onAcceptWithDetails: (promptIndex) {
-                    //   _handleQuestionDrop(promptIndex, index);
-                    // },
-                    onAcceptWithDetails: (details) {
-  _handleQuestionDrop(details.data, index);
-},
-
-                    onMove: (details) {
-                      setState(() {
-                        _responseHovered[index] = true;
-                      });
-                    },
-                    onLeave: (promptIndex) {
-                      setState(() {
-                        _responseHovered[index] = false;
-                      });
-                    },
-                  ),
-                );
-              }),
-            ),
+            child: questionTitle(widget.question.title),
           ),
         ],
       ),
     );
   }
 
-  // 🔥 ويدجت جديد للمربع الفارغ
+  Widget _buildGridContent(bool isLandscape, bool isTablet) {
+    return SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: isLandscape ? 1000 : 300,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // العمود الأول: الأسئلة
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: List.generate(_prompts.length, (index) {
+                  final prompt = _prompts[index];
+                  final isMatched = _matches.containsKey(index);
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: isMatched
+                        ? // 🔥 حل المشكلة الأولى: إظهار مربع فارغ بدلاً من SizedBox
+                          _buildEmptyQuestionSlot(index, isTablet)
+                        : Draggable<int>(
+                            data: index,
+                            feedback: _buildQuestionCard(
+                              prompt,
+                              index,
+                              false,
+                              null,
+                              isTablet,
+                              isDragging: true,
+                            ),
+                            childWhenDragging:
+                                // 🔥 حل المشكلة الأولى: إظهار مربع فارغ أثناء السحب
+                                _buildEmptyQuestionSlot(index, isTablet),
+                            child: _buildQuestionCard(
+                              prompt,
+                              index,
+                              false,
+                              null,
+                              isTablet,
+                            ),
+                            // 🔥 حل المشكلة الأولى: إرجاع السؤال لمكانه الأصلي عند الإلغاء
+                            onDragEnd: (details) {
+                              // إذا لم يتم إسقاط السؤال في مكان صحيح، يرجع لمكانه
+                              if (!details.wasAccepted) {
+                                // لا نحتاج لفعل شيء لأن الـ state لن يتغير
+                                setState(() {}); // فقط لإعادة البناء
+                              }
+                            },
+                          ),
+                  );
+                }),
+              ),
+            ),
+
+            SizedBox(width: 20),
+
+            // العمود الثاني: الإجابات
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: List.generate(_responses.length, (index) {
+                  final response = _responses[index];
+                  final isUsed = _matches.containsValue(index);
+                  final isHovered = _responseHovered[index] ?? false;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: DragTarget<int>(
+                      builder: (context, candidateData, rejectedData) {
+                        return Container(
+                          height: 80,
+                          padding: EdgeInsets.all(isTablet ? 12 : 8),
+                          decoration: BoxDecoration(
+                            color: Color(0xff3f0627),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: candidateData.isNotEmpty
+                                  ? Colors.green
+                                  : isHovered
+                                  ? Colors.green
+                                  : Colors.white.withOpacity(0.3),
+                              width: candidateData.isNotEmpty || isHovered
+                                  ? 3
+                                  : 2,
+                            ),
+                          ),
+                          child: isUsed
+                              ? _buildDraggableQuestionInResponse(
+                                  // نعرض السؤال اللي اتعمله drop بنفس لونه ولكن قابل للسحب
+                                  _prompts[_matches.entries
+                                      .firstWhere(
+                                        (entry) => entry.value == index,
+                                      )
+                                      .key],
+                                  _matches.entries
+                                      .firstWhere(
+                                        (entry) => entry.value == index,
+                                      )
+                                      .key,
+                                  index,
+                                  isTablet,
+                                )
+                              : _buildResponseCard(response, isTablet),
+                        );
+                      },
+                      // 🔥 حل المشكلة الثانية: منع وضع أكثر من سؤال في نفس المكان
+                      onWillAcceptWithDetails: (promptIndex) {
+                        return !_matches.containsValue(
+                          index,
+                        ); // يرفض إذا كان المكان مُستخدم
+                      },
+                      // onAcceptWithDetails: (promptIndex) {
+                      //   _handleQuestionDrop(promptIndex, index);
+                      // },
+                      onAcceptWithDetails: (details) {
+                        _handleQuestionDrop(details.data, index);
+                      },
+
+                      onMove: (details) {
+                        setState(() {
+                          _responseHovered[index] = true;
+                        });
+                      },
+                      onLeave: (promptIndex) {
+                        setState(() {
+                          _responseHovered[index] = false;
+                        });
+                      },
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildEmptyQuestionSlot(int index, bool isTablet) {
     return Container(
-      height: 80, // نفس ارتفاع السؤال الأصلي
+      height: 80,
       padding: EdgeInsets.all(isTablet ? 12 : 8),
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -323,13 +334,12 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
         border: Border.all(
           color: Colors.white.withOpacity(0.3),
           width: 2,
-          style: BorderStyle.solid, // خط متقطع ليوضح أنه مكان فارغ
+          style: BorderStyle.solid,
         ),
       ),
     );
   }
 
-  // 🔥 ويدجت جديد للسؤال القابل للسحب من داخل الإجابة
   Widget _buildDraggableQuestionInResponse(
     Prompt prompt,
     int promptIndex,

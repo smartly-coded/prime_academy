@@ -21,7 +21,7 @@ class CategoryTabs extends StatelessWidget {
           color: isSelected ? Color(0xFF12161f) : Mycolors.cardColor1,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
           child: Text(
             title,
             style: TextStyle(

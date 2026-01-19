@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +55,7 @@ class _RewardBoxState extends State<RewardBox> {
       child: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Mycolors.cardColor1,
+          color: Color(0xFF161c29),
           borderRadius: BorderRadius.circular(20),
         ),
         child: BlocBuilder<ProfileCubit, ProfileState>(
@@ -84,52 +83,58 @@ class _RewardBoxState extends State<RewardBox> {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                   
                     Container(
-                      height: widget.isMobile ? 120 : 150,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xff3D57E9), Color(0xffff9933)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
+                        color: Colors.grey[700],
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.emoji_events,
-                            color: Colors.amber,
-                            size: 30,
+                      padding: const EdgeInsets.all(5.0),
+
+                      child: Container(
+                        height: widget.isMobile ? 98 : 120,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xff3D57E9), Color(0xffff9933)],
+                            begin: Alignment.bottomLeft,
+                            end: Alignment.topRight,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "عدد الجوائز : ${trophies.length}",
-                            style: TextStyle(
-                              fontSize: widget.isMobile ? 20 : 24,
-                              // fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              spreadRadius: 1,
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.emoji_events_outlined,
+                              color: Colors.amber,
+                              size: 40,
+                            ),
+                            // const SizedBox(height: 8),
+                            Text(
+                              " الجوائز والشهادات: ${trophies.length}",
+                              style: TextStyle(
+                                fontSize: widget.isMobile ? 20 : 24,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
 
-                  
                     SizedBox(
                       height: widget.isMobile ? 180 : 200,
                       child: PageView.builder(
@@ -176,7 +181,7 @@ class _RewardBoxState extends State<RewardBox> {
                                     trophy.name ?? "بدون اسم",
                                     style: TextStyle(
                                       color: Mycolors.gold,
-                                      
+
                                       // fontWeight: FontWeight.bold,
                                       fontSize: widget.isMobile ? 14 : 16,
                                     ),

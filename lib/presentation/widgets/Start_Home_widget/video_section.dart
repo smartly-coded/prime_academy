@@ -17,7 +17,7 @@ class _VideoSectionState extends State<VideoSection> {
   @override
   void initState() {
     super.initState();
-      _controller = VideoPlayerController.asset('assets/videos/splash3.mp4')
+    _controller = VideoPlayerController.asset('assets/videos/splash3.mp4')
       ..initialize().then((_) {
         setState(() {});
         _controller.setLooping(true);
@@ -61,7 +61,12 @@ class _VideoSectionState extends State<VideoSection> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-              child: buildTextWithBorder("في برايم أكاديمي", "", context),
+              child: buildTextWithBorder(
+                "في برايم أكاديمي",
+                "",
+                context,
+                containerWidth: width * 0.7,
+              ),
             ),
 
             Container(
@@ -70,7 +75,7 @@ class _VideoSectionState extends State<VideoSection> {
                 "لاتخاف تنسى \nالفيديوهات عندك، تعيدها متى ما\n !تبي، ومرات قد ما تبي",
                 style: TextStyle(
                   fontSize: 26,
-                  // fontWeight: FontWeight.bold,
+                  
                   color: Colors.white,
                   height: 1.5,
                 ),

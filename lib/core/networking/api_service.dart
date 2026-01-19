@@ -5,6 +5,7 @@ import 'package:prime_academy/features/CoursesModules/data/models/mark_answerd_r
 import 'package:prime_academy/features/CoursesModules/data/models/mark_answered_response_model.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_request_body.dart';
 import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model.dart';
+import 'package:prime_academy/features/CoursesModules/data/models/module_lessons_response_model2.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/profileScreen/data/models/student_profile_response.dart';

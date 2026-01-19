@@ -23,13 +23,5 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
   }
 
-  //Future<void> loadUserCourses(int userId) async {
-  //  try {
-  //    emit(CourseLoading());
-  //    final courses = await repository.getUserCourses(userId);
-  //    emit(CourseLoaded(courses));
-  //  } catch (e) {
-  //    emit(CourseError(e.toString()));
-  //  }
-  //}
+  
 }
