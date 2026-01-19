@@ -31,11 +31,11 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
 
   final dialogWidth = deviceType == DeviceType.mobile
       ? size.width * 0.9
-      : 320.0;
+      : size.width * 0.6;
 
   final dialogHeight = deviceType == DeviceType.mobile
       ? size.height * 0.7
-      : size.height * 0.8;
+      : size.height * 0.7;
 
   final borderRadiusSize = deviceType == DeviceType.mobile ? 12.0 : 16.0;
 
