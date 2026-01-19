@@ -67,7 +67,20 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProfileHeader(user: widget.user),
+              // ProfileHeader(user: widget.user),
+              BlocBuilder<ProfileCubit, ProfileState>(
+  builder: (context, state) {
+    return state.when(
+      initial: () => const SizedBox(),
+      loading: () => const CircularProgressIndicator(),
+      error: (error) => Text(error),
+      success: (profile) {
+        return ProfileHeader(user:  profile);
+      }, 
+    );
+  },
+)
+,
               SizedBox(height: isMobile ? 40 : 60),
               LogoutButton(isMobile: isMobile),
               SizedBox(height: isMobile ? 50 : 80),

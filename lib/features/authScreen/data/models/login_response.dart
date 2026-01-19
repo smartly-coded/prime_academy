@@ -92,7 +92,6 @@ class LoginResponse {
   factory LoginResponse.fromJson(Map<String, dynamic> json) =>
       _$LoginResponseFromJson(json);
 
-  // 🔥 ده اللي كان ناقص - دالة تحويل الـ object لـ JSON
   Map<String, dynamic> toJson() => _$LoginResponseToJson(this);
 }
 
@@ -120,6 +119,5 @@ class UserImage {
   factory UserImage.fromJson(Map<String, dynamic> json) =>
       _$UserImageFromJson(json);
 
-  // 🔥 وده كمان
   Map<String, dynamic> toJson() => _$UserImageToJson(this);
 }
