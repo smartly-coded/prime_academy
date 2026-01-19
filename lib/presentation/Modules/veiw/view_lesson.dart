@@ -205,8 +205,7 @@ class _ViewModuleState extends State<ViewModule> {
       setState(() {
         _currentVideoId = videoId;
         _isPlayerReady = false;
-        _playerKey =
-            GlobalKey<YouTubeWebViewPlayerState>(); 
+        _playerKey = GlobalKey<YouTubeWebViewPlayerState>();
       });
     }
   }
@@ -902,7 +901,7 @@ class _ViewModuleState extends State<ViewModule> {
         isVideo: isLesson,
         isSelected: _currentSelectedItemId == item.id,
         isRewarded: accessWithoutEnrollment,
-        videoUrl: videoUrl, 
+        videoUrl: videoUrl,
         index: index,
         onTap: () {
           setState(() {
@@ -987,57 +986,54 @@ class _ViewModuleState extends State<ViewModule> {
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                child: Text(
-                  "الحصص المسجلة",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: titleFontSize,
-                    fontWeight: FontWeight.bold,
+          Flexible(
+            flex: 0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                  child: Text(
+                    "الحصص المسجلة",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: titleFontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
 
-              // Container(
-              //   height: 2,
-              //   width: double.infinity,
-              //   decoration: BoxDecoration(
-              //     gradient: LinearGradient(
-              //       colors: Mycolors.primary_color.colors,
-              //     ),
-              //   ),
-              // ),
-              ValueListenableBuilder<bool>(
-                valueListenable: lineFlip,
-                builder: (context, isFlipped, _) {
-                  return GestureDetector(
-                    onTap: () {
-                      lineFlip.value = !lineFlip.value;
-                    },
-                    child: Container(
-                      height: 2,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: Mycolors.primary_color.colors,
-                          begin: isFlipped
-                              ? Alignment.centerRight
-                              : Alignment.centerLeft,
-                          end: isFlipped
-                              ? Alignment.centerLeft
-                              : Alignment.centerRight,
+                ValueListenableBuilder<bool>(
+                  valueListenable: lineFlip,
+                  builder: (context, isFlipped, _) {
+                    return GestureDetector(
+                      onTap: () {
+                        lineFlip.value = !lineFlip.value;
+                      },
+                      child: Container(
+                        height: 2,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: Mycolors.primary_color.colors,
+                            begin: isFlipped
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            end: isFlipped
+                                ? Alignment.centerLeft
+                                : Alignment.centerRight,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
           SizedBox(height: 15),
 
@@ -1045,19 +1041,17 @@ class _ViewModuleState extends State<ViewModule> {
               ? Expanded(
                   child: ListView.builder(
                     itemCount: items.length,
+
                     itemBuilder: (context, index) {
                       return _buildLessonItemContent(items, index, deviceType);
                     },
                   ),
                 )
-              : SizedBox(
-                  height: deviceType == DeviceType.mobilePortrait
-                      ? 400
-                      : deviceType == DeviceType.mobileLandscape
-                      ? 300
-                      : 500,
+              : Expanded(
                   child: ListView.builder(
                     itemCount: items.length,
+                    shrinkWrap: false,
+                    padding: EdgeInsets.zero,
                     itemBuilder: (context, index) {
                       print('📱 ListView.builder - Index: $index');
 
@@ -1107,7 +1101,7 @@ class _ViewModuleState extends State<ViewModule> {
                           isVideo: isLesson,
                           isSelected: _currentSelectedItemId == item.id,
                           isRewarded: accessWithoutEnrollment,
-                          videoUrl: videoUrl, 
+                          videoUrl: videoUrl,
                           index: index,
                           onTap: () {
                             setState(() {
@@ -1131,7 +1125,7 @@ class _ViewModuleState extends State<ViewModule> {
                       } catch (e, stackTrace) {
                         print('❌❌❌ ERROR in ListView.builder itemBuilder: $e');
                         print('Stack trace: $stackTrace');
-                        
+
                         return Container(
                           height: 110,
                           margin: EdgeInsets.symmetric(
@@ -1330,7 +1324,6 @@ class _ViewModuleState extends State<ViewModule> {
       if (isVideo && videoUrl != null) {
         print('🎬 Attempting to extract YouTube ID from: $videoUrl');
 
-        
         if (videoUrl is! String) {
           print(
             '❌ ERROR: videoUrl is not a String! Type: ${videoUrl.runtimeType}',
@@ -1348,7 +1341,6 @@ class _ViewModuleState extends State<ViewModule> {
         }
       }
 
-     
       print('ℹ️ Using placeholder thumbnail');
       return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
     } catch (e, stackTrace) {
@@ -1357,7 +1349,6 @@ class _ViewModuleState extends State<ViewModule> {
       return _buildPlaceholderThumbnail(isVideo, iconSize, duration);
     }
   }
-
 
   Widget _buildNetworkThumb(
     String url,
@@ -1526,25 +1517,19 @@ class _ViewModuleState extends State<ViewModule> {
                       // TODO: Handle non-YouTube videos (HLS, MP4, etc.)
                       // For now, show an error or alternative player
                       if (mounted && !_isDisposing) {
-                        
                         _showErrorDialog(
                           'هذا الفيديو غير مدعوم حالياً. يدعم التطبيق فقط مقاطع يوتيوب.',
                         );
                       }
                     }
-                    
                   } else {
                     print('❌ No valid URL found in lesson details');
-                    
                   }
-                  
                 },
                 loading: () {
-                  
                   print('Loading lesson details...');
                 },
                 error: (msg) {
-                 
                   print('Error loading lesson: $msg');
                   if (mounted && !_isDisposing) {
                     _showErrorDialog("فشل تحميل تفاصيل الدرس: $msg");
