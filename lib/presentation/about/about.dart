@@ -14,6 +14,7 @@ class AboutUsPage extends StatelessWidget {
     final isDesktop = width >= 1024;
 
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       child: Container(
         padding: EdgeInsets.symmetric(
           vertical: isDesktop ? 64 : (isTablet ? 48 : 32),
@@ -22,12 +23,12 @@ class AboutUsPage extends StatelessWidget {
         color: const Color(0xFF0f1217),
         child: Column(
           children: [
-            // 1. Main Title "من نحن"
+            
             _buildMainTitle(context, width),
 
             SizedBox(height: isDesktop ? 80 : (isTablet ? 60 : 48)),
 
-            // 2. Text Content (كل المحتوى النصي)
+           
             Container(
               constraints: BoxConstraints(
                 maxWidth: isDesktop ? 1200 : double.infinity,
@@ -38,7 +39,7 @@ class AboutUsPage extends StatelessWidget {
 
             SizedBox(height: isDesktop ? 80 : (isTablet ? 60 : 48)),
 
-            // 3. Image and Stats (الصورة والدوائر)
+         
             Container(
               constraints: BoxConstraints(
                 maxWidth: isDesktop ? 1200 : double.infinity,
@@ -54,7 +55,7 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  // Main Title "من نحن"
+  
   Widget _buildMainTitle(BuildContext context, double width) {
     final isMobile = width < 768;
     final isTablet = width >= 768 && width < 1024;
@@ -64,8 +65,8 @@ class AboutUsPage extends StatelessWidget {
     double titleFontSize;
 
     if (isMobile) {
-      titleWidth = width * 0.85;
-      titleHeight = 100;
+      titleWidth = width * 0.75;
+      titleHeight = 120;
       titleFontSize = 28;
     } else if (isTablet) {
       titleWidth = width * 0.6;
@@ -79,9 +80,9 @@ class AboutUsPage extends StatelessWidget {
 
     return Center(
       child: buildTextWithBorder(
-        "من نحن",
-        "",
-        context,
+      mainTitle:   "من نحن",
+      subTitle:   "",
+        
         containerWidth: titleWidth,
         containerHeight: titleHeight,
         isBold: true,
@@ -90,15 +91,14 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  // Text Content Column
   Widget _buildTextContent(double width, BuildContext context) {
     final isMobile = width < 768;
     final isTablet = width >= 768 && width < 1024;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end, // RTL
+      crossAxisAlignment: CrossAxisAlignment.end, 
       children: [
-        // "برايم أكاديمي" subtitle
+        
         Text(
           "برايم أكاديـمي",
           style: TextStyle(
@@ -110,7 +110,7 @@ class AboutUsPage extends StatelessWidget {
 
         SizedBox(height: isMobile ? 20 : 24),
 
-        // "نبذة عنا" section
+        
         _buildSectionHeader("نبذة عنا", context: context, width: width),
 
         SizedBox(height: isMobile ? 20 : 24),
@@ -138,7 +138,7 @@ class AboutUsPage extends StatelessWidget {
 
         SizedBox(height: isMobile ? 20 : 24),
 
-        // Feature Items
+        
         _buildFeatureItem(
           number: 1,
           iconAsset: 'assets/icons/person_laptop.svg',
@@ -184,7 +184,7 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  // Section Header with gradient border
+  
   Widget _buildSectionHeader(
     String text, {
     bool fullWidth = false,
@@ -196,9 +196,9 @@ class AboutUsPage extends StatelessWidget {
     final isTablet = width >= 768 && width < 1024;
 
     return buildTextWithBorder(
-      text,
-      "",
-      context,
+     mainTitle:  text,
+      subTitle: "",
+      
       containerWidth: fullWidth ? double.infinity : null,
       containerHeight: isMobile ? 48 : (isTablet ? 52 : 56),
       fontSize: isMobile ? 16 : (isTablet ? 18 : 20),
@@ -206,7 +206,7 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  // Feature Item
+
   Widget _buildFeatureItem({
     required int number,
     required String iconAsset,
@@ -220,7 +220,7 @@ class AboutUsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // Icon and Title Row
+       
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -237,7 +237,7 @@ class AboutUsPage extends StatelessWidget {
               ),
             ),
             SizedBox(width: isMobile ? 8 : 12),
-            // SVG Icon
+           
             SvgPicture.asset(
               iconAsset,
               width: isMobile ? 22 : 25,
@@ -252,7 +252,7 @@ class AboutUsPage extends StatelessWidget {
 
         SizedBox(height: isMobile ? 8 : 12),
 
-        // Description
+        
         Text(
           description,
           style: TextStyle(
@@ -267,7 +267,7 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  // Image and Stats Column
+  
   Widget _buildImageAndStats(double width) {
     final isMobile = width < 768;
     final isTablet = width >= 768 && width < 1024;
@@ -277,7 +277,7 @@ class AboutUsPage extends StatelessWidget {
 
     if (isMobile) {
       imageWidth = width * 0.7;
-      imageHeight = imageWidth * 0.84; // maintain aspect ratio
+      imageHeight = imageWidth * 0.84;
     } else if (isTablet) {
       imageWidth = width * 0.7;
       imageHeight = imageWidth * 0.84;
@@ -288,7 +288,7 @@ class AboutUsPage extends StatelessWidget {
 
     return Column(
       children: [
-        // GIF Image
+      
         Container(
           width: imageWidth * 1.5,
           height: imageHeight,
@@ -314,7 +314,7 @@ class AboutUsPage extends StatelessWidget {
 
         SizedBox(height: isMobile ? 32 : (isTablet ? 40 : 48)),
 
-        // Stats Grid (2x2)
+      
         Container(
           constraints: BoxConstraints(
             maxWidth: isMobile ? width * 0.9 : (isTablet ? 450 : 500),
@@ -354,7 +354,7 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  // Stat Circle with SVG-like border
+  
   Widget _buildStatCircle({
     required String iconAsset,
     required String label,
@@ -372,14 +372,14 @@ class AboutUsPage extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Circle with gradient border
+       
         SizedBox(
           width: circleSize,
           height: circleSize,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Background circle (gray)
+             
               Container(
                 width: circleSize,
                 height: circleSize,
@@ -392,7 +392,6 @@ class AboutUsPage extends StatelessWidget {
                 ),
               ),
 
-              // Gradient circle (full)
               Container(
                 width: circleSize,
                 height: circleSize,
@@ -410,7 +409,7 @@ class AboutUsPage extends StatelessWidget {
                 ),
               ),
 
-              // Inner content circle
+              
               Container(
                 width: innerCircleSize,
                 height: innerCircleSize,
@@ -444,7 +443,6 @@ class AboutUsPage extends StatelessWidget {
 
         SizedBox(height: isMobile ? 6 : 8),
 
-        // Label
         SizedBox(
           width: circleSize,
           child: Text(
@@ -460,7 +458,7 @@ class AboutUsPage extends StatelessWidget {
   }
 }
 
-// Custom painter for gradient circle border
+
 class _CirclePainter extends CustomPainter {
   final double strokeWidth;
 

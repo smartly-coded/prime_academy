@@ -8,7 +8,6 @@ class GifSection extends StatefulWidget {
   final String gifPath;
   final String smallIconPath;
 
-  /// جديد: width اختياري للـ title container
   final double? titleWidth;
   final Color? backgroundColor;
   final double overlapOffset;
@@ -74,32 +73,32 @@ class _GifSectionState extends State<GifSection>
           color: widget.backgroundColor ?? Mycolors.cardColor1,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            /// العنوان
             Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: 35 * scale,
-                vertical: 12,
+                horizontal: 6 * scale,
+                // vertical: 12,
               ),
               child: buildTextWithBorder(
-                widget.title,
-                "",
-                context,
-                containerWidth: widget.titleWidth ?? width * 0.9,
+               mainTitle:  widget.title,
+               subTitle:  "",
+               
+                containerWidth: widget.titleWidth ?? width * 0.6,
+                isBold: true,
+                fontSize: 24,
               ),
             ),
 
-            /// subtitle + animated icon
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5 * scale),
+              padding: EdgeInsets.symmetric(horizontal: 15 * scale),
               child: Directionality(
-                textDirection: TextDirection.rtl, // دايمًا من اليمين
+                textDirection: TextDirection.rtl,
                 child: RichText(
                   text: TextSpan(
                     style: TextStyle(
                       fontSize: 26 * scale,
-                      // fontWeight: FontWeight.bold,
+
                       color: Colors.white,
                       fontFamily: 'Bahij',
                       height: 1.5,

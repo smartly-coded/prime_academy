@@ -21,9 +21,8 @@ class FeaturesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             buildTextWithBorder(
-              "ابدأ بالتعلم مع برايم أكاديمي",
-              "",
-              context,
+             mainTitle:  "ابدأ بالتعلم مع برايم أكاديمي",
+             subTitle:  "",
               containerWidth: isMobile ? width * 0.8 : width * 0.5,
             ),
 

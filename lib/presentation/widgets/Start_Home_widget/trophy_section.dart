@@ -83,18 +83,17 @@ class TrophySection extends StatelessWidget {
                     SizedBox(
                       width: borderWidth * 1.25,
                       child: buildTextWithBorder(
-                        "نافس و تعلم",
-                        "",
-                        context,
+                     mainTitle:    "نافس و تعلم",
+                     subTitle:    "", 
                         containerWidth: borderWidth * 1.25,
                       ),
                     ),
                   ],
                 )
               : buildTextWithBorder(
-                  "نافس و تعلم",
-                  "هدفنا إخراج جيل جديد",
-                  context,
+               mainTitle:    "نافس و تعلم",
+               subTitle:    "هدفنا إخراج جيل جديد",
+                 
                   containerWidth: borderWidth,
                 ),
 

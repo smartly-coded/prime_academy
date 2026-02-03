@@ -280,10 +280,9 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
         maxBoxesPerRow = 3;
       }
 
-      // احسب حجم المربع الفعلي بناءً على المساحة المتاحة
       actualBoxSize =
           (availableWidth - (maxBoxesPerRow - 1) * boxSpacing) / maxBoxesPerRow;
-      actualBoxSize = actualBoxSize.clamp(35.0, 60.0); // حد أدنى وأعلى للحجم
+      actualBoxSize = actualBoxSize.clamp(35.0, 60.0); 
     }
 
     final numberOfRows = (totalBoxes / maxBoxesPerRow).ceil();
@@ -297,36 +296,12 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
       index,
       actualBoxSize,
       boxSpacing,
-      true, // مش مهم هنا
+      true, 
     );
   }),
 )
 ;
-    // Column(
-    //   children: List.generate(numberOfRows, (rowIndex) {
-    //     final startIndex = rowIndex * maxBoxesPerRow;
-    //     final endIndex = (startIndex + maxBoxesPerRow).clamp(0, totalBoxes);
-    //     final boxesInThisRow = endIndex - startIndex;
-
-    //     return Padding(
-    //       padding: EdgeInsets.only(
-    //         bottom: rowIndex < numberOfRows - 1 ? 15 : 0,
-    //       ),
-    //       child: Row(
-    //         mainAxisAlignment: MainAxisAlignment.center,
-    //         children: List.generate(boxesInThisRow, (boxIndex) {
-    //           final globalIndex = startIndex + boxIndex;
-    //           return _buildSingleCharacterBox(
-    //             globalIndex,
-    //             actualBoxSize,
-    //             boxSpacing,
-    //             boxIndex < boxesInThisRow - 1,
-    //           );
-    //         }),
-    //       ),
-    //     );
-    //   }),
-    // );
+    
   }
 
   Widget _buildSingleCharacterBox(
@@ -359,7 +334,7 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: boxSize < 45 ? 16 : (boxSize < 55 ? 18 : 20),
-            // fontWeight: FontWeight.bold,
+           
             color: Colors.black87,
           ),
           maxLength: 1,
@@ -370,7 +345,8 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
           ),
           inputFormatters: [
             FilteringTextInputFormatter.allow(
-              RegExp(r'[a-zA-Zا-ي\u0600-\u06FF]'),
+             RegExp( r'[a-zA-Z0-9ا-ي\u0600-\u06FF\u0660-\u0669]'),
+              
             ),
           ],
           onChanged: (value) {

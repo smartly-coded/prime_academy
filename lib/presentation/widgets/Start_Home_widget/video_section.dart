@@ -60,12 +60,14 @@ class _VideoSectionState extends State<VideoSection> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: buildTextWithBorder(
-                "في برايم أكاديمي",
-                "",
-                context,
-                containerWidth: width * 0.7,
+                mainTitle: "في برايم أكاديمي",
+                subTitle: "",
+
+                containerWidth: width * 0.6,
+                isBold: true,
+                fontSize: 24,
               ),
             ),
 
@@ -75,7 +77,7 @@ class _VideoSectionState extends State<VideoSection> {
                 "لاتخاف تنسى \nالفيديوهات عندك، تعيدها متى ما\n !تبي، ومرات قد ما تبي",
                 style: TextStyle(
                   fontSize: 26,
-                  
+
                   color: Colors.white,
                   height: 1.5,
                 ),

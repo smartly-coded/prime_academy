@@ -41,6 +41,7 @@ class ContactUsPage extends StatelessWidget {
       },
       builder: (context, state) {
         return SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Container(
             padding: EdgeInsets.symmetric(
               vertical: isDesktop ? 96 : (isTablet ? 64 : 48),
@@ -113,8 +114,8 @@ class ContactUsPage extends StatelessWidget {
     double titleFontSize;
 
     if (isMobile) {
-      titleWidth = width * 0.85;
-      titleHeight = 100;
+      titleWidth = width * 0.75;
+      titleHeight = 120;
       titleFontSize = 28;
     } else if (isTablet) {
       titleWidth = width * 0.6;
@@ -128,13 +129,13 @@ class ContactUsPage extends StatelessWidget {
 
     return Center(
       child: buildTextWithBorder(
-        "تواصل معنا",
-        "",
-        context,
+        
+       
+        
         containerWidth: titleWidth,
         containerHeight: titleHeight,
         isBold: true,
-        fontSize: titleFontSize,
+        fontSize: titleFontSize, mainTitle: "تواصل معنا",subTitle:  "",
       ),
     );
   }
@@ -314,7 +315,6 @@ class ContactUsPage extends StatelessWidget {
     );
   }
 
-  // Textarea Field
   Widget _buildTextareaField({
     required TextEditingController controller,
     required String placeholder,
@@ -421,9 +421,9 @@ class ContactUsPage extends StatelessWidget {
               ),
             )
           : buildTextWithBorder(
-              "إرسال",
-              "",
-              context,
+           mainTitle:    "إرسال",
+             subTitle:  "",
+             
               containerWidth: double.infinity,
               containerHeight: isMobile ? 50 : (isTablet ? 54 : 58),
               fontSize: isMobile ? 18 : (isTablet ? 20 : 22),
@@ -432,7 +432,6 @@ class ContactUsPage extends StatelessWidget {
     );
   }
 
-  // GIF Image
   Widget _buildGifImage(double width) {
     final isMobile = width < 768;
     final isTablet = width >= 768 && width < 1024;

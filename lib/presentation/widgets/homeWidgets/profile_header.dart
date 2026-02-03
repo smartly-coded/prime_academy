@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,46 +22,54 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() => _image = File(pickedFile.path));
-    }             
-  }                
-                    
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
 
     final imageUrl = _buildImageUrl(widget.user.image?.url);
-    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    print('📸 User Image Object: ${widget.user.image}');
-    print('📸 Image URL from user: ${widget.user.image?.url}');
-  
+
     return Row(
       children: [
         GestureDetector(
           onTap: _openGallery,
           child: Container(
-            width: 60,
-            height: 60,
+            padding: const EdgeInsets.all(1.5),
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: Colors.orange.withOpacity(0.6),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
             ),
-            child: ClipOval(
-              child: _image != null
-                  ? Image.file(_image!, fit: BoxFit.cover)
-                  : (imageUrl.isNotEmpty)
-                  ? Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.person, color: Colors.white),
-                    )
-                  : const Icon(Icons.camera_alt_outlined, color: Colors.white),
+            child: Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                shape: BoxShape.circle,
+              ),
+
+              child: ClipOval(
+                child: _image != null
+                    ? Image.file(_image!, fit: BoxFit.cover)
+                    : (imageUrl.isNotEmpty)
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.person, color: Colors.white),
+                      )
+                    : Icon(
+                        Icons.person,
+                        size: 80,
+                        color: Colors.orange.withOpacity(0.6),
+                      ),
+              ),
             ),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -77,7 +84,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               "${widget.user.firstname} ${widget.user.lastname}",
               style: TextStyle(
                 fontSize: isMobile ? 20 : 24,
-                // fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
             ),
@@ -86,6 +93,20 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       ],
     );
   }
+}
+
+Widget _buildPlaceholder() {
+  return Center(
+    child: Container(
+      width: 110,
+      height: 110,
+      decoration: BoxDecoration(
+        color: Colors.orange.withOpacity(0.6),
+        shape: BoxShape.circle,
+      ),
+      child: const Icon(Icons.person, size: 100, color: Colors.black87),
+    ),
+  );
 }
 
 String _buildImageUrl(String? imagePath) {

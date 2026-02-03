@@ -51,6 +51,96 @@ class UnifiedSSEService {
     _activeChatCubit = null;
   }
 
+  // Future<void> connect() async {
+  //   if (_isConnected) {
+  //     print('✅ SSE already connected');
+  //     return;
+  //   }
+
+  //   if (_isConnecting) {
+  //     print('⏳ SSE connection already in progress');
+  //     return;
+  //   }
+
+  //   _isConnecting = true;
+
+  //   try {
+  //     print('🔄 Attempting SSE connection...');
+
+  //     final storage = const FlutterSecureStorage();
+  //     final token = await storage.read(key: 'accessToken') ?? '';
+  //     final refreshToken = await storage.read(key: 'refreshToken') ?? '';
+  //     final deviceIdentifier =
+  //         await storage.read(key: 'device_fingerprint') ?? '';
+  //     if (token.isEmpty) {
+  //       print('⚠️ No access token found - skipping SSE connection');
+  //       _isConnecting = false;
+  //       return;
+  //     }
+
+  //     print('🔑 Token found: ${token.substring(0, 10)}...');
+
+  //     final headers = <String, String>{};
+  //     headers['Authorization'] = 'Bearer $token';
+  //     headers['X-Device-Identifier'] = deviceIdentifier;
+
+  //     if (refreshToken.isNotEmpty) {
+  //       headers['Cookie'] = 'accessToken=$token; refreshToken=$refreshToken';
+  //     }
+
+  //     headers['Accept'] = 'text/event-stream';
+  //     headers['Cache-Control'] = 'no-cache';
+  //     headers['Connection'] = 'keep-alive';
+
+  //     final url = '${ApiConstants.apiBaseUrl}sse';
+  //     print('🌐 Connecting to: $url');
+  //     print('📋 Headers: ${headers.keys.join(", ")}');
+
+  //     _eventSource = await EventSource.connect(url, headers: headers);
+
+  //     _subscription = _eventSource!.listen(
+  //       (event) => _handleSSEEvent(event),
+  //       onError: (error, stackTrace) {
+  //         print('❌ SSE stream error: $error');
+  //       },
+  //       onDone: () {
+  //         print('⚠️ SSE connection closed');
+  //         _isConnected = false;
+  //         _isConnecting = false;
+  //         _reconnect();
+  //       },
+  //       cancelOnError: false,
+  //     );
+
+  //     _isConnected = true;
+  //     _isConnecting = false;
+  //     _reconnectAttempts = 0;
+  //     print('🎉 Unified SSE connected successfully');
+  //   } catch (e, st) {
+  //     print('❌ SSE connection failed: $e');
+  //     print('Stack trace: $st');
+  //     _isConnected = false;
+  //     _isConnecting = false;
+
+  //     if (e.toString().contains('401') ||
+  //         e.toString().contains('Unauthorized')) {
+  //       print('🔐 Authentication error - token may be invalid');
+  //       return;
+  //     }
+
+  //     if (e.toString().contains('403') || e.toString().contains('Forbidden')) {
+  //       print('🚫 Access forbidden - check server permissions');
+  //       return;
+  //     }
+
+  //     if (e.toString().contains('404') || e.toString().contains('Not Found')) {
+  //       print('🔍 SSE endpoint not found - check API URL');
+  //       return;
+  //     }
+
+  //     _reconnect();
+  //   }
+  // }
   Future<void> connect() async {
     if (_isConnected) {
       print('✅ SSE already connected');
@@ -70,24 +160,41 @@ class UnifiedSSEService {
       final storage = const FlutterSecureStorage();
       final token = await storage.read(key: 'accessToken') ?? '';
       final refreshToken = await storage.read(key: 'refreshToken') ?? '';
-      final deviceIdentifier =
-          await storage.read(key: 'device_fingerprint') ?? '';
+      final deviceIdentifier = await storage.read(key: 'device_fingerprint') ?? '';
+      final deviceToken = await storage.read(key: 'deviceToken') ?? '';
+
       if (token.isEmpty) {
         print('⚠️ No access token found - skipping SSE connection');
         _isConnecting = false;
         return;
       }
 
-      print('🔑 Token found: ${token.substring(0, 10)}...');
+      print('🔑 Access Token found: ${token.substring(0, 10)}...');
 
       final headers = <String, String>{};
+      
+      // 1. Authorization Token
       headers['Authorization'] = 'Bearer $token';
-      headers['X-Device-Identifier'] = deviceIdentifier;
-
-      if (refreshToken.isNotEmpty) {
-        headers['Cookie'] = 'accessToken=$token; refreshToken=$refreshToken';
+      
+      // 2. Device Identifier (fingerprint)
+      // if (deviceIdentifier.isNotEmpty) {
+      //   headers['X-Device-Identifier'] = deviceIdentifier;
+      //   print('📱 Device Identifier: ${deviceIdentifier.substring(0, 10)}...');
+      // }
+      
+      // 3. Device Token (from login response)
+      if (deviceToken.isNotEmpty) {
+        headers['X-Device-Identifier'] = deviceToken;
+        print('🔐 Device Token added');
       }
 
+      // 4. Cookies (access + refresh tokens)
+      if (refreshToken.isNotEmpty) {
+        headers['Cookie'] = 'accessToken=$token; refreshToken=$refreshToken';
+        print('🍪 Cookies added');
+      }
+
+      // 5. SSE-specific headers
       headers['Accept'] = 'text/event-stream';
       headers['Cache-Control'] = 'no-cache';
       headers['Connection'] = 'keep-alive';

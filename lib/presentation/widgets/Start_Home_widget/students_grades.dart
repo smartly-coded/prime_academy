@@ -166,9 +166,9 @@ class _StudentsGreadesSectionState extends State<StudentsGreadesSection> {
                           gradientFlipped2.value = !gradientFlipped2.value;
                         },
                         child: buildTextWithBorder(
-                          "شهادات طلابنا ",
-                          "",
-                          context,
+                     mainTitle:      "شهادات طلابنا ",
+                      subTitle:     "",
+                          
                           containerWidth: 200,
                         ),
                         // child: Container(

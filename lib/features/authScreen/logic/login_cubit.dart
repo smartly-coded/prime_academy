@@ -1,8 +1,8 @@
-
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:prime_academy/core/helpers/Device%20Fingerprint%20Helper.dart';
 import 'package:prime_academy/core/networking/api_result.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_request_body.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
@@ -20,39 +20,77 @@ class LoginCubit extends Cubit<LoginState> {
   TextEditingController passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
-  void emitLoginStates(LoginRequestBody loginRequestBody) async {
-    emit(const LoginState.loading());
-    
-    
-    final loginRequest = LoginRequestBody(
-      email: emailController.text,
-      password: passwordController.text,
-    );
-    
-    final response = await _loginRepo.login(loginRequest);
-    
-    response.when(
-      success: (loginResponse) async {
-        currentUser = loginResponse;
-        
-        try {
-          await _storage.write(
-            key: "userData",
-            value: jsonEncode(loginResponse.toJson()),
-          );
-          print("✅ User data saved successfully");
-        } catch (e) {
-          print("❌ Error saving user data: $e");
-        }
-        
-        emit(LoginState.success(loginResponse));
-      },
-      failure: (error) {
-        emit(LoginState.error(error: error.apiErrorModel.message ?? ''));
-      },
-    );
+  // void emitLoginStates(LoginRequestBody loginRequestBody) async {
+  //   emit(const LoginState.loading());
+
+  //   final loginRequest = LoginRequestBody(
+  //     email: emailController.text,
+  //     password: passwordController.text,
+  //   );
+
+  //   final response = await _loginRepo.login(loginRequest);
+
+  //   response.when(
+  //     success: (loginResponse) async {
+  //       currentUser = loginResponse;
+
+  //       try {
+  //         await _storage.write(
+  //           key: "userData",
+  //           value: jsonEncode(loginResponse.toJson()),
+  //         );
+  //         print("✅ User data saved successfully");
+  //       } catch (e) {
+  //         print("❌ Error saving user data: $e");
+  //       }
+
+  //       emit(LoginState.success(loginResponse));
+  //     },
+  //     failure: (error) {
+  //       emit(LoginState.error(error: error.apiErrorModel.message ?? ''));
+  //     },
+  //   );
+  // }
+void emitLoginStates(LoginRequestBody loginRequestBody) async {
+  emit(const LoginState.loading());
+
+  // Ensure device fingerprint exists before login
+  try {
+    await DeviceFingerprintHelper.getDeviceFingerprint();
+  } catch (e) {
+    print('❌ Failed to generate device fingerprint: $e');
+    emit(LoginState.error(error: 'فشل في التحقق من الجهاز'));
+    return;
   }
 
+  final loginRequest = LoginRequestBody(
+    email: emailController.text,
+    password: passwordController.text,
+  );
+
+  final response = await _loginRepo.login(loginRequest);
+
+  response.when(
+    success: (loginResponse) async {
+      currentUser = loginResponse;
+
+      try {
+        await _storage.write(
+          key: "userData",
+          value: jsonEncode(loginResponse.toJson()),
+        );
+        print("✅ User data saved successfully");
+      } catch (e) {
+        print("❌ Error saving user data: $e");
+      }
+
+      emit(LoginState.success(loginResponse));
+    },
+    failure: (error) {
+      emit(LoginState.error(error: error.apiErrorModel.message ?? ''));
+    },
+  );
+}
   Future<LoginResponse?> loadSavedUser() async {
     try {
       final userData = await _storage.read(key: "userData");
@@ -70,6 +108,7 @@ class LoginCubit extends Cubit<LoginState> {
       await _storage.delete(key: "userData");
       await _storage.delete(key: "accessToken");
       await _storage.delete(key: "refreshToken");
+      await _storage.delete(key: "deviceToken");
       currentUser = null;
       print("✅ User data cleared successfully");
     } catch (e) {

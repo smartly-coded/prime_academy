@@ -132,32 +132,43 @@ class DialogHelper {
       builder: (context) {
         return AlertDialog(
           backgroundColor: const Color(0xff1c2128),
-          title: const Text(
-            "تعديل الرسالة",
-            style: TextStyle(color: Colors.white),
+          title: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              const Spacer(),
+              const Text(
+                "تعديل الرسالة",
+                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.end,
+              ),
+            ],
           ),
           content: TextField(
             controller: controller,
             style: const TextStyle(color: Colors.white),
-            maxLines: 3,
+            maxLines: 5,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
+                borderSide: BorderSide(color: Color.fromRGBO(106, 114, 130, 1)),
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
+                borderSide: BorderSide(color: Color.fromRGBO(106, 114, 130, 1)),
               ),
-              hintText: 'اكتب رسالتك هنا...',
+              hintText: 'قم بتعديل الرسالة هنا...',
               hintStyle: TextStyle(color: Colors.grey),
             ),
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("إلغاء", style: TextStyle(color: Colors.grey)),
-            ),
-            TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  const Color.fromRGBO(21, 26, 40, 1),
+                ),
+              ),
               onPressed: () {
                 final newMessage = controller.text.trim();
                 if (newMessage.isNotEmpty) {
@@ -168,7 +179,17 @@ class DialogHelper {
                   showError('لا يمكن أن تكون الرسالة فارغة');
                 }
               },
-              child: const Text("تعديل", style: TextStyle(color: Colors.blue)),
+              child: const Text("تعديل", style: TextStyle(color: Colors.grey)),
+            ),
+            SizedBox(width: 80),
+            TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  const Color.fromARGB(150, 207, 3, 3),
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("إلغاء", style: TextStyle(color: Colors.grey)),
             ),
           ],
         );

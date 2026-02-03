@@ -334,47 +334,32 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                 onTap: () {
                   gradientFlipped.value = !gradientFlipped.value;
                 },
-                child: buildTextWithBorder(
-                  "ماذا قالوا عنا الطلاب",
-                  "",
-                  context,
-                  containerWidth: 250,
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  margin: const EdgeInsets.only(bottom: 30),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      colors: isFlipped
+                          ? const [Color(0xFF450486), Color(0xffa76433)]
+                          : const [Color(0xffa76433), Color(0xFF450486)],
+                    ),
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Mycolors.darkblue,
+                    ),
+                    child: const Text(
+                      "ماذا قالوا عنا الطلاب",
+                      style: TextStyle(fontSize: 24, color: Colors.white),
+                    ),
+                  ),
                 ),
-
-                //  Container(
-                //   padding: const EdgeInsets.all(3),
-                //   margin: const EdgeInsets.only(bottom: 30),
-                //   decoration: BoxDecoration(
-                //     borderRadius: BorderRadius.circular(12),
-                //     gradient: LinearGradient(
-                //       colors: Mycolors.primary_color.colors,
-                //       begin: isFlipped
-                //           ? Alignment.topLeft
-                //           : Alignment.bottomRight,
-                //       end: isFlipped
-                //           ? Alignment.bottomRight
-                //           : Alignment.topLeft,
-                //     ),
-                //   ),
-                //   child: Container(
-                //     padding: const EdgeInsets.symmetric(
-                //       horizontal: 16,
-                //       vertical: 10,
-                //     ),
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(12),
-                //       color: Mycolors.darkblue,
-                //     ),
-                //     child: const Text(
-                //       "ماذا قالوا عنا الطلاب",
-                //       style: TextStyle(
-                //         fontSize: 20,
-                //         fontWeight: FontWeight.bold,
-                //         color: Colors.white,
-                //       ),
-                //     ),
-                //   ),
-                // ),
               );
             },
           ),

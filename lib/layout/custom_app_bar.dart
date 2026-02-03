@@ -89,7 +89,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
       child: Container(
         decoration: BoxDecoration(
           color: const Color(0xFF0b0f12),
@@ -100,6 +100,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
           automaticallyImplyLeading: showBackArrow && automaticallyImplyLeading,
           iconTheme: IconThemeData(color: backArrowColor),
           leading: showBackArrow && automaticallyImplyLeading

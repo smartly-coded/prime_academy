@@ -363,7 +363,8 @@ class _NotificationItem extends StatelessWidget {
                 chatId: chatId,
                 user: user,
               )..loadChat(),
-              child: ChatScreen(chatId: chatId, user: user),
+              child: ChatScreen(chatId: chatId, user: user ,
+              ),
             ),
           ),
         );

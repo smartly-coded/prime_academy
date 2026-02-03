@@ -1,11 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
-import 'package:prime_academy/features/Chat/data/models/chatModel.dart';
-import 'package:prime_academy/features/Chat/data/models/chat_info_model.dart';
 import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
 import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
 import 'package:prime_academy/features/Chat/logic/chat_state.dart';
@@ -50,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   late final DialogHelper _dialogHelper;
 
   File? _pickedFile;
-  bool _isDisposing = false; // ⭐ flag لمنع أي operations أثناء الـ dispose
+  bool _isDisposing = false; 
 
   @override
   void initState() {
@@ -69,7 +65,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _dialogHelper = DialogHelper(context);
   }
 
-  // ⭐ دالة آمنة للـ setState
+  
   void _safeSetState() {
     if (mounted && !_isDisposing) {
       setState(() {});
@@ -78,13 +74,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _isDisposing = true; // ⭐ علّم إننا بندي dispose
+    _isDisposing = true;
     
-    // ✅ SSE cleanup is now handled automatically by ChatCubit.close()
-    // The BlocProvider will call close() when this widget is disposed
-    // which will unregister from UnifiedSSEService
-    
-    // ⭐ بعدين dispose الباقي
     _audioPlayerManager.dispose();
     _recordingManager.dispose();
     AudioRecorderManager.dispose();
@@ -108,17 +99,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      // ✅ Handle back button properly - SSE cleanup is automatic
+      
       onWillPop: () async {
         _isDisposing = true;
-        // ✅ SSE cleanup happens automatically in dispose()
-        // No need to call closeSSE() - it will be handled by BlocProvider
+        
         return true;
       },
       child: MultiBlocProvider(
         providers: [
           RepositoryProvider(create: (_) => ChatRepo()),
-          // ⭐ ModulesLessonsRepo موجود already في MultiRepositoryProvider في main
+          
         ],
         child: BlocProvider(
           create: (context) {
@@ -128,11 +118,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               chatRepo: chatRepo,
               modulesLessonsRepo: modulesRepo,
               chatId: widget.chatId,
-              moduleId: widget.moduleId, // ⭐ تمرير moduleId
-              courseId: widget.courseId, // ⭐ تمرير courseId
+              moduleId: widget.moduleId, 
+              courseId: widget.courseId, 
               user: widget.user,
             )..loadChat();
             return cubit;
+            
           },
           child: BlocConsumer<ChatCubit, ChatState>(
             listener: (context, state) {
@@ -141,7 +132,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               }
             },
             builder: (context, state) {
-              if (state is ChatError) {
+              if (state is ChatError) { 
                 return Scaffold(
                   backgroundColor: const Color(0xff0d1117),
                   appBar: _buildAppBar(),
