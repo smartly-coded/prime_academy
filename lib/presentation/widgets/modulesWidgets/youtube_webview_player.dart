@@ -68,7 +68,7 @@ bool _isDisposed = false;
     _controller.addListener(_playerListener);
 
     Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted) {
+      if (mounted  && !_isDisposed) {
         setState(() {
           _showProgressBar = true;
         });
@@ -92,10 +92,10 @@ bool _isDisposed = false;
       widget.onVideoEnd?.call();
       _progressTimer?.cancel();
 
-      if (_isLooping && mounted) {
+      if (_isLooping && mounted && !_isDisposed) {
         print('🔁 Looping: Video ended, restarting...');
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) {
+          if (mounted && !_isDisposed) {
             _controller.seekTo(Duration.zero);
             _lastStablePosition = Duration.zero;
             _controller.play();
@@ -116,9 +116,11 @@ bool _isDisposed = false;
   void _startProgressTracking() {
     _progressTimer?.cancel();
     _progressTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      if (_isDisposed || !mounted) return;
+        if (_isDisposed || !mounted) { 
+        timer.cancel();
+        return;
+      }
   if (!_controller.value.isReady || _isInFullscreen) return;
-      // if (!mounted || !_controller.value.isReady || _isInFullscreen) return;
 
       final currentPosition = _controller.value.position;
       final duration = _controller.metadata.duration;
@@ -138,6 +140,7 @@ bool _isDisposed = false;
   }
 
   void _togglePlayPause() {
+    if (_isDisposed || !mounted) return;
     setState(() {
       if (_controller.value.isPlaying) {
         _controller.pause();
@@ -149,7 +152,7 @@ bool _isDisposed = false;
   }
 
   void _showControlsTemporarily() {
-    if (!mounted) return;
+    if (_isDisposed || !mounted) return;
 
     setState(() {
       _showControls = true;
@@ -157,7 +160,7 @@ bool _isDisposed = false;
 
     _controlsTimer?.cancel();
     _controlsTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted && _controller.value.isPlaying) {
+      if (mounted && !_isDisposed && _controller.value.isPlaying) {
         setState(() {
           _showControls = false;
         });
@@ -392,6 +395,7 @@ bool _isDisposed = false;
   }
 
   Future<void> seekTo(Duration position) async {
+    if (_isDisposed || _isInFullscreen) return;
     if (!_isInFullscreen) {
       _controller.seekTo(position);
       _lastStablePosition = position;
@@ -399,18 +403,20 @@ bool _isDisposed = false;
   }
 
   Future<void> play() async {
+    if (_isDisposed || _isInFullscreen) return;
     if (!_isInFullscreen) {
       _controller.play();
     }
   }
 
   Future<void> pause() async {
+    if (_isDisposed || _isInFullscreen) return;
     if (!_isInFullscreen) {
       _controller.pause();
     }
   }
 
-  bool get isPlaying => _controller.value.isPlaying;
+  bool get isPlaying => _isDisposed ? false : _controller.value.isPlaying;
 
   Duration get currentPosition => _lastStablePosition;
 }

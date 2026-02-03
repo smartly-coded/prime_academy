@@ -22,8 +22,8 @@ class ResponsiveMatchDialog extends StatefulWidget {
 class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
   late List<Prompt> _prompts;
   late List<ResponseModel> _responses;
-  final Map<int, int?> _matches = {}; // promptIndex -> responseIndex
-  final Map<int, bool> _responseHovered = {}; // responseIndex -> isHovered
+  final Map<int, int?> _matches = {}; 
+  final Map<int, bool> _responseHovered = {}; 
   bool _showResult = false;
   bool _isCorrect = false;
 
@@ -36,17 +36,17 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
         .map((p) => p.response!)
         .toList();
 
-    // خلط الإجابات بشكل عشوائي
+   
     _responses.shuffle();
 
-    // تهيئة حالة الـ hover للإجابات
+    
     for (int i = 0; i < _responses.length; i++) {
       _responseHovered[i] = false;
     }
   }
 
   void _submitAnswer() {
-    // تحقق من صحة الإجابات
+   
     bool allCorrect = true;
 
     for (int i = 0; i < _prompts.length; i++) {
@@ -58,12 +58,12 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
       }
     }
 
-    // إنشاء خريطة للإرسال للـ API
+   
     Map<int, int> matchAnswers = {};
     for (int promptIndex = 0; promptIndex < _prompts.length; promptIndex++) {
       int? responseIndex = _matches[promptIndex];
       if (responseIndex != null) {
-        // promptId -> responseId
+       
         matchAnswers[_prompts[promptIndex].id] = _responses[responseIndex].id;
       }
     }
@@ -87,16 +87,16 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
 
   void _handleQuestionDrop(int promptIndex, int responseIndex) {
     setState(() {
-      // إزالة أي ربط سابق لهذا السؤال
+      
       _matches.remove(promptIndex);
 
-      // إزالة أي ربط سابق لهذه الإجابة من أسئلة أخرى
+      
       _matches.removeWhere((key, value) => value == responseIndex);
 
-      // ربط جديد
+     
       _matches[promptIndex] = responseIndex;
 
-      // إزالة حالة الـ hover
+      
       _responseHovered[responseIndex] = false;
     });
   }
@@ -119,207 +119,301 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     );
   }
 
-  Widget _buildMatchContent() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        bool isLandscape = constraints.maxWidth > constraints.maxHeight;
-        bool isTablet = constraints.maxWidth > 600;
+  // Widget _buildMatchContent() {
+  //   return LayoutBuilder(
+  //     builder: (context, constraints) {
+  //       bool isLandscape = constraints.maxWidth > constraints.maxHeight;
+  //       bool isTablet = constraints.maxWidth > 600;
 
-        return Padding(
-          padding: EdgeInsets.all(isTablet ? 24 : 16),
-          child: Column(
-            children: [
-              // Header
-              _buildHeader(),
+  //       return Padding(
+  //         padding: EdgeInsets.all(isTablet ? 24 : 16),
+  //         child: Column(
+  //           children: [
+            
+  //             _buildHeader(),
 
-              SizedBox(height: isTablet ? 20 : 16),
+  //             SizedBox(height: isTablet ? 20 : 16),
 
-              // Instructions
-              Container(
-                padding: EdgeInsets.all(isTablet ? 20 : 16),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  "اسحب الأسئلة وأسقطها على الإجابات المناسبة",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: isTablet ? 18 : 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
+              
+  //             Container(
+  //               padding: EdgeInsets.all(isTablet ? 20 : 16),
+  //               decoration: BoxDecoration(
+  //                 color: Colors.black.withOpacity(0.3),
+  //                 borderRadius: BorderRadius.circular(12),
+  //               ),
+  //               child: Text(
+  //                 "اسحب الأسئلة وأسقطها على الإجابات المناسبة",
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontSize: isTablet ? 18 : 16,
+  //                   fontWeight: FontWeight.w600,
+  //                 ),
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //             ),
+
+  //             SizedBox(height: isTablet ? 24 : 20),
+
+  //             Expanded(child: _buildGridContent(isLandscape, isTablet)),
+
+              
+  //             _buildBottomSection(isTablet),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+Widget _buildMatchContent() {
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      bool isLandscape = constraints.maxWidth > constraints.maxHeight;
+      bool isTablet = constraints.maxWidth > 600;
+
+      return SizedBox.expand(
+        child: Column(
+          children: [
+            
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(isTablet ? 24 : 16),
+                child: Column(
+                  children: [
+                    _buildHeader(),
+                    SizedBox(height: isTablet ? 20 : 16),
+        
+                    _buildInstructionBox(isTablet),
+        
+                    SizedBox(height: isTablet ? 24 : 20),
+        
+                    _buildGridContent(isLandscape, isTablet),
+                  ],
                 ),
               ),
-
-              SizedBox(height: isTablet ? 24 : 20),
-
-              // Content
-              Expanded(child: _buildGridContent(isLandscape, isTablet)),
-
-              // Bottom section
-              _buildBottomSection(isTablet),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildHeader() {
-    return Flexible(
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(20),
             ),
-            child: questionTitle(widget.question.title),
+        
+            
+            _buildFixedBottomButton(isTablet),
+          ],
+        ),
+      );
+    },
+  );
+}
+Widget _buildInstructionBox(bool isTablet) {
+  return Container(
+    padding: EdgeInsets.all(isTablet ? 20 : 16),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.3),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Text(
+      "اسحب الأسئلة وأسقطها على الإجابات المناسبة",
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: isTablet ? 18 : 16,
+        fontWeight: FontWeight.w600,
+      ),
+      textAlign: TextAlign.center,
+    ),
+  );
+}
+Widget _buildFixedBottomButton(bool isTablet) {
+  return SafeArea(
+    top: false,
+    child: Container(
+      padding: EdgeInsets.fromLTRB(
+        16,
+        12,
+        16,
+        MediaQuery.of(context).padding.bottom + 8,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xff270419),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: _isAnswerComplete ? _submitAnswer : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                _isAnswerComplete ? Colors.white : Colors.grey,
+            padding: EdgeInsets.symmetric(vertical: isTablet ? 18 : 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            elevation: 6,
+          ),
+          child: Text(
+            "تقديم",
+            style: TextStyle(
+              color: _isAnswerComplete
+                  ? const Color(0xFFD32F2F)
+                  : Colors.white,
+              fontSize: isTablet ? 18 : 16,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: questionTitle(widget.question.title),
+        ),
+      ],
     );
   }
 
   Widget _buildGridContent(bool isLandscape, bool isTablet) {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: isLandscape ? 1000 : 300,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // العمود الأول: الأسئلة
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: List.generate(_prompts.length, (index) {
-                  final prompt = _prompts[index];
-                  final isMatched = _matches.containsKey(index);
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: isMatched
-                        ? // 🔥 حل المشكلة الأولى: إظهار مربع فارغ بدلاً من SizedBox
-                          _buildEmptyQuestionSlot(index, isTablet)
-                        : Draggable<int>(
-                            data: index,
-                            feedback: _buildQuestionCard(
-                              prompt,
-                              index,
-                              false,
-                              null,
-                              isTablet,
-                              isDragging: true,
-                            ),
-                            childWhenDragging:
-                                // 🔥 حل المشكلة الأولى: إظهار مربع فارغ أثناء السحب
-                                _buildEmptyQuestionSlot(index, isTablet),
-                            child: _buildQuestionCard(
-                              prompt,
-                              index,
-                              false,
-                              null,
-                              isTablet,
-                            ),
-                            // 🔥 حل المشكلة الأولى: إرجاع السؤال لمكانه الأصلي عند الإلغاء
-                            onDragEnd: (details) {
-                              // إذا لم يتم إسقاط السؤال في مكان صحيح، يرجع لمكانه
-                              if (!details.wasAccepted) {
-                                // لا نحتاج لفعل شيء لأن الـ state لن يتغير
-                                setState(() {}); // فقط لإعادة البناء
-                              }
-                            },
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minWidth: isLandscape ? 1000 : 300,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+         
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: List.generate(_prompts.length, (index) {
+                final prompt = _prompts[index];
+                final isMatched = _matches.containsKey(index);
+    
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: isMatched
+                      ? 
+                        _buildEmptyQuestionSlot(index, isTablet)
+                      : Draggable<int>(
+                          data: index,
+                          feedback: _buildQuestionCard(
+                            prompt,
+                            index,
+                            false,
+                            null,
+                            isTablet,
+                            isDragging: true,
                           ),
-                  );
-                }),
-              ),
-            ),
-
-            SizedBox(width: 20),
-
-            // العمود الثاني: الإجابات
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: List.generate(_responses.length, (index) {
-                  final response = _responses[index];
-                  final isUsed = _matches.containsValue(index);
-                  final isHovered = _responseHovered[index] ?? false;
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: DragTarget<int>(
-                      builder: (context, candidateData, rejectedData) {
-                        return Container(
-                          height: 80,
-                          padding: EdgeInsets.all(isTablet ? 12 : 8),
-                          decoration: BoxDecoration(
-                            color: Color(0xff3f0627),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: candidateData.isNotEmpty
-                                  ? Colors.green
-                                  : isHovered
-                                  ? Colors.green
-                                  : Colors.white.withOpacity(0.3),
-                              width: candidateData.isNotEmpty || isHovered
-                                  ? 3
-                                  : 2,
-                            ),
+                          childWhenDragging:
+                              
+                              _buildEmptyQuestionSlot(index, isTablet),
+                          child: _buildQuestionCard(
+                            prompt,
+                            index,
+                            false,
+                            null,
+                            isTablet,
                           ),
-                          child: isUsed
-                              ? _buildDraggableQuestionInResponse(
-                                  // نعرض السؤال اللي اتعمله drop بنفس لونه ولكن قابل للسحب
-                                  _prompts[_matches.entries
-                                      .firstWhere(
-                                        (entry) => entry.value == index,
-                                      )
-                                      .key],
-                                  _matches.entries
-                                      .firstWhere(
-                                        (entry) => entry.value == index,
-                                      )
-                                      .key,
-                                  index,
-                                  isTablet,
-                                )
-                              : _buildResponseCard(response, isTablet),
-                        );
-                      },
-                      // 🔥 حل المشكلة الثانية: منع وضع أكثر من سؤال في نفس المكان
-                      onWillAcceptWithDetails: (promptIndex) {
-                        return !_matches.containsValue(
-                          index,
-                        ); // يرفض إذا كان المكان مُستخدم
-                      },
-                      // onAcceptWithDetails: (promptIndex) {
-                      //   _handleQuestionDrop(promptIndex, index);
-                      // },
-                      onAcceptWithDetails: (details) {
-                        _handleQuestionDrop(details.data, index);
-                      },
-
-                      onMove: (details) {
-                        setState(() {
-                          _responseHovered[index] = true;
-                        });
-                      },
-                      onLeave: (promptIndex) {
-                        setState(() {
-                          _responseHovered[index] = false;
-                        });
-                      },
-                    ),
-                  );
-                }),
-              ),
+                         
+                          onDragEnd: (details) {
+                            
+                            if (!details.wasAccepted) {
+                             
+                              setState(() {}); 
+                            }
+                          },
+                        ),
+                );
+              }),
             ),
-          ],
-        ),
+          ),
+    
+          SizedBox(width: 20),
+    
+         
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: List.generate(_responses.length, (index) {
+                final response = _responses[index];
+                final isUsed = _matches.containsValue(index);
+                final isHovered = _responseHovered[index] ?? false;
+    
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: DragTarget<int>(
+                    builder: (context, candidateData, rejectedData) {
+                      return Container(
+                        height: 80,
+                        padding: EdgeInsets.all(isTablet ? 12 : 8),
+                        decoration: BoxDecoration(
+                          color: Color(0xff3f0627),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: candidateData.isNotEmpty
+                                ? Colors.green
+                                : isHovered
+                                ? Colors.green
+                                : Colors.white.withOpacity(0.3),
+                            width: candidateData.isNotEmpty || isHovered
+                                ? 3
+                                : 2,
+                          ),
+                        ),
+                        child: isUsed
+                            ? _buildDraggableQuestionInResponse(
+                                
+                                _prompts[_matches.entries
+                                    .firstWhere(
+                                      (entry) => entry.value == index,
+                                    )
+                                    .key],
+                                _matches.entries
+                                    .firstWhere(
+                                      (entry) => entry.value == index,
+                                    )
+                                    .key,
+                                index,
+                                isTablet,
+                              )
+                            : _buildResponseCard(response, isTablet),
+                      );
+                    },
+                   
+                    onWillAcceptWithDetails: (promptIndex) {
+                      return !_matches.containsValue(
+                        index,
+                      ); 
+                    },
+                   
+                    onAcceptWithDetails: (details) {
+                      _handleQuestionDrop(details.data, index);
+                    },
+    
+                    onMove: (details) {
+                      setState(() {
+                        _responseHovered[index] = true;
+                      });
+                    },
+                    onLeave: (promptIndex) {
+                      setState(() {
+                        _responseHovered[index] = false;
+                      });
+                    },
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -347,7 +441,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     bool isTablet,
   ) {
     return Draggable<String>(
-      // استخدام String بدلاً من int للتمييز عن الـ drag الأصلي
+      
       data: "remove_$promptIndex",
       feedback: _buildQuestionCard(
         prompt,
@@ -373,10 +467,10 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
         false,
         null,
         isTablet,
-        showDragHint: true, // إضافة hint للسحب
+        showDragHint: true, 
       ),
       onDragEnd: (details) {
-        // إذا تم سحب السؤال خارج منطقة الإجابة، أرجعه لمكانه الأصلي
+       
         if (!details.wasAccepted) {
           setState(() {
             _matches.remove(promptIndex);
@@ -386,7 +480,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     );
   }
 
-  // ويدجت منفصل لعرض الإجابات
+
   Widget _buildResponseCard(ResponseModel response, bool isTablet) {
     return SizedBox(
       height: 60,
@@ -414,7 +508,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     bool isDraggedAway = false,
     bool showDragHint = false,
   }) {
-    // ألوان ثابتة حسب الترتيب
+    
     final List<Color> cardColors = [
       Colors.red,
       Colors.blue,
@@ -424,11 +518,11 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
       Colors.amber,
     ];
 
-    // حدد اللون حسب index
+    
     Color baseColor = cardColors[index % cardColors.length];
 
     return Material(
-      elevation: 0, // هنستغنى عن الـ Material shadow ونستخدم BoxShadow
+      elevation: 0, 
       borderRadius: BorderRadius.circular(12),
       child: Container(
         height: 80,
@@ -438,8 +532,8 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
             begin: Alignment.topCenter,
             end: Alignment.center,
             colors: [
-              Colors.white.withOpacity(0.4), // لمعة بسيطة جدًا من فوق
-              baseColor, // اللون الأصلي للكارت
+              Colors.white.withOpacity(0.4),
+              baseColor,
             ],
             stops: const [0.0, 0.15],
           ),
@@ -447,8 +541,8 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.3),
-              blurRadius: 6, // قوة الضبابية
-              offset: const Offset(0, 4), // اتجاه الظل (نازل لتحت)
+              blurRadius: 6, 
+              offset: const Offset(0, 4), 
             ),
           ],
           border: Border.all(
@@ -496,43 +590,43 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     );
   }
 
-  Widget _buildBottomSection(bool isTablet) {
-    return Column(
-      children: [
-        // Actions
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: ElevatedButton(
-                onPressed: _isAnswerComplete ? _submitAnswer : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _isAnswerComplete
-                      ? Colors.white
-                      : Colors.grey,
-                  padding: EdgeInsets.symmetric(vertical: isTablet ? 18 : 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 6,
-                ),
-                child: Text(
-                  "تقديم",
-                  style: TextStyle(
-                    color: _isAnswerComplete
-                        ? const Color(0xFFD32F2F)
-                        : Colors.white,
-                    fontSize: isTablet ? 18 : 16,
-                    // fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+  // Widget _buildBottomSection(bool isTablet) {
+  //   return Column(
+  //     children: [
+      
+  //       Row(
+  //         children: [
+  //           Expanded(
+  //             flex: 2,
+  //             child: ElevatedButton(
+  //               onPressed: _isAnswerComplete ? _submitAnswer : null,
+  //               style: ElevatedButton.styleFrom(
+  //                 backgroundColor: _isAnswerComplete
+  //                     ? Colors.white
+  //                     : Colors.grey,
+  //                 padding: EdgeInsets.symmetric(vertical: isTablet ? 18 : 16),
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(12),
+  //                 ),
+  //                 elevation: 6,
+  //               ),
+  //               child: Text(
+  //                 "تقديم",
+  //                 style: TextStyle(
+  //                   color: _isAnswerComplete
+  //                       ? const Color(0xFFD32F2F)
+  //                       : Colors.white,
+  //                   fontSize: isTablet ? 18 : 16,
+                   
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildResultScreen() {
     return Center(
@@ -575,7 +669,7 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 32,
-                // fontWeight: FontWeight.bold,
+                
               ),
               textAlign: TextAlign.center,
             ),
