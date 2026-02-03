@@ -41,6 +41,7 @@ class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
   Timer? _controlsTimer;
   bool _isLooping = false;
   bool _showProgressBar = false;
+bool _isDisposed = false;
 
   @override
   void initState() {
@@ -76,8 +77,8 @@ class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
   }
 
   void _playerListener() {
-    if (!mounted || _isInFullscreen) return;
-
+    // if (!mounted || _isInFullscreen) return;
+ if (_isDisposed || !mounted || _isInFullscreen) return;
     final state = _controller.value.playerState;
 
     if (!_isReady &&
@@ -114,9 +115,10 @@ class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
 
   void _startProgressTracking() {
     _progressTimer?.cancel();
-
     _progressTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      if (!mounted || !_controller.value.isReady || _isInFullscreen) return;
+      if (_isDisposed || !mounted) return;
+  if (!_controller.value.isReady || _isInFullscreen) return;
+      // if (!mounted || !_controller.value.isReady || _isInFullscreen) return;
 
       final currentPosition = _controller.value.position;
       final duration = _controller.metadata.duration;
@@ -177,6 +179,8 @@ class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
   }
 
   Future<void> _enterFullscreen() async {
+    if (!mounted || _isDisposed) return;
+
     if (_isInFullscreen) return;
 
     setState(() {
@@ -254,6 +258,7 @@ class YouTubeWebViewPlayerState extends State<YouTubeWebViewPlayer> {
 
   @override
   void dispose() {
+    _isDisposed = true;
     _progressTimer?.cancel();
     _controlsTimer?.cancel();
     _controller.removeListener(_playerListener);

@@ -268,15 +268,14 @@ class _FillInBlanksDialogState extends State<FillInBlanksDialog>
       maxBoxesPerRow = 12;
       actualBoxSize = baseBoxSize;
     } else {
-      // في portrait، احسب عدد المربعات بناءً على العرض المتاح
+      
       maxBoxesPerRow =
           ((availableWidth + boxSpacing) / (baseBoxSize + boxSpacing)).floor();
 
-      // تأكد من وجود مساحة كافية للمربعات
       if (maxBoxesPerRow > totalBoxes) {
         maxBoxesPerRow = totalBoxes;
       } else if (maxBoxesPerRow < 3) {
-        // أقل حد 3 مربعات في الصف
+       
         maxBoxesPerRow = 3;
       }
 
