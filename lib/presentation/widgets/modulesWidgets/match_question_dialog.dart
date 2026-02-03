@@ -119,51 +119,6 @@ class _ResponsiveMatchDialogState extends State<ResponsiveMatchDialog> {
     );
   }
 
-  // Widget _buildMatchContent() {
-  //   return LayoutBuilder(
-  //     builder: (context, constraints) {
-  //       bool isLandscape = constraints.maxWidth > constraints.maxHeight;
-  //       bool isTablet = constraints.maxWidth > 600;
-
-  //       return Padding(
-  //         padding: EdgeInsets.all(isTablet ? 24 : 16),
-  //         child: Column(
-  //           children: [
-            
-  //             _buildHeader(),
-
-  //             SizedBox(height: isTablet ? 20 : 16),
-
-              
-  //             Container(
-  //               padding: EdgeInsets.all(isTablet ? 20 : 16),
-  //               decoration: BoxDecoration(
-  //                 color: Colors.black.withOpacity(0.3),
-  //                 borderRadius: BorderRadius.circular(12),
-  //               ),
-  //               child: Text(
-  //                 "اسحب الأسئلة وأسقطها على الإجابات المناسبة",
-  //                 style: TextStyle(
-  //                   color: Colors.white,
-  //                   fontSize: isTablet ? 18 : 16,
-  //                   fontWeight: FontWeight.w600,
-  //                 ),
-  //                 textAlign: TextAlign.center,
-  //               ),
-  //             ),
-
-  //             SizedBox(height: isTablet ? 24 : 20),
-
-  //             Expanded(child: _buildGridContent(isLandscape, isTablet)),
-
-              
-  //             _buildBottomSection(isTablet),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 Widget _buildMatchContent() {
   return LayoutBuilder(
     builder: (context, constraints) {
