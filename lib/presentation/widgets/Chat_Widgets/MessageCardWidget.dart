@@ -69,13 +69,18 @@ class MessageCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isStudent = message.senderRole == 1;
-  
+
     String userName = isStudent ? chatInfo.name : (chatInfo.teacherName ?? " ");
     String? userImageUrl = isStudent
         ? chatInfo.imageUrl
         : chatInfo.teacherImageUrl;
     String role = isStudent ? "طالب" : "معلم";
-
+    print("======== PROFILE DEBUG ========");
+    print("User Name: $userName");
+    print("Raw Image Url: $userImageUrl");
+    print("Is Empty: ${userImageUrl?.isEmpty}");
+    print("After Trim Empty: ${userImageUrl?.trim().isEmpty}");
+    print("================================");
     double containerWidth = MediaQuery.of(context).size.width * 0.7;
 
     if (message.message.length > 100) {
@@ -222,6 +227,7 @@ class MessageCardWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 6),
+
             // CircleAvatar(
             //   radius: 28,
 
@@ -245,27 +251,70 @@ class MessageCardWidget extends StatelessWidget {
             //       : null,
             // ),
             CircleAvatar(
-  radius: 28,
-  backgroundColor: Color.fromRGBO(49, 54, 72, 1),
-  backgroundImage: userImageUrl != null && userImageUrl.isNotEmpty
-      ? _buildProfileImage(userImageUrl)
-      : null, // ✅ هنا بس يحط الصورة لو موجودة
-  child: (userImageUrl == null || userImageUrl.isEmpty)
-      ? isStudent
-          ? SvgPicture.asset(
-              'assets/icons/svgviewer-output (3).svg',
-              width: 30,
-              height: 30,
-              color: Colors.white,
-            )
-          : SvgPicture.asset(
-              'assets/icons/person_laptop.svg',
-              width: 27,
-              height: 27,
-              color: Colors.amber,
-            )
-      : null,
-),
+              radius: 28,
+              backgroundColor: const Color.fromRGBO(49, 54, 72, 1),
+              child: ClipOval(
+                child: (userImageUrl?.trim().isNotEmpty ?? false)
+                    ? Image.network(
+                        fileManager.buildImageUrl(userImageUrl!),
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          print("Image Load Error: $error");
+                          return isStudent
+                              ? SvgPicture.asset(
+                                  'assets/icons/svgviewer-output (3).svg',
+                                  width: 30,
+                                  height: 30,
+                                  color: Colors.white,
+                                )
+                              : SvgPicture.asset(
+                                  'assets/icons/person_laptop.svg',
+                                  width: 27,
+                                  height: 27,
+                                  color: Colors.amber,
+                                );
+                        },
+                      )
+                    : (isStudent
+                          ? SvgPicture.asset(
+                              'assets/icons/svgviewer-output (3).svg',
+                              width: 30,
+                              height: 30,
+                              color: Colors.white,
+                            )
+                          : SvgPicture.asset(
+                              'assets/icons/person_laptop.svg',
+                              width: 27,
+                              height: 27,
+                              color: Colors.amber,
+                            )),
+              ),
+            ),
+
+            // CircleAvatar(
+            //   radius: 28,
+            //   backgroundColor: Color.fromRGBO(49, 54, 72, 1),
+            //   backgroundImage: userImageUrl != null && userImageUrl.isNotEmpty
+            //       ? _buildProfileImage(userImageUrl)
+            //       : null, // ✅ هنا بس يحط الصورة لو موجودة
+            //   child: (userImageUrl == null || userImageUrl.isEmpty)
+            //       ? isStudent
+            //             ? SvgPicture.asset(
+            //                 'assets/icons/svgviewer-output (3).svg',
+            //                 width: 30,
+            //                 height: 30,
+            //                 color: Colors.white,
+            //               )
+            //             : SvgPicture.asset(
+            //                 'assets/icons/person_laptop.svg',
+            //                 width: 27,
+            //                 height: 27,
+            //                 color: Colors.amber,
+            //               )
+            //       : null,
+            // ),
           ],
         ),
       ],

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
@@ -18,13 +17,9 @@ import 'package:prime_academy/presentation/widgets/homeWidgets/my_rank.dart';
 
 class HomePage extends StatefulWidget {
   final LoginResponse user;
-  final int initialTab; 
-  
-  const HomePage({
-    super.key, 
-    required this.user,
-    this.initialTab = 0, 
-  });
+  final int initialTab;
+
+  const HomePage({super.key, required this.user, this.initialTab = 0});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -36,12 +31,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    selectedIndex = widget.initialTab; 
-    
+    selectedIndex = widget.initialTab;
+
     context.read<ProfileCubit>().emitprofileState();
-    
   }
 
+  @override
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -49,110 +44,122 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
-      appBar: CustomAppBar(
-        user: widget.user,
-        onLogoPressed: () => Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => AppLayout(user: widget.user)),
-          (route) => false,
-        ), showBackArrow: true,
-      ),
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            vertical: 20,
-            horizontal: isMobile ? 15 : width * 0.1,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ProfileHeader(user: widget.user),
-              BlocBuilder<ProfileCubit, ProfileState>(
-  builder: (context, state) {
-    return state.when(
-      initial: () => const SizedBox(),
-      loading: () => const CircularProgressIndicator(),
-      error: (error) => Text(error),
-      success: (profile) {
-        return ProfileHeader(user:  profile);
-      }, 
-    );
-  },
-)
-,
-              SizedBox(height: isMobile ? 40 : 60),
-              LogoutButton(isMobile: isMobile),
-              SizedBox(height: isMobile ? 50 : 80),
-              CategoryTabs(
-                isMobile: isMobile,
-                selectedIndex: selectedIndex,
-                onTabSelected: (index) {
-                  setState(() {
-                    selectedIndex = index;
-                  });
-                },
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomAppBar(
+              key: const ValueKey('home_page_appbar'),
+              user: widget.user,
+              onLogoPressed: () => Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AppLayout(user: widget.user),
+                ),
+                (route) => false,
               ),
-              SizedBox(height: isMobile ? 90 : 120),
+              showBackArrow: true,
+            ),
 
-              if (selectedIndex == 0) ...[
-                BlocBuilder<ProfileCubit, ProfileState>(
-                  builder: (context, state) {
-                    return state.when(
-                      initial: () => const SizedBox.shrink(),
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
-                      success: (data) {
-                        final profile = data as StudentProfileResponse;
+            Directionality(
+              textDirection: TextDirection.rtl,
 
-                        if (profile.courses == null ||
-                            profile.courses!.isEmpty) {
-                          return EmptyState(
-                            message: "لا توجد دورات",
-                            isMobile: isMobile,
-                          );
-                        }
-
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: isMobile ? 1 : 2,
-                                crossAxisSpacing: 20,
-                                mainAxisSpacing: 20,
-                                childAspectRatio: isMobile ? 1.1 : .8,
-                              ),
-                          itemCount: profile.courses!.length,
-                          itemBuilder: (context, index) {
-                            final course = profile.courses![index];
-                            final imageUrl = buildImageUrl(
-                              course.featuredImage?.url,
-                            );
-                            return CourseCard(
-                              image: imageUrl,
-                              courseName: course.title ?? '',
-                              isMobile: isMobile,
-                              courseId: course.id ?? 0,
-                              user: widget.user,
-                            );
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: isMobile ? 15 : width * 0.1,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BlocBuilder<ProfileCubit, ProfileState>(
+                      builder: (context, state) {
+                        return state.when(
+                          initial: () => const SizedBox(),
+                          loading: () => const CircularProgressIndicator(),
+                          error: (error) => Text(error),
+                          success: (profile) {
+                            return ProfileHeader(user: profile);
                           },
                         );
                       },
-                      error: (error) => EmptyState(
-                        message: "خطأ: $error",
-                        isMobile: isMobile,
+                    ),
+                    SizedBox(height: isMobile ? 40 : 60),
+                    LogoutButton(isMobile: isMobile),
+                    SizedBox(height: isMobile ? 50 : 80),
+                    CategoryTabs(
+                      isMobile: isMobile,
+                      selectedIndex: selectedIndex,
+                      onTabSelected: (index) {
+                        setState(() {
+                          selectedIndex = index;
+                        });
+                      },
+                    ),
+                    SizedBox(height: isMobile ? 90 : 120),
+
+                    if (selectedIndex == 0) ...[
+                      BlocBuilder<ProfileCubit, ProfileState>(
+                        builder: (context, state) {
+                          return state.when(
+                            initial: () => const SizedBox.shrink(),
+                            loading: () => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            success: (data) {
+                              final profile = data as StudentProfileResponse;
+
+                              if (profile.courses == null ||
+                                  profile.courses!.isEmpty) {
+                                return EmptyState(
+                                  message: "لا توجد دورات",
+                                  isMobile: isMobile,
+                                );
+                              }
+
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: isMobile ? 1 : 2,
+                                      crossAxisSpacing: 20,
+                                      mainAxisSpacing: 20,
+                                      childAspectRatio: isMobile ? 1.1 : .8,
+                                    ),
+                                itemCount: profile.courses!.length,
+                                itemBuilder: (context, index) {
+                                  final course = profile.courses![index];
+                                  final imageUrl = buildImageUrl(
+                                    course.featuredImage?.url,
+                                  );
+                                  return CourseCard(
+                                    image: imageUrl,
+                                    courseName: course.title ?? '',
+                                    isMobile: isMobile,
+                                    courseId: course.id ?? 0,
+                                    user: widget.user,
+                                  );
+                                },
+                              );
+                            },
+                            error: (error) => EmptyState(
+                              message: "خطأ: $error",
+                              isMobile: isMobile,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ] else if (selectedIndex == 1) ...[
+                      RewardBox(isMobile: isMobile),
+                    ] else if (selectedIndex == 2) ...[
+                      RankingWidget(isMobile: isMobile),
+                    ],
+                  ],
                 ),
-              ] else if (selectedIndex == 1) ...[
-                RewardBox(isMobile: isMobile),
-              ] else if (selectedIndex == 2) ...[
-                RankingWidget(isMobile: isMobile),
-              ],
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -34,71 +34,134 @@ class ChatCubit extends Cubit<ChatState> {
     instance = this;
   }
 
-  Future<void> loadChat() async {
-    print('🟡 CHAT CUBIT REQUEST');
-    print('chatId = $chatId');
-    print('moduleId = $moduleId');
-    print('courseId = $courseId');
+  // Future<void> loadChat() async {
+  //   print('🟡 CHAT CUBIT REQUEST');
+  //   print('chatId = $chatId');
+  //   print('moduleId = $moduleId');
+  //   print('courseId = $courseId');
 
-    final chatInfo = ChatInfoModel.fromLoginResponse(user);
-    emit(ChatLoaded(chatInfo, []));
+  //   final chatInfo = ChatInfoModel.fromLoginResponse(user);
+  //   emit(ChatLoaded(chatInfo, []));
 
-    try {
-      ChatInfoModel updatedChatInfo = chatInfo;
+  //   try {
+  //     ChatInfoModel updatedChatInfo = chatInfo;
 
-      // Try to get teacher data from cache first
-      final cachedTeacher = await TeacherCacheService.getTeacherData(chatId);
+  //     // Try to get teacher data from cache first
+  //     final cachedTeacher = await TeacherCacheService.getTeacherData(chatId);
 
-      if (cachedTeacher != null) {
-        print('✅ Using cached teacher data');
-        updatedChatInfo = chatInfo.copyWithTeacherData(
-          teacherId: cachedTeacher['id'],
-          teacherName: '${cachedTeacher['firstname']} ${cachedTeacher['lastname']}',
-          teacherImageUrl: cachedTeacher['imageUrl'],
-        );
-      } else if (moduleId != null && courseId != null && modulesLessonsRepo != null) {
-        print('⚠️ Fetching teacher data from API');
-        try {
-          final moduleResult = await modulesLessonsRepo!.getModuleLessons(
-            courseId!,
-            moduleId!,
-          );
+  //     if (cachedTeacher != null) {
+  //       print('✅ Using cached teacher data');
+  //       updatedChatInfo = chatInfo.copyWithTeacherData(
+  //         teacherId: cachedTeacher['id'],
+  //         teacherName: '${cachedTeacher['firstname']} ${cachedTeacher['lastname']}',
+  //         teacherImageUrl: cachedTeacher['imageUrl'],
+  //       );
+  //     } else if (moduleId != null && courseId != null && modulesLessonsRepo != null) {
+  //       print('⚠️ Fetching teacher data from API');
+  //       try {
+  //         final moduleResult = await modulesLessonsRepo!.getModuleLessons(
+  //           courseId!,
+  //           moduleId!,
+  //         );
 
-          moduleResult.when(
-            success: (moduleData) {
-              if (moduleData.teacher != null) {
-                final teacher = moduleData.teacher!;
-                updatedChatInfo = chatInfo.copyWithTeacher(teacher);
+  //         moduleResult.when(
+  //           success: (moduleData) {
+  //             if (moduleData.teacher != null) {
+  //               final teacher = moduleData.teacher!;
+  //               updatedChatInfo = chatInfo.copyWithTeacher(teacher);
                 
-                // Save to cache for next time
-                TeacherCacheService.saveTeacherData(chatId, teacher);
-              }
-            },
-            failure: (error) {
-              print('❌ Failed to fetch teacher data: ${error.apiErrorModel.message}');
-            },
-          );
-        } catch (e) {
-          print('❌ Error fetching teacher data: $e');
-        }
-      } else {
-        print('⚠️ Not enough data to fetch teacher info');
+  //               // Save to cache for next time
+  //               TeacherCacheService.saveTeacherData(chatId, teacher);
+  //             }
+  //           },
+  //           failure: (error) {
+  //             print('❌ Failed to fetch teacher data: ${error.apiErrorModel.message}');
+  //           },
+  //         );
+  //       } catch (e) {
+  //         print('❌ Error fetching teacher data: $e');
+  //       }
+  //     } else {
+  //       print('⚠️ Not enough data to fetch teacher info');
+  //     }
+  
+
+  //     // Fetch messages
+  //     final fetchedMessages = await chatRepo.getMessages(chatId, page: 1);
+  //     messages = fetchedMessages.reversed.toList();
+
+  //     emit(ChatLoaded(updatedChatInfo, List.from(messages)));
+      
+  //     // ✅ Register this chat with the unified SSE service
+  //     _sseService.registerChatCubit(this);
+      
+  //   } catch (e) {
+  //     emit(ChatError(e.toString()));
+  //   }
+  // }
+Future<void> loadChat({Map<String, dynamic>? profileData}) async {
+  print('🟡 CHAT CUBIT REQUEST');
+  print('chatId = $chatId');
+  print('moduleId = $moduleId');
+  print('courseId = $courseId');
+
+  final chatInfo = profileData != null 
+      ? ChatInfoModel.fromProfileResponse(profileData)
+      : ChatInfoModel.fromLoginResponse(user);
+  
+  emit(ChatLoaded(chatInfo, []));
+
+  try {
+    ChatInfoModel updatedChatInfo = chatInfo;
+
+    final cachedTeacher = await TeacherCacheService.getTeacherData(chatId);
+
+    if (cachedTeacher != null) {
+      print('✅ Using cached teacher data');
+      updatedChatInfo = chatInfo.copyWithTeacherData(
+        teacherId: cachedTeacher['id'],
+        teacherName: '${cachedTeacher['firstname']} ${cachedTeacher['lastname']}',
+        teacherImageUrl: cachedTeacher['imageUrl'],
+      );
+    } else if (moduleId != null && courseId != null && modulesLessonsRepo != null) {
+      print('⚠️ Fetching teacher data from API');
+      try {
+        final moduleResult = await modulesLessonsRepo!.getModuleLessons(
+          courseId!,
+          moduleId!,
+        );
+
+        moduleResult.when(
+          success: (moduleData) {
+            if (moduleData.teacher != null) {
+              final teacher = moduleData.teacher!;
+              updatedChatInfo = chatInfo.copyWithTeacher(teacher);
+              
+              TeacherCacheService.saveTeacherData(chatId, teacher);
+            }
+          },
+          failure: (error) {
+            print('❌ Failed to fetch teacher data: ${error.apiErrorModel.message}');
+          },
+        );
+      } catch (e) {
+        print('❌ Error fetching teacher data: $e');
       }
-
-      // Fetch messages
-      final fetchedMessages = await chatRepo.getMessages(chatId, page: 1);
-      messages = fetchedMessages.reversed.toList();
-
-      emit(ChatLoaded(updatedChatInfo, List.from(messages)));
-      
-      // ✅ Register this chat with the unified SSE service
-      _sseService.registerChatCubit(this);
-      
-    } catch (e) {
-      emit(ChatError(e.toString()));
+    } else {
+      print('⚠️ Not enough data to fetch teacher info');
     }
-  }
 
+    final fetchedMessages = await chatRepo.getMessages(chatId, page: 1);
+    messages = fetchedMessages.reversed.toList();
+
+    emit(ChatLoaded(updatedChatInfo, List.from(messages)));
+    
+    _sseService.registerChatCubit(this);
+    
+  } catch (e) {
+    emit(ChatError(e.toString()));
+  }
+}
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
     try {

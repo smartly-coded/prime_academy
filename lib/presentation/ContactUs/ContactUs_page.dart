@@ -129,13 +129,12 @@ class ContactUsPage extends StatelessWidget {
 
     return Center(
       child: buildTextWithBorder(
-        
-       
-        
         containerWidth: titleWidth,
         containerHeight: titleHeight,
         isBold: true,
-        fontSize: titleFontSize, mainTitle: "تواصل معنا",subTitle:  "",
+        fontSize: titleFontSize,
+        mainTitle: "تواصل معنا",
+        subTitle: "",
       ),
     );
   }
@@ -421,9 +420,9 @@ class ContactUsPage extends StatelessWidget {
               ),
             )
           : buildTextWithBorder(
-           mainTitle:    "إرسال",
-             subTitle:  "",
-             
+              mainTitle: "إرسال",
+              subTitle: "",
+
               containerWidth: double.infinity,
               containerHeight: isMobile ? 50 : (isTablet ? 54 : 58),
               fontSize: isMobile ? 18 : (isTablet ? 20 : 22),

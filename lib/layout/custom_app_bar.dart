@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
@@ -7,7 +8,7 @@ import 'package:prime_academy/features/authScreen/data/models/login_response.dar
 import 'package:prime_academy/presentation/widgets/animated_notification_bell.dart';
 import 'package:prime_academy/presentation/widgets/splashWidgets/build_text_withoutImage.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget {
   final LoginResponse? user;
   final bool showNotificationIcon;
   final List<Widget>? additionalActions;
@@ -28,9 +29,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.automaticallyImplyLeading = true,
     required this.showBackArrow,
   });
-
-  @override
-  Size get preferredSize => const Size.fromHeight(90);
 
   Future<void> _handleAccountButton(BuildContext context) async {
     if (onAccountPressed != null) {
@@ -89,7 +87,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+      padding: const EdgeInsets.fromLTRB(0, 20, 0, 5),
       child: Container(
         decoration: BoxDecoration(
           color: const Color(0xFF0b0f12),
@@ -97,41 +95,28 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             bottom: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1.0),
           ),
         ),
-        child: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          surfaceTintColor: Colors.transparent,
-          automaticallyImplyLeading: showBackArrow && automaticallyImplyLeading,
-          iconTheme: IconThemeData(color: backArrowColor),
-          leading: showBackArrow && automaticallyImplyLeading
-              ? null
-              : GestureDetector(
-                  onTap: onLogoPressed,
-                  child: Image.asset(
-                    "assets/images/footer-logo.webp",
-                    height: 120,
-                    width: 120,
-                  ),
-                ),
-          leadingWidth: showBackArrow && automaticallyImplyLeading ? 56 : 120,
-          title: showBackArrow && automaticallyImplyLeading
-              ? GestureDetector(
-                  onTap: onLogoPressed,
-                  child: Image.asset(
-                    "assets/images/footer-logo.webp",
-                    height: 120,
-                    width: 120,
-                  ),
-                )
-              : null,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
 
-          actions: [
+        child: Row(
+          children: [
+            if (showBackArrow && automaticallyImplyLeading)
+              IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: backArrowColor),
+                onPressed: () => Navigator.pop(context),
+              ),
+
+            if (showNotificationIcon && user != null)
+              Transform.scale(
+                scale: 0.85,
+                child: AnimatedNotificationBell(user: user!),
+              ),
+
+            ...?additionalActions,
+            const SizedBox(width: 10),
             GestureDetector(
               onTap: () => _handleAccountButton(context),
               child: Container(
                 height: 40,
-
                 decoration: BoxDecoration(
                   gradient: const RadialGradient(
                     center: Alignment(-1, 1),
@@ -163,13 +148,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            ...?additionalActions,
-            if (showNotificationIcon && user != null)
-              Transform.scale(
-                scale: 0.85,
-                child: AnimatedNotificationBell(user: user!),
+
+            const Spacer(),
+
+            GestureDetector(
+              onTap: onLogoPressed,
+              child: Image.asset(
+                "assets/images/footer-logo.webp",
+                height: 60,
+                width: 120,
               ),
+            ),
           ],
         ),
       ),
@@ -177,7 +166,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
+class SimpleAppBar extends StatelessWidget {
   final String? title;
   final Widget? leading;
   final List<Widget>? actions;
@@ -196,9 +185,6 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -207,22 +193,25 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
           bottom: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1.0),
         ),
       ),
-      child: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: leading,
-        automaticallyImplyLeading: automaticallyImplyLeading,
-        iconTheme: IconThemeData(color: backArrowColor),
-        title: title != null
-            ? Text(title!)
-            : GestureDetector(
-                onTap: onLogoPressed,
-                child: Image.asset(
-                  "assets/images/footer-logo.webp",
-                  height: 40,
-                ),
-              ),
-        actions: actions,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          if (leading != null) leading!,
+          if (actions != null) ...actions!,
+
+          const Spacer(),
+
+          if (title != null)
+            Text(
+              title!,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            )
+          else
+            GestureDetector(
+              onTap: onLogoPressed,
+              child: Image.asset("assets/images/footer-logo.webp", height: 40),
+            ),
+        ],
       ),
     );
   }

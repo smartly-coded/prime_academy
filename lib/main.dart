@@ -16,6 +16,7 @@ import 'package:prime_academy/features/Notification/logic/notification_cubit.dar
 import 'package:prime_academy/features/authScreen/logic/login_cubit.dart';
 import 'package:prime_academy/features/contact_us/data/Repos/contact_us_repo.dart';
 import 'package:prime_academy/features/contact_us/logic/inquery_cubit.dart';
+import 'package:prime_academy/features/profileScreen/logic/profile_cubit.dart';
 import 'package:prime_academy/features/splashScreens/logic/splash_cubit.dart';
 import 'package:prime_academy/features/startScreen/logic/student_preview_cubit.dart';
 import 'package:prime_academy/layout/GlobalLoadingOverlay.dart';
@@ -31,7 +32,6 @@ void main() {
         setupGetIt(),
         FirebaseNotificationService.initializeFirebaseMessaging(),
       ]);
-
 
       FlutterError.onError = (FlutterErrorDetails details) {
         final errorString = details.exception.toString();
@@ -83,6 +83,9 @@ class MyApp extends StatelessWidget {
           BlocProvider.value(value: getIt<GlobalLoadingCubit>()),
 
           BlocProvider(create: (_) => SplashCubit()..start(), lazy: false),
+          BlocProvider<ProfileCubit>(
+            create: (context) => ProfileCubit(getIt())..emitprofileState(),
+          ),
 
           BlocProvider(create: (context) => ContactUsCubit(ContactUsRepo())),
           BlocProvider(create: (_) => LoginCubit(getIt()), lazy: false),

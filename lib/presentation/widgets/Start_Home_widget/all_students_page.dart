@@ -31,17 +31,21 @@ class _AllStudentsPageState extends State<AllStudentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
-      appBar: CustomAppBar(
-        user: null,
-        showNotificationIcon: false,
-        onLogoPressed: () => Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const AppLayout(user: null)),
-          (route) => false,
-        ), showBackArrow: true,
-      ),
+     
       body: CustomScrollView(
         slivers: [
+          SliverToBoxAdapter(
+            child: CustomAppBar(
+               key: const ValueKey('all_students_appbar'),
+                    user: null,
+                    showNotificationIcon: false,
+                    onLogoPressed: () => Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const AppLayout(user: null)),
+            (route) => false,
+                    ), showBackArrow: true,
+                  ),
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(70, 16, 70, 20),

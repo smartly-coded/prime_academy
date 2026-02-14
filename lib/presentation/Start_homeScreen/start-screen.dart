@@ -34,79 +34,81 @@ class StartPage extends StatelessWidget {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Mycolors.backgroundColor,
-      body: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 40.0),
-          child: Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.7,
-                child: SizedBox(
+    return SafeArea(
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 40.0),
+            child: Column(
+              children: [
+                SizedBox(
                   height: MediaQuery.of(context).size.height * 0.7,
                   child: VideoWithBackground(),
                 ),
-              ),
 
-              const FeaturesSection(),
-              GifSection(
-                title: " برايم أكاديمي",
-                subtitle: " تلم لك كل دروسك بالشكل الذي تبيه و على مزاجك بعد! ",
-                gifPath: "assets/Gifs/splash1.gif",
-                smallIconPath: "assets/icons/banner.jpg",
-                titleWidth: MediaQuery.of(context).size.width * 0.8,
-              ),
+                const FeaturesSection(),
+                GifSection(
+                  title: " برايم أكاديمي",
+                  subtitle:
+                      " تلم لك كل دروسك بالشكل الذي تبيه و على مزاجك بعد! ",
+                  gifPath: "assets/Gifs/splash1.gif",
+                  smallIconPath: "assets/icons/banner.jpg",
+                  titleWidth: MediaQuery.of(context).size.width * 0.8,
+                ),
 
-              const VideoSection(),
-              GifSection(
-                title: "في برايم اكاديمي ",
-                subtitle: "تدري شنو؟ النجاح صار مرررره سهل \n!",
-                gifPath: "assets/Gifs/onboarding.gif",
-                smallIconPath: "assets/icons/banner.jpg",
-                overlapOffset: 20,
-              ),
-              GifSection(
-                title: "في برايم اكاديمي ",
-                subtitle: "هدفنا اخراج جيل جديد",
-                gifPath: "assets/Gifs/splash2.gif",
-                smallIconPath: "assets/icons/banner3.png",
-                backgroundColor: Color(0xff12161f),
-                overlapOffset: 50,
-              ),
-              const StudentsSliderSection(),
-              BlocProvider(
-                create: (context) => getIt<TestimonalCubit>(),
-                child: const TestimonialsSection(),
-              ),
+                const VideoSection(),
+                GifSection(
+                  title: "في برايم اكاديمي ",
+                  subtitle: "تدري شنو؟ النجاح صار مرررره سهل \n!",
+                  gifPath: "assets/Gifs/onboarding.gif",
+                  smallIconPath: "assets/icons/banner.jpg",
+                  overlapOffset: 20,
+                ),
+                GifSection(
+                  title: "في برايم اكاديمي ",
+                  subtitle: "هدفنا اخراج جيل جديد",
+                  gifPath: "assets/Gifs/splash2.gif",
+                  smallIconPath: "assets/icons/banner3.png",
+                  backgroundColor: Color(0xff12161f),
+                  overlapOffset: 50,
+                ),
+                const StudentsSliderSection(),
+                BlocProvider(
+                  create: (context) => getIt<TestimonalCubit>(),
+                  child: const TestimonialsSection(),
+                ),
 
-              StudentsGreadesSection(),
-              BlocProvider(
-                create: (context) => CommRequestCubit(),
-                child: FooterSection(),
-              ),
-            ],
+                StudentsGreadesSection(),
+                BlocProvider(
+                  create: (context) => CommRequestCubit(),
+                  child: FooterSection(),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
 
-      floatingActionButton: SizedBox(
-        height: 40,
-        width: 40,
-        child: FloatingActionButton(
-          onPressed: openWhatsAppChat,
-          backgroundColor: Colors.white,
-          shape: const CircleBorder(),
-          child: const FaIcon(
-            FontAwesomeIcons.whatsapp,
-            color: Colors.green,
-            size: 30,
+          Positioned(
+            bottom: 16,
+            left: 16,
+            child: SizedBox(
+              height: 40,
+              width: 40,
+              child: FloatingActionButton(
+                onPressed: openWhatsAppChat,
+                backgroundColor: Colors.white,
+                shape: const CircleBorder(),
+                child: const FaIcon(
+                  FontAwesomeIcons.whatsapp,
+                  color: Colors.green,
+                  size: 30,
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

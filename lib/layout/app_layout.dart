@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -74,7 +75,6 @@ class _AppLayoutState extends State<AppLayout> {
       child: StartPage(),
     ),
     AboutUsPage(),
-
     ContactUsPage(),
   ];
 
@@ -133,17 +133,28 @@ class _AppLayoutState extends State<AppLayout> {
   }
 
   @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
-      
       backgroundColor: const Color(0xFF0b0f12),
-      appBar: CustomAppBar(
-        user: _currentUser,
-        onAccountPressed: _handleAccountButton,
-        showBackArrow: false,
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: CustomAppBar(
+              user: _currentUser,
+              onAccountPressed: _handleAccountButton,
+              showBackArrow: false,
+            ),
+          ),
+
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => _pages[_currentIndex],
+              childCount: 1,
+            ),
+          ),
+        ],
       ),
-     
-      body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),

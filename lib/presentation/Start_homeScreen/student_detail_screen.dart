@@ -69,15 +69,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
 
     return Scaffold(
       backgroundColor: Mycolors.backgroundColor,
-      appBar: CustomAppBar(
-        user: null,
-        showNotificationIcon: false,
-        onLogoPressed: () => Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => AppLayout(user: null)),
-          (route) => false,
-        ), showBackArrow: true,
-      ),
+     
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
@@ -88,6 +80,15 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              CustomAppBar(
+        user: null,
+        showNotificationIcon: false,
+        onLogoPressed: () => Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => AppLayout(user: null)),
+          (route) => false,
+        ), showBackArrow: true,
+      ),
               SizedBox(height: isMobile ? 20 : 30),
 
               BlocBuilder<StudentPreviewCubit, StudentPreviewState>(

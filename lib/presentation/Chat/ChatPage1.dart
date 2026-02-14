@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,18 +17,19 @@ import 'package:prime_academy/presentation/widgets/Chat_Widgets/MessageInputWidg
 import 'package:prime_academy/presentation/widgets/Chat_Widgets/RecordingManager.dart';
 import 'package:prime_academy/presentation/widgets/Chat_Widgets/RecordingUIWidget.dart';
 import 'package:prime_academy/presentation/widgets/Chat_Widgets/media_file_record.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatScreen extends StatefulWidget {
   final int chatId;
-  final int? moduleId; 
+  final int? moduleId;
   final int? courseId;
   final LoginResponse user;
 
   const ChatScreen({
     super.key,
     required this.chatId,
-    this.moduleId, 
-    this.courseId, 
+    this.moduleId,
+    this.courseId,
     required this.user,
   });
 
@@ -38,7 +40,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   // Managers
   late final AudioPlayerManager _audioPlayerManager;
   late final RecordingManager _recordingManager;
@@ -46,26 +48,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   late final DialogHelper _dialogHelper;
 
   File? _pickedFile;
-  bool _isDisposing = false; 
+  bool _isDisposing = false;
 
   @override
   void initState() {
     super.initState();
-    
-    _audioPlayerManager = AudioPlayerManager(
-      onStateChanged: _safeSetState,
-    );
-    
+
+    _audioPlayerManager = AudioPlayerManager(onStateChanged: _safeSetState);
+
     _recordingManager = RecordingManager(
       vsync: this,
       onStateChanged: _safeSetState,
     );
-    
+
     _fileManager = FileManager();
     _dialogHelper = DialogHelper(context);
   }
 
-  
   void _safeSetState() {
     if (mounted && !_isDisposing) {
       setState(() {});
@@ -75,14 +74,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _isDisposing = true;
-    
+
     _audioPlayerManager.dispose();
     _recordingManager.dispose();
     AudioRecorderManager.dispose();
-    
+
     _controller.dispose();
     _scrollController.dispose();
-    
+
     super.dispose();
   }
 
@@ -95,36 +94,73 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       });
     }
   }
+Future<void> _loadProfileAndChat(ChatCubit cubit) async {
+  Map<String, dynamic>? profileData;
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final userDataString = prefs.getString('userData');
+    if (userDataString != null && userDataString.isNotEmpty) {
+      final userData = jsonDecode(userDataString);
+      profileData = {
+        'id': userData['id'],
+        'firstname': userData['firstname'],
+        'lastname': userData['lastname'],
+        'image': userData['image'],
+      };
+      print('✅ Loaded profile from SharedPreferences');
+      print('Profile data: $profileData');
+    }
+  } catch (e) {
+    print('⚠️ Failed to load profile from storage: $e');
+  }
 
+  cubit.loadChat(profileData: profileData);
+}
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      
       onWillPop: () async {
         _isDisposing = true;
-        
+
         return true;
       },
       child: MultiBlocProvider(
-        providers: [
-          RepositoryProvider(create: (_) => ChatRepo()),
-          
-        ],
-        child: BlocProvider(
-          create: (context) {
-            final chatRepo = context.read<ChatRepo>();
-            final modulesRepo = context.read<ModulesLessonsRepo>();
-            final cubit = ChatCubit(
-              chatRepo: chatRepo,
-              modulesLessonsRepo: modulesRepo,
-              chatId: widget.chatId,
-              moduleId: widget.moduleId, 
-              courseId: widget.courseId, 
-              user: widget.user,
-            )..loadChat();
-            return cubit;
-            
-          },
+        providers: [RepositoryProvider(create: (_) => ChatRepo())],
+        child:
+      // BlocProvider(
+      //     create: (context) {
+      //       final chatRepo = context.read<ChatRepo>();
+      //       final modulesRepo = context.read<ModulesLessonsRepo>();
+      //       final cubit = ChatCubit(
+      //         chatRepo: chatRepo,
+      //         modulesLessonsRepo: modulesRepo,
+      //         chatId: widget.chatId,
+      //         moduleId: widget.moduleId,
+      //         courseId: widget.courseId,
+      //         user: widget.user,
+      //       )..loadChat();
+      //       return cubit;
+      //     },
+      BlocProvider(
+  create: (context) {
+    final chatRepo = context.read<ChatRepo>();
+    final modulesRepo = context.read<ModulesLessonsRepo>();
+
+    final cubit = ChatCubit(
+      chatRepo: chatRepo,
+      modulesLessonsRepo: modulesRepo,
+      chatId: widget.chatId,
+      moduleId: widget.moduleId,
+      courseId: widget.courseId,
+      user: widget.user,
+    );
+
+    // ✅ اعمل الـ loading بعد ما تخلق الـ cubit
+    _loadProfileAndChat(cubit);
+
+    return cubit;
+  },
+ 
           child: BlocConsumer<ChatCubit, ChatState>(
             listener: (context, state) {
               if (state is ChatLoaded && !_isDisposing) {
@@ -132,7 +168,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               }
             },
             builder: (context, state) {
-              if (state is ChatError) { 
+              if (state is ChatError) {
                 return Scaffold(
                   backgroundColor: const Color(0xff0d1117),
                   appBar: _buildAppBar(),
@@ -165,7 +201,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               )
                             : ListView.builder(
                                 controller: _scrollController,
-                                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                                padding: const EdgeInsets.only(
+                                  top: 10,
+                                  bottom: 10,
+                                ),
                                 itemCount: messages.length,
                                 itemBuilder: (context, index) {
                                   return MessageCardWidget(
@@ -174,11 +213,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     audioPlayerManager: _audioPlayerManager,
                                     fileManager: _fileManager,
                                     dialogHelper: _dialogHelper,
-                                    onEdit: (msg) => _dialogHelper.showEditDialog(
-                                      msg,
-                                      cubit,
-                                    ),
-                                    onDelete: (msgId) => cubit.deleteMessage(msgId),
+                                    onEdit: (msg) => _dialogHelper
+                                        .showEditDialog(msg, cubit),
+                                    onDelete: (msgId) =>
+                                        cubit.deleteMessage(msgId),
                                   );
                                 },
                               ),
@@ -206,9 +244,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   children: [
                     const Expanded(
                       child: Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.orange,
-                        ),
+                        child: CircularProgressIndicator(color: Colors.orange),
                       ),
                     ),
                     _buildMessageInputArea(null),
@@ -220,7 +256,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
+  } 
 
   AppBar _buildAppBar() {
     return AppBar(
@@ -232,19 +268,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         onPressed: () {
           // ✅ Mark as disposing to prevent setState calls
           _isDisposing = true;
-          
+
           // ✅ SSE cleanup is handled automatically when widget disposes
           // No need to manually call closeSSE()
-          
+
           Navigator.pop(context);
         },
       ),
       title: const Text(
         "اسألني لايف",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 30,
-        ),
+        style: TextStyle(color: Colors.white, fontSize: 30),
         textDirection: TextDirection.rtl,
       ),
       centerTitle: true,
@@ -253,9 +286,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         child: Container(
           height: 2,
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.orange, Colors.purple],
-            ),
+            gradient: LinearGradient(colors: [Colors.orange, Colors.purple]),
           ),
         ),
       ),
@@ -299,7 +330,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   Future<void> _handleStartRecording() async {
     if (_isDisposing) return;
-    
+
     try {
       print('🎙️ [iOS DEBUG] Starting recording...');
       await _recordingManager.startRecording();
@@ -307,7 +338,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     } catch (e, stackTrace) {
       print('❌ [iOS DEBUG] Failed to start recording: $e');
       print('❌ [iOS DEBUG] Stack trace: $stackTrace');
-      
+
       if (mounted && !_isDisposing) {
         _dialogHelper.showError('خطأ في بدء التسجيل: $e');
       }
@@ -316,61 +347,63 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   Future<void> _handleSendRecording(ChatCubit cubit) async {
     if (_isDisposing) return;
-    
+
     try {
       print('🎙️ [iOS DEBUG] Finishing recording...');
       final recordingData = await _recordingManager.finishRecording();
-      
-      print('🎙️ [iOS DEBUG] Recording data received: ${recordingData != null}');
-      
+
+      print(
+        '🎙️ [iOS DEBUG] Recording data received: ${recordingData != null}',
+      );
+
       if (recordingData == null) {
         throw Exception('Recording data is null');
       }
-      
+
       if (recordingData['path'] == null) {
         throw Exception('Recording path is null');
       }
-      
+
       final filePath = recordingData['path'] as String;
       print('🎙️ [iOS DEBUG] Recording path: $filePath');
-      
+
       final file = File(filePath);
       final fileExists = await file.exists();
       print('🎙️ [iOS DEBUG] File exists: $fileExists');
-      
+
       if (!fileExists) {
         throw Exception('Recording file does not exist at path: $filePath');
       }
-      
+
       final fileSize = await file.length();
       print('🎙️ [iOS DEBUG] File size: $fileSize bytes');
-      
+
       if (fileSize == 0) {
         throw Exception('Recording file is empty (0 bytes)');
       }
-      
+
       final amplitudes = recordingData['amplitudes'] ?? [];
       final duration = recordingData['duration'] ?? 0;
-      
+
       print('🎙️ [iOS DEBUG] Amplitudes count: ${amplitudes.length}');
       print('🎙️ [iOS DEBUG] Duration: $duration seconds');
       print('🎙️ [iOS DEBUG] Sending media to server...');
-      
+
       await cubit.sendMedia(
         file,
         amplitudes: List<double>.from(amplitudes),
         duration: duration,
       );
-      
+
       print('🎙️ [iOS DEBUG] Media sent successfully!');
-      
+
       if (mounted && !_isDisposing) {
         _dialogHelper.showSuccess('تم إرسال التسجيل بنجاح');
       }
     } catch (e, stackTrace) {
       print('❌ [iOS DEBUG] Failed to send recording: $e');
       print('❌ [iOS DEBUG] Stack trace: $stackTrace');
-      
+
       if (mounted && !_isDisposing) {
         _dialogHelper.showError('خطأ في إرسال التسجيل: $e');
       }
@@ -383,10 +416,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final file = _pickedFile;
 
     if (file != null) {
-      cubit.sendMedia(
-        file,
-        message: text.isNotEmpty ? text : null,
-      );
+      cubit.sendMedia(file, message: text.isNotEmpty ? text : null);
       if (!_isDisposing) {
         _safeSetState();
         _pickedFile = null;

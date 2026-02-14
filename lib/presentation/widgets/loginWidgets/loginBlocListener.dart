@@ -25,17 +25,17 @@ class LoginBlocListener extends StatelessWidget {
             );
           },
           success: (loginResponse) {
-             Navigator.of(context).pop();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Login Success"),
-                backgroundColor: Colors.green,
-              ),
-            );
-        Navigator.pushNamedAndRemoveUntil(
+            Navigator.of(context).pop();
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   const SnackBar(
+            //     content: Text("Login Success"),
+            //     backgroundColor: Colors.green,
+            //   ),
+            // );
+            Navigator.pushNamedAndRemoveUntil(
               context,
               AppRoutes.Home,
-              (route) => route.isFirst, 
+              (route) => route.isFirst,
               arguments: loginResponse,
             );
             // Navigator.pushReplacementNamed(
