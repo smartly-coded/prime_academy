@@ -70,6 +70,7 @@ class _ViewModuleState extends State<ViewModule> {
   late int _currentChatId;
   bool _firstQuestionAnswered = false;
   int? _currentAnsweredQuestionId;
+  Set<int> _locallyWatchedLessons = {};
   void _updateCurrentLessonTitle(String title) {
     setState(() {
       _currentLessonTitle = title;
@@ -655,6 +656,7 @@ class _ViewModuleState extends State<ViewModule> {
           videoId: _currentVideoId!,
           autoPlay: true,
           showControls: true,
+
           onReady: () {
             if (!mounted || _isDisposing) return;
             setState(() {
@@ -662,6 +664,20 @@ class _ViewModuleState extends State<ViewModule> {
             });
             _showRatingPopupIfNeeded();
           },
+          // onReady: () {
+          //   if (!mounted || _isDisposing) return;
+          //   setState(() {
+          //     _isPlayerReady = true;
+          //   });
+
+          //   if (_currentSelectedItemId != null) {
+          //     context.read<MarkAnsweredCubit>().markLessonWatched(
+          //       _currentSelectedItemId!,
+          //     );
+          //   }
+
+          //   _showRatingPopupIfNeeded();
+          // },
           onError: (error) {
             print('❌ Video error: $error');
           },
@@ -1100,13 +1116,21 @@ class _ViewModuleState extends State<ViewModule> {
                             ? _extractThumbnailUrl(item.lesson!.thumbnail)
                             : null;
 
+                        final watched = isLesson ? item.lesson!.watched : false;
+                        // ✅ اتحقق من الـ local set كمان
+                        final isWatched =
+                            watched || _locallyWatchedLessons.contains(item.id);
+                        final cupColor = isWatched
+                            ? Color(0xFFff9933)
+                            : Colors.grey;
+
                         final accessWithoutEnrollment = isLesson
                             ? item.lesson!.accessWithoutEnrollment
                             : false;
-                        final watched = isLesson ? item.lesson!.watched : false;
-                        final cupColor = watched
-                            ? Color(0xFFff9933)
-                            : Colors.grey;
+                        // final watched = isLesson ? item.lesson!.watched : false;
+                        // final cupColor = watched
+                        //     ? Color(0xFFff9933)
+                        //     : Colors.grey;
 
                         final videoUrl = isLesson
                             ? _extractUrlFromDynamic(item.lesson?.externalUrl)
@@ -1499,7 +1523,14 @@ class _ViewModuleState extends State<ViewModule> {
                         _updateLessonQuestions(lessonDetails);
                         _currentChatId = lessonDetails.chatId;
                         _updateCurrentLessonTitle(lessonDetails.title ?? "");
-
+                        if (_currentSelectedItemId != null) {
+                          context.read<MarkAnsweredCubit>().markLessonWatched(
+                            _currentSelectedItemId!,
+                          );
+                          setState(() {
+                            _locallyWatchedLessons.add(_currentSelectedItemId!);
+                          });
+                        }
                         // ✅ FIX: Handle both String and Map types for externalUrl
                         String? url;
 

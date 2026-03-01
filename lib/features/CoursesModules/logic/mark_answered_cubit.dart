@@ -251,6 +251,17 @@ class MarkAnsweredCubit extends Cubit<MarkAnsweredState> {
 
     return null;
   }
+void markLessonWatched(int lessonId) async {
+  final response = await _markAnsweredRepo.markLessonWatched(lessonId);
+  response.when(
+    success: (data) {
+      print('✅ Lesson $lessonId marked as watched');
+    },
+    failure: (error) {
+      print('❌ Failed to mark lesson watched: ${error.apiErrorModel.message}');
+    },
+  );
+}
 }
 
 // مثال على الاستخدام في الـ UI:

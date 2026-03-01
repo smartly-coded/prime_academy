@@ -51,7 +51,7 @@ class FirebaseNotificationService {
       final notification = message.notification;
       final android = message.notification?.android;
 
-      if (notification != null && android != null) {
+      if (notification != null ) {
         _localNotificationsPlugin.show(
           notification.hashCode,
           notification.title,
@@ -67,7 +67,12 @@ class FirebaseNotificationService {
               ticker: 'ticker',
               icon: '@mipmap/ic_launcher',
             ),
-          ),
+          
+         iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),),
         );
       }
     });
@@ -87,9 +92,36 @@ class FirebaseNotificationService {
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(
-    RemoteMessage message,
-  ) async {
-    await Firebase.initializeApp();
-    print('📩 Received background message: ${message.notification?.title}');
+  RemoteMessage message,
+) async {
+  await Firebase.initializeApp();
+  print('📩 Background message: ${message.notification?.title}');
+  print('📦 Data: ${message.data}');
+  
+  // ✅ لو في data بس من غير notification object
+  if (message.notification == null && message.data.isNotEmpty) {
+    final plugin = FlutterLocalNotificationsPlugin();
+    
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    await plugin.initialize(
+      const InitializationSettings(android: androidSettings),
+    );
+
+    await plugin.show(
+      message.hashCode,
+      message.data['title'] ?? 'إشعار جديد',
+      message.data['body'] ?? '',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
+        ),
+      ),
+    );
   }
+}
 }

@@ -27,6 +27,7 @@ void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      
       await DeviceFingerprintHelper.getDeviceFingerprint();
       await Future.wait([
         setupGetIt(),

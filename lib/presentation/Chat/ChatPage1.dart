@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:prime_academy/features/Chat/data/repos/chat_repo.dart';
 import 'package:prime_academy/features/Chat/logic/chat_cubit.dart';
 import 'package:prime_academy/features/Chat/logic/chat_state.dart';
@@ -94,28 +95,59 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       });
     }
   }
-Future<void> _loadProfileAndChat(ChatCubit cubit) async {
-  Map<String, dynamic>? profileData;
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final userDataString = prefs.getString('userData');
-    if (userDataString != null && userDataString.isNotEmpty) {
-      final userData = jsonDecode(userDataString);
-      profileData = {
-        'id': userData['id'],
-        'firstname': userData['firstname'],
-        'lastname': userData['lastname'],
-        'image': userData['image'],
-      };
-      print('✅ Loaded profile from SharedPreferences');
-      print('Profile data: $profileData');
+  // Future<void> _loadProfileAndChat(ChatCubit cubit) async {
+  //   Map<String, dynamic>? profileData;
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final userDataString = prefs.getString('userData');
+  //     if (userDataString != null && userDataString.isNotEmpty) {
+  //       final userData = jsonDecode(userDataString);
+  //       profileData = {
+  //         'id': userData['id'],
+  //         'firstname': userData['firstname'],
+  //         'lastname': userData['lastname'],
+  //         'image': userData['image'],
+  //       };
+  //       print('✅ Loaded profile from SharedPreferences');
+  //       print('Profile data: $profileData');
+  //     }
+  //   } catch (e) {
+  //     print('⚠️ Failed to load profile from storage: $e');
+  //   }
+
+  //   cubit.loadChat(profileData: profileData);
+  // }
+  Future<void> _loadProfileAndChat(ChatCubit cubit) async {
+    Map<String, dynamic>? profileData;
+    try {
+      const storage = FlutterSecureStorage();
+      final userDataString = await storage.read(key: 'userData');
+
+      print(
+        '🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍 Raw userData from secure storage: $userDataString',
+      );
+
+      if (userDataString != null && userDataString.isNotEmpty) {
+        final userData = jsonDecode(userDataString);
+
+        print(
+          '🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍 image field: ${userData['image']}',
+        );
+
+        profileData = {
+          'id': userData['id'],
+          'firstname': userData['firstname'],
+          'lastname': userData['lastname'],
+         'imageUrl': userData['image'],
+        };
+      }
+    } catch (e) {
+      print('⚠️ Failed to load profile: $e');
     }
-  } catch (e) {
-    print('⚠️ Failed to load profile from storage: $e');
+
+    cubit.loadChat(profileData: profileData);
   }
 
-  cubit.loadChat(profileData: profileData);
-}
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -127,136 +159,138 @@ Future<void> _loadProfileAndChat(ChatCubit cubit) async {
       child: MultiBlocProvider(
         providers: [RepositoryProvider(create: (_) => ChatRepo())],
         child:
-      // BlocProvider(
-      //     create: (context) {
-      //       final chatRepo = context.read<ChatRepo>();
-      //       final modulesRepo = context.read<ModulesLessonsRepo>();
-      //       final cubit = ChatCubit(
-      //         chatRepo: chatRepo,
-      //         modulesLessonsRepo: modulesRepo,
-      //         chatId: widget.chatId,
-      //         moduleId: widget.moduleId,
-      //         courseId: widget.courseId,
-      //         user: widget.user,
-      //       )..loadChat();
-      //       return cubit;
-      //     },
-      BlocProvider(
-  create: (context) {
-    final chatRepo = context.read<ChatRepo>();
-    final modulesRepo = context.read<ModulesLessonsRepo>();
+            // BlocProvider(
+            //     create: (context) {
+            //       final chatRepo = context.read<ChatRepo>();
+            //       final modulesRepo = context.read<ModulesLessonsRepo>();
+            //       final cubit = ChatCubit(
+            //         chatRepo: chatRepo,
+            //         modulesLessonsRepo: modulesRepo,
+            //         chatId: widget.chatId,
+            //         moduleId: widget.moduleId,
+            //         courseId: widget.courseId,
+            //         user: widget.user,
+            //       )..loadChat();
+            //       return cubit;
+            //     },
+            BlocProvider(
+              create: (context) {
+                final chatRepo = context.read<ChatRepo>();
+                final modulesRepo = context.read<ModulesLessonsRepo>();
 
-    final cubit = ChatCubit(
-      chatRepo: chatRepo,
-      modulesLessonsRepo: modulesRepo,
-      chatId: widget.chatId,
-      moduleId: widget.moduleId,
-      courseId: widget.courseId,
-      user: widget.user,
-    );
-
-    // ✅ اعمل الـ loading بعد ما تخلق الـ cubit
-    _loadProfileAndChat(cubit);
-
-    return cubit;
-  },
- 
-          child: BlocConsumer<ChatCubit, ChatState>(
-            listener: (context, state) {
-              if (state is ChatLoaded && !_isDisposing) {
-                _scrollToBottom();
-              }
-            },
-            builder: (context, state) {
-              if (state is ChatError) {
-                return Scaffold(
-                  backgroundColor: const Color(0xff0d1117),
-                  appBar: _buildAppBar(),
-                  body: Center(
-                    child: Text(
-                      state.error,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ),
+                final cubit = ChatCubit(
+                  chatRepo: chatRepo,
+                  modulesLessonsRepo: modulesRepo,
+                  chatId: widget.chatId,
+                  moduleId: widget.moduleId,
+                  courseId: widget.courseId,
+                  user: widget.user,
                 );
-              }
 
-              if (state is ChatLoaded) {
-                final cubit = context.read<ChatCubit>();
-                final messages = state.messages;
-                final chatInfo = state.chatInfo;
+                // ✅ اعمل الـ loading بعد ما تخلق الـ cubit
+                _loadProfileAndChat(cubit);
 
-                return Scaffold(
-                  backgroundColor: const Color(0xff0d1117),
-                  appBar: _buildAppBar(),
-                  body: Column(
-                    children: [
-                      Expanded(
-                        child: messages.isEmpty
-                            ? const Center(
-                                child: Text(
-                                  'ابدأ المحادثة',
-                                  style: TextStyle(color: Colors.white54),
-                                ),
-                              )
-                            : ListView.builder(
-                                controller: _scrollController,
-                                padding: const EdgeInsets.only(
-                                  top: 10,
-                                  bottom: 10,
-                                ),
-                                itemCount: messages.length,
-                                itemBuilder: (context, index) {
-                                  return MessageCardWidget(
-                                    message: messages[index],
-                                    chatInfo: chatInfo,
-                                    audioPlayerManager: _audioPlayerManager,
-                                    fileManager: _fileManager,
-                                    dialogHelper: _dialogHelper,
-                                    onEdit: (msg) => _dialogHelper
-                                        .showEditDialog(msg, cubit),
-                                    onDelete: (msgId) =>
-                                        cubit.deleteMessage(msgId),
-                                  );
-                                },
-                              ),
-                      ),
-                      FilePreviewWidget(
-                        pickedFile: _pickedFile,
-                        onRemove: () {
-                          if (!_isDisposing) {
-                            _safeSetState();
-                            _pickedFile = null;
-                          }
-                        },
-                      ),
-                      _buildMessageInputArea(cubit),
-                    ],
-                  ),
-                );
-              }
+                return cubit;
+              },
 
-              // Initial state
-              return Scaffold(
-                backgroundColor: const Color(0xff0d1117),
-                appBar: _buildAppBar(),
-                body: Column(
-                  children: [
-                    const Expanded(
-                      child: Center(
-                        child: CircularProgressIndicator(color: Colors.orange),
+              child: BlocConsumer<ChatCubit, ChatState>(
+                listener: (context, state) {
+                  if (state is ChatLoaded && !_isDisposing) {
+                    _scrollToBottom();
+                  }
+                },
+                builder: (context, state) {
+                  if (state is ChatError) {
+                    return Scaffold(
+                      backgroundColor: const Color(0xff0d1117),
+                      appBar: _buildAppBar(),
+                      body: Center(
+                        child: Text(
+                          state.error,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                       ),
+                    );
+                  }
+
+                  if (state is ChatLoaded) {
+                    final cubit = context.read<ChatCubit>();
+                    final messages = state.messages;
+                    final chatInfo = state.chatInfo;
+
+                    return Scaffold(
+                      backgroundColor: const Color(0xff0d1117),
+                      appBar: _buildAppBar(),
+                      body: Column(
+                        children: [
+                          Expanded(
+                            child: messages.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      'ابدأ المحادثة',
+                                      style: TextStyle(color: Colors.white54),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    controller: _scrollController,
+                                    padding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                    itemCount: messages.length,
+                                    itemBuilder: (context, index) {
+                                      return MessageCardWidget(
+                                        message: messages[index],
+                                        chatInfo: chatInfo,
+                                        audioPlayerManager: _audioPlayerManager,
+                                        fileManager: _fileManager,
+                                        dialogHelper: _dialogHelper,
+                                        onEdit: (msg) => _dialogHelper
+                                            .showEditDialog(msg, cubit),
+                                        onDelete: (msgId) =>
+                                            cubit.deleteMessage(msgId),
+                                      );
+                                    },
+                                  ),
+                          ),
+                          FilePreviewWidget(
+                            pickedFile: _pickedFile,
+                            onRemove: () {
+                              if (!_isDisposing) {
+                                _safeSetState();
+                                _pickedFile = null;
+                              }
+                            },
+                          ),
+                          _buildMessageInputArea(cubit),
+                        ],
+                      ),
+                    );
+                  }
+
+                  // Initial state
+                  return Scaffold(
+                    backgroundColor: const Color(0xff0d1117),
+                    appBar: _buildAppBar(),
+                    body: Column(
+                      children: [
+                        const Expanded(
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.orange,
+                            ),
+                          ),
+                        ),
+                        _buildMessageInputArea(null),
+                      ],
                     ),
-                    _buildMessageInputArea(null),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
+                  );
+                },
+              ),
+            ),
       ),
     );
-  } 
+  }
 
   AppBar _buildAppBar() {
     return AppBar(
@@ -398,7 +432,7 @@ Future<void> _loadProfileAndChat(ChatCubit cubit) async {
       print('🎙️ [iOS DEBUG] Media sent successfully!');
 
       if (mounted && !_isDisposing) {
-        _dialogHelper.showSuccess('تم إرسال التسجيل بنجاح');
+        // _dialogHelper.showSuccess('تم إرسال التسجيل بنجاح');
       }
     } catch (e, stackTrace) {
       print('❌ [iOS DEBUG] Failed to send recording: $e');

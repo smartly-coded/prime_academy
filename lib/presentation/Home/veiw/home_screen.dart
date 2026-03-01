@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:prime_academy/core/helpers/themeing/app_colors.dart';
 import 'package:prime_academy/features/authScreen/data/models/login_response.dart';
 import 'package:prime_academy/features/profileScreen/data/models/student_profile_response.dart';
@@ -27,6 +28,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late int selectedIndex;
+ 
 
   @override
   void initState() {
@@ -34,9 +36,10 @@ class _HomePageState extends State<HomePage> {
     selectedIndex = widget.initialTab;
 
     context.read<ProfileCubit>().emitprofileState();
+   
   }
 
-  @override
+  
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;

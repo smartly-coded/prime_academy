@@ -23,4 +23,14 @@ class ModulesLessonsRepo {
       return ApiResult.failure(ErrorHandler.handle(error));
     }
   }
+
+
+  Future<ApiResult<void>> markLessonWatched(int lessonId) async {
+  try {
+    await _apiService.markLessonWatched(lessonId);
+    return const ApiResult.success(null);
+  } catch (error) {
+    return ApiResult.failure(ErrorHandler.handle(error));
+  }
+}
 }

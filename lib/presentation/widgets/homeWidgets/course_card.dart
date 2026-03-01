@@ -90,31 +90,37 @@ class CourseCard extends StatelessWidget {
                                       topLeft: Radius.circular(20),
                                       topRight: Radius.circular(20),
                                     ),
-                                    child: Image.network(
+                                    child: 
+                                    Image.network(
                                       buildImageUrl(image),
                                       fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (
-                                            context,
-                                            error,
-                                            stackTrace,
-                                          ) => ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                                  topLeft: Radius.circular(20),
-                                                  topRight: Radius.circular(20),
-                                                ),
-                                            child: Transform.scale(
-                                              scale: 1.1,
-                                              child: Image.asset(
-                                                'assets/Gifs/englishcourse.gif',
-                                                width: double.infinity,
-                                                height: double.infinity,
-                                                fit: BoxFit.cover,
-                                                alignment: Alignment.center,
-                                              ),
+                                      headers: const {
+                                        'Accept':
+                                            'image/png,image/jpeg,image/*',
+                                      },
+
+                                      errorBuilder: (context, error, stackTrace) {
+                                        print(
+                                          '❌ Image failed to load: ${buildImageUrl(image)}',
+                                        );
+                                        print('❌ Error: $error');
+                                        return ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            topRight: Radius.circular(20),
+                                          ),
+                                          child: Transform.scale(
+                                            scale: 1.1,
+                                            child: Image.asset(
+                                              'assets/Gifs/englishcourse.gif',
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              fit: BoxFit.cover,
+                                              alignment: Alignment.center,
                                             ),
                                           ),
+                                        );
+                                      },
                                     ),
                                   )
                                 : Center(

@@ -52,4 +52,6 @@ abstract class ApiService {
   );
   @GET(ApiConstants.testimonals)
   Future<List<StudentTestimonalsResponse>> getStudentsTestimonals();
+  @POST('/module-items/mark-watched/{lessonId}')
+Future<void> markLessonWatched(@Path('lessonId') int lessonId);
 }

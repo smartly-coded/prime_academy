@@ -98,135 +98,14 @@ class MarkAnsweredRepo {
 
     return getLessonRewardStatus(questionId, requestBody);
   }
-}
 
-// مثال على الاستخدام في UI Layer:
-/*
 
-class QuestionCubit extends Cubit<QuestionState> {
-  final MarkAnsweredRepo _markAnsweredRepo;
-  
-  QuestionCubit(this._markAnsweredRepo) : super(QuestionInitial());
-  
-  // للأسئلة من نوع re-order
-  Future<void> submitReOrderAnswer(
-    int questionId,
-    int lessonId,
-    Map<int, int> orderMap,
-  ) async {
-    emit(QuestionLoading());
-    
-    final result = await _markAnsweredRepo.submitReOrderAnswer(
-      questionId,
-      lessonId,
-      orderMap,
-    );
-    
-    result.when(
-      success: (data) {
-        emit(QuestionSuccess(data.lastReward ?? false));
-      },
-      failure: (error) {
-        emit(QuestionError(error.apiErrorModel.message));
-      },
-    );
-  }
-  
-  // للأسئلة من نوع match
-  Future<void> submitMatchAnswer(
-    int questionId,
-    int lessonId,
-    Map<int, int> matchMap,
-  ) async {
-    emit(QuestionLoading());
-    
-    final result = await _markAnsweredRepo.submitMatchAnswer(
-      questionId,
-      lessonId,
-      matchMap,
-    );
-    
-    result.when(
-      success: (data) {
-        emit(QuestionSuccess(data.lastReward ?? false));
-      },
-      failure: (error) {
-        emit(QuestionError(error.apiErrorModel.message));
-      },
-    );
-  }
-  
-  // للأسئلة من نوع choose
-  Future<void> submitChoiceAnswer(
-    int questionId,
-    int lessonId,
-    List<int> selectedChoices,
-  ) async {
-    emit(QuestionLoading());
-    
-    final result = await _markAnsweredRepo.submitChoiceAnswer(
-      questionId,
-      lessonId,
-      selectedChoices,
-    );
-    
-    result.when(
-      success: (data) {
-        emit(QuestionSuccess(data.lastReward ?? false));
-      },
-      failure: (error) {
-        emit(QuestionError(error.apiErrorModel.message));
-      },
-    );
-  }
-  
-  // للأسئلة من نوع fill
-  Future<void> submitFillAnswer(
-    int questionId,
-    int lessonId,
-    String answer,
-  ) async {
-    emit(QuestionLoading());
-    
-    final result = await _markAnsweredRepo.submitFillAnswer(
-      questionId,
-      lessonId,
-      answer,
-    );
-    
-    result.when(
-      success: (data) {
-        emit(QuestionSuccess(data.lastReward ?? false));
-      },
-      failure: (error) {
-        emit(QuestionError(error.apiErrorModel.message));
-      },
-    );
-  }
-  
-  // للأسئلة من نوع essay
-  Future<void> submitEssayAnswer(
-    int questionId,
-    int lessonId,
-    String answer,
-  ) async {
-    emit(QuestionLoading());
-    
-    final result = await _markAnsweredRepo.submitEssayAnswer(
-      questionId,
-      lessonId,
-      answer,
-    );
-    
-    result.when(
-      success: (data) {
-        emit(QuestionSuccess(data.lastReward ?? false));
-      },
-      failure: (error) {
-        emit(QuestionError(error.apiErrorModel.message));
-      },
-    );
+  Future<ApiResult<dynamic>> markLessonWatched(int lessonId) async {
+  try {
+    await _apiService.markLessonWatched(lessonId);
+    return const ApiResult.success(null);
+  } catch (error) {
+    return ApiResult.failure(ErrorHandler.handle(error));
   }
 }
-
-*/
+}

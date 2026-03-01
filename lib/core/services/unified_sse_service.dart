@@ -298,11 +298,23 @@ class UnifiedSSEService {
         }
         return;
       }
-
+// أضيفي الـ case ده قبل الـ "Ignored unknown" print
+if (decoded.containsKey("chatId") && decoded.containsKey("messageId")) {
+  await _handleChatNotification({
+    "type": "CHAT",
+    "data": {
+      "chatId": decoded["chatId"],
+      "messageId": decoded["messageId"],
+      "itemId": decoded["itemId"],
+    }
+  });
+  return;
+}
       // Only log if it's not empty and not a known heartbeat pattern
       if (decoded.isNotEmpty &&
           decoded["type"] != "heartbeat" &&
           decoded["type"] != "ping") {
+
         print('⚠️ Ignored unknown SSE event: $decoded');
       }
     } catch (e) {
@@ -414,41 +426,75 @@ class UnifiedSSEService {
       print('❌ Error handling general notification: $e');
     }
   }
+Future<void> _showHeadsUpNotification(String title, String body) async {
+  try {
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'high_importance_channel',
+        'High Importance Notifications',
+        channelDescription: 'This channel is used for important notifications.',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        ticker: 'ticker',
+        icon: '@mipmap/ic_launcher',
+        fullScreenIntent: true,
+      ),
+      // ✅ أضيفي الـ iOS settings
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
 
-  /// Show heads-up notification with sound and vibration
-  Future<void> _showHeadsUpNotification(String title, String body) async {
-    try {
-      const AndroidNotificationDetails androidDetails =
-          AndroidNotificationDetails(
-            'high_importance_channel',
-            'High Importance Notifications',
-            channelDescription:
-                'This channel is used for important notifications.',
-            importance: Importance.max,
-            priority: Priority.high,
-            playSound: true,
-            enableVibration: true,
-            ticker: 'ticker',
-            icon: '@mipmap/ic_launcher',
-            fullScreenIntent: true,
-          );
+    await _localNotificationsPlugin.show(
+      DateTime.now().millisecondsSinceEpoch.remainder(100000),
+      title.isEmpty ? 'إشعار جديد' : title,
+      body.isEmpty ? 'لديك إشعار جديد' : body,
+      notificationDetails,
+    );
 
-      const NotificationDetails notificationDetails = NotificationDetails(
-        android: androidDetails,
-      );
-
-      await _localNotificationsPlugin.show(
-        DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        title.isEmpty ? 'إشعار جديد' : title,
-        body.isEmpty ? 'لديك إشعار جديد' : body,
-        notificationDetails,
-      );
-
-      print('🔔 Notification shown: $title');
-    } catch (e) {
-      print('❌ Error showing notification: $e');
-    }
+    print('🔔 Notification shown: $title');
+  } catch (e) {
+    print('❌ Error showing notification: $e');
   }
+}
+  /// Show heads-up notification with sound and vibration
+  // Future<void> _showHeadsUpNotification(String title, String body) async {
+  //   try {
+  //     const AndroidNotificationDetails androidDetails =
+  //         AndroidNotificationDetails(
+  //           'high_importance_channel',
+  //           'High Importance Notifications',
+  //           channelDescription:
+  //               'This channel is used for important notifications.',
+  //           importance: Importance.max,
+  //           priority: Priority.high,
+  //           playSound: true,
+  //           enableVibration: true,
+  //           ticker: 'ticker',
+  //           icon: '@mipmap/ic_launcher',
+  //           fullScreenIntent: true,
+  //         );
+
+  //     const NotificationDetails notificationDetails = NotificationDetails(
+  //       android: androidDetails,
+  //     );
+
+  //     await _localNotificationsPlugin.show(
+  //       DateTime.now().millisecondsSinceEpoch.remainder(100000),
+  //       title.isEmpty ? 'إشعار جديد' : title,
+  //       body.isEmpty ? 'لديك إشعار جديد' : body,
+  //       notificationDetails,
+  //     );
+
+  //     print('🔔 Notification shown: $title');
+  //   } catch (e) {
+  //     print('❌ Error showing notification: $e');
+  //   }
+  // }
 
   void _reconnect() {
     if (_reconnectAttempts >= _maxReconnectAttempts) {

@@ -41,174 +41,177 @@ void showNotificationsDialog(BuildContext context, LoginResponse user) {
 
   showDialog(
     context: context,
-    builder: (_) {
-      return Align(
-        alignment: Alignment.topLeft,
-        child: Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadiusSize),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            width: dialogWidth,
-            height: dialogHeight,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF9933), Color(0xFF450486)],
-              ),
+    builder: (dialogContext) {
+      return BlocProvider.value(
+        value: context.read<NotificationCubit>(),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadiusSize),
             ),
             child: Container(
+              padding: const EdgeInsets.all(2),
+              width: dialogWidth,
+              height: dialogHeight,
               decoration: BoxDecoration(
-                color: const Color(0xFF0d1117),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF9933), Color(0xFF450486)],
+                ),
                 borderRadius: BorderRadius.circular(borderRadiusSize),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Text(
-                          "الإشعارات",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0d1117),
+                  borderRadius: BorderRadius.circular(borderRadiusSize),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const Text(
+                            "الإشعارات",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.right,
                           ),
-                          textAlign: TextAlign.right,
-                        ),
-                        const SizedBox(height: 8),
+                          const SizedBox(height: 8),
 
-                        Container(
-                          height: 1,
-                          color: Colors.grey.withOpacity(0.4),
-                        ),
+                          Container(
+                            height: 1,
+                            color: Colors.grey.withOpacity(0.4),
+                          ),
 
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
 
-                        BlocBuilder<NotificationCubit, NotificationState>(
-                          builder: (context, state) {
-                            if (state is NotificationLoaded) {
-                              final unreadIds = state.notifications
-                                  .where((n) => !n.isRead)
-                                  .map((n) => n.id!)
-                                  .toList();
+                          BlocBuilder<NotificationCubit, NotificationState>(
+                            builder: (context, state) {
+                              if (state is NotificationLoaded) {
+                                final unreadIds = state.notifications
+                                    .where((n) => !n.isRead)
+                                    .map((n) => n.id!)
+                                    .toList();
 
-                              if (unreadIds.isEmpty) {
-                                return const SizedBox.shrink();
-                              }
+                                if (unreadIds.isEmpty) {
+                                  return const SizedBox.shrink();
+                                }
 
-                              return Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    context
-                                        .read<NotificationCubit>()
-                                        .markAllAsRead(unreadIds);
-                                  },
-                                  style: TextButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
+                                return Center(
+                                  child: TextButton(
+                                    onPressed: () {
+                                      context
+                                          .read<NotificationCubit>()
+                                          .markAllAsRead(unreadIds);
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      minimumSize: const Size(0, 0),
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      backgroundColor: Colors.transparent,
                                     ),
-                                    minimumSize: const Size(0, 0),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    backgroundColor: Colors.transparent,
+                                    child: const Text(
+                                      "تحديد الكل كمقروء",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Color(0xFFD1D5DB),
+                                      ),
+                                    ),
                                   ),
-                                  child: const Text(
-                                    "تحديد الكل كمقروء",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFFD1D5DB),
-                                    ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Expanded(
+                      child: BlocBuilder<NotificationCubit, NotificationState>(
+                        builder: (context, state) {
+                          if (state is NotificationLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFFFF9933),
+                              ),
+                            );
+                          } else if (state is NotificationLoaded) {
+                            final notifications = state.notifications;
+
+                            if (notifications.isEmpty) {
+                              return const Center(
+                                child: Text(
+                                  "لا توجد إشعارات",
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 14,
                                   ),
                                 ),
                               );
                             }
-                            return const SizedBox.shrink();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
 
-                  Expanded(
-                    child: BlocBuilder<NotificationCubit, NotificationState>(
-                      builder: (context, state) {
-                        if (state is NotificationLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: Color(0xFFFF9933),
-                            ),
-                          );
-                        } else if (state is NotificationLoaded) {
-                          final notifications = state.notifications;
+                            final unreadNotifications = notifications
+                                .where((noti) => !noti.isRead)
+                                .toList();
 
-                          if (notifications.isEmpty) {
-                            return const Center(
-                              child: Text(
-                                "لا توجد إشعارات",
-                                style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 14,
+                            if (unreadNotifications.isEmpty) {
+                              return const Center(
+                                child: Text(
+                                  "لا توجد إشعارات جديدة",
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-
-                          final unreadNotifications = notifications
-                              .where((noti) => !noti.isRead)
-                              .toList();
-
-                          if (unreadNotifications.isEmpty) {
-                            return const Center(
-                              child: Text(
-                                "لا توجد إشعارات جديدة",
-                                style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            );
-                          }
-
-                          return ListView.builder(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            itemCount: unreadNotifications.length,
-                            itemBuilder: (context, index) {
-                              final noti = unreadNotifications[index];
-                              return _NotificationItem(
-                                notification: noti,
-                                user: user,
                               );
-                            },
-                          );
-                        } else if (state is NotificationError) {
-                          return Center(
+                            }
+
+                            return ListView.builder(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              itemCount: unreadNotifications.length,
+                              itemBuilder: (context, index) {
+                                final noti = unreadNotifications[index];
+                                return _NotificationItem(
+                                  notification: noti,
+                                  user: user,
+                                );
+                              },
+                            );
+                          } else if (state is NotificationError) {
+                            return Center(
+                              child: Text(
+                                "خطأ: ${state.message}",
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            );
+                          }
+                          return const Center(
                             child: Text(
-                              "خطأ: ${state.message}",
-                              style: const TextStyle(color: Colors.red),
+                              "لا توجد إشعارات",
+                              style: TextStyle(color: Colors.white54),
                             ),
                           );
-                        }
-                        return const Center(
-                          child: Text(
-                            "لا توجد إشعارات",
-                            style: TextStyle(color: Colors.white54),
-                          ),
-                        );
-                      },
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -363,8 +366,7 @@ class _NotificationItem extends StatelessWidget {
                 chatId: chatId,
                 user: user,
               )..loadChat(),
-              child: ChatScreen(chatId: chatId, user: user ,
-              ),
+              child: ChatScreen(chatId: chatId, user: user),
             ),
           ),
         );

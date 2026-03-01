@@ -72,20 +72,48 @@ void emitLoginStates(LoginRequestBody loginRequestBody) async {
 
   response.when(
     success: (loginResponse) async {
-      currentUser = loginResponse;
+  currentUser = loginResponse;
 
-      try {
-        await _storage.write(
-          key: "userData",
-          value: jsonEncode(loginResponse.toJson()),
-        );
-        print("✅ User data saved successfully");
-      } catch (e) {
-        print("❌ Error saving user data: $e");
-      }
+  try {
+    // ✅ اجلبي البروفايل عشان تاخدي الصورة
+    final profile = await _loginRepo.getMyProfile();
+     print('🔴 Profile result: $profile');
+    print('🔴 Profile image: ${profile?.image}');
+    print('🔴 Profile image url: ${profile?.image?.url}');
+    
+    final imageUrl = profile?.image?.url; // ✅ عدليها حسب اسم الـ field
 
-      emit(LoginState.success(loginResponse));
-    },
+    await _storage.write(
+      key: "userData",
+      value: jsonEncode({
+        'id': loginResponse.id,
+        'firstname': loginResponse.firstname,
+        'lastname': loginResponse.lastname,
+        'username': loginResponse.username,
+        'email': loginResponse.email,
+        'role': loginResponse.role,
+        'image': imageUrl, // ✅ URL مباشرة
+      }),
+    );
+    print("✅ User data saved with image: $imageUrl");
+  } catch (e) {
+    print("❌ Error: $e");
+  }
+
+  emit(LoginState.success(loginResponse));
+},
+    //   try {
+    //     await _storage.write(
+    //       key: "userData",
+    //       value: jsonEncode(loginResponse.toJson()),
+    //     );
+    //     print("✅ User data saved successfully");
+    //   } catch (e) {
+    //     print("❌ Error saving user data: $e");
+    //   }
+
+    //   emit(LoginState.success(loginResponse));
+    // },
     failure: (error) {
       emit(LoginState.error(error: error.apiErrorModel.message ?? ''));
     },

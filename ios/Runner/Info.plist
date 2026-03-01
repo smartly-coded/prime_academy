@@ -41,6 +41,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -49,6 +54,11 @@
 	<string>App needs access to microphone for recording audio</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App needs access to photo library for file picking</string>
-
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>App needs access to save photos</string>
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+<true/>
 </dict>
 </plist>
