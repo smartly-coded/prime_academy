@@ -24,9 +24,10 @@ import 'package:prime_academy/presentation/splashScreens/custom_splash.dart';
 import 'package:flutter/foundation.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runZonedGuarded(
     () async {
-      WidgetsFlutterBinding.ensureInitialized();
+      
       
       await DeviceFingerprintHelper.getDeviceFingerprint();
       await Future.wait([
