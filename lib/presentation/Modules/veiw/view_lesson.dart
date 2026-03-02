@@ -1641,7 +1641,7 @@ class _ViewModuleState extends State<ViewModule> {
                       error: (error) {
                         _currentAnsweredQuestionId = null;
                         _showNextPendingQuestion();
-                        _showErrorDialog("خطأ في إرسال الإجابة: $error");
+                        // _showErrorDialog("خطأ في إرسال الإجابة: $error");
                       },
                       loading: () {},
                       initial: () {},

@@ -119,17 +119,36 @@ void emitLoginStates(LoginRequestBody loginRequestBody) async {
     },
   );
 }
-  Future<LoginResponse?> loadSavedUser() async {
-    try {
-      final userData = await _storage.read(key: "userData");
-      if (userData != null && userData.isNotEmpty) {
-        return LoginResponse.fromJson(jsonDecode(userData));
+Future<LoginResponse?> loadSavedUser() async {
+  try {
+    final userData = await _storage.read(key: "userData");
+    if (userData != null && userData.isNotEmpty) {
+      final Map<String, dynamic> json = jsonDecode(userData);
+      
+      // ✅ الـ image محفوظ كـ String مش Map
+      final imageUrl = json['image'];
+      if (imageUrl != null && imageUrl is String) {
+        json['image'] = {'url': imageUrl}; // ✅ حوله لـ Map
       }
-    } catch (e) {
-      print("❌ Error loading saved user: $e");
+      
+      return LoginResponse.fromJson(json);
     }
-    return null;
+  } catch (e) {
+    print("❌ Error loading saved user: $e");
   }
+  return null;
+}
+  // Future<LoginResponse?> loadSavedUser() async {
+  //   try {
+  //     final userData = await _storage.read(key: "userData");
+  //     if (userData != null && userData.isNotEmpty) {
+  //       return LoginResponse.fromJson(jsonDecode(userData));
+  //     }
+  //   } catch (e) {
+  //     print("❌ Error loading saved user: $e");
+  //   }
+  //   return null;
+  // }
 
   Future<void> clearUserData() async {
     try {

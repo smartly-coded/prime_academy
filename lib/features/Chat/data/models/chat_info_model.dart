@@ -76,8 +76,6 @@ factory ChatInfoModel.fromProfileResponse(dynamic profile) {
     fullName = profile['username'] ?? "طالب";
   }
 
-  // ✅ بناء الـ URL الكامل للصورة
-  // String? imageUrl = profile['image']?['url'];
   String? imageUrl = profile['imageUrl'];
   print("Before processing imageUrl: $imageUrl");
   

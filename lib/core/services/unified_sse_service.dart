@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:eventsource/eventsource.dart' show EventSource, Event;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -28,7 +29,7 @@ class UnifiedSSEService {
   bool _isConnecting = false;
   int _reconnectAttempts = 0;
   static const int _maxReconnectAttempts = 5;
-
+static final AudioPlayer _audioPlayer = AudioPlayer();
   // 🔔 Stream to notify UI about new notifications
   final _notificationStreamController = StreamController<bool>.broadcast();
   Stream<bool> get notificationStream => _notificationStreamController.stream;
@@ -51,96 +52,6 @@ class UnifiedSSEService {
     _activeChatCubit = null;
   }
 
-  // Future<void> connect() async {
-  //   if (_isConnected) {
-  //     print('✅ SSE already connected');
-  //     return;
-  //   }
-
-  //   if (_isConnecting) {
-  //     print('⏳ SSE connection already in progress');
-  //     return;
-  //   }
-
-  //   _isConnecting = true;
-
-  //   try {
-  //     print('🔄 Attempting SSE connection...');
-
-  //     final storage = const FlutterSecureStorage();
-  //     final token = await storage.read(key: 'accessToken') ?? '';
-  //     final refreshToken = await storage.read(key: 'refreshToken') ?? '';
-  //     final deviceIdentifier =
-  //         await storage.read(key: 'device_fingerprint') ?? '';
-  //     if (token.isEmpty) {
-  //       print('⚠️ No access token found - skipping SSE connection');
-  //       _isConnecting = false;
-  //       return;
-  //     }
-
-  //     print('🔑 Token found: ${token.substring(0, 10)}...');
-
-  //     final headers = <String, String>{};
-  //     headers['Authorization'] = 'Bearer $token';
-  //     headers['X-Device-Identifier'] = deviceIdentifier;
-
-  //     if (refreshToken.isNotEmpty) {
-  //       headers['Cookie'] = 'accessToken=$token; refreshToken=$refreshToken';
-  //     }
-
-  //     headers['Accept'] = 'text/event-stream';
-  //     headers['Cache-Control'] = 'no-cache';
-  //     headers['Connection'] = 'keep-alive';
-
-  //     final url = '${ApiConstants.apiBaseUrl}sse';
-  //     print('🌐 Connecting to: $url');
-  //     print('📋 Headers: ${headers.keys.join(", ")}');
-
-  //     _eventSource = await EventSource.connect(url, headers: headers);
-
-  //     _subscription = _eventSource!.listen(
-  //       (event) => _handleSSEEvent(event),
-  //       onError: (error, stackTrace) {
-  //         print('❌ SSE stream error: $error');
-  //       },
-  //       onDone: () {
-  //         print('⚠️ SSE connection closed');
-  //         _isConnected = false;
-  //         _isConnecting = false;
-  //         _reconnect();
-  //       },
-  //       cancelOnError: false,
-  //     );
-
-  //     _isConnected = true;
-  //     _isConnecting = false;
-  //     _reconnectAttempts = 0;
-  //     print('🎉 Unified SSE connected successfully');
-  //   } catch (e, st) {
-  //     print('❌ SSE connection failed: $e');
-  //     print('Stack trace: $st');
-  //     _isConnected = false;
-  //     _isConnecting = false;
-
-  //     if (e.toString().contains('401') ||
-  //         e.toString().contains('Unauthorized')) {
-  //       print('🔐 Authentication error - token may be invalid');
-  //       return;
-  //     }
-
-  //     if (e.toString().contains('403') || e.toString().contains('Forbidden')) {
-  //       print('🚫 Access forbidden - check server permissions');
-  //       return;
-  //     }
-
-  //     if (e.toString().contains('404') || e.toString().contains('Not Found')) {
-  //       print('🔍 SSE endpoint not found - check API URL');
-  //       return;
-  //     }
-
-  //     _reconnect();
-  //   }
-  // }
   Future<void> connect() async {
     if (_isConnected) {
       print('✅ SSE already connected');
@@ -426,8 +337,45 @@ if (decoded.containsKey("chatId") && decoded.containsKey("messageId")) {
       print('❌ Error handling general notification: $e');
     }
   }
+ 
+static Future<void> initializeNotifications() async {
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    iOS: DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    ),
+  );
+  
+  await _localNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (details) {
+      print('✅ iOS Notification tapped: ${details.payload}');
+    },
+  );
+  
+  // ✅ تحققي من الـ permission
+  final plugin = _localNotificationsPlugin
+      .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+  
+  if (plugin != null) {
+    final granted = await plugin.requestPermissions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    print('🔔 iOS notification permission granted: $granted');
+  } else {
+    print('⚠️ iOS plugin is null');
+  }
+  
+  print('✅ SSE Notifications initialized');
+}
 Future<void> _showHeadsUpNotification(String title, String body) async {
   try {
+       await _audioPlayer.play(AssetSource('sounds/notification.mp3'));
+
     const NotificationDetails notificationDetails = NotificationDetails(
       android: AndroidNotificationDetails(
         'high_importance_channel',
@@ -461,40 +409,7 @@ Future<void> _showHeadsUpNotification(String title, String body) async {
     print('❌ Error showing notification: $e');
   }
 }
-  /// Show heads-up notification with sound and vibration
-  // Future<void> _showHeadsUpNotification(String title, String body) async {
-  //   try {
-  //     const AndroidNotificationDetails androidDetails =
-  //         AndroidNotificationDetails(
-  //           'high_importance_channel',
-  //           'High Importance Notifications',
-  //           channelDescription:
-  //               'This channel is used for important notifications.',
-  //           importance: Importance.max,
-  //           priority: Priority.high,
-  //           playSound: true,
-  //           enableVibration: true,
-  //           ticker: 'ticker',
-  //           icon: '@mipmap/ic_launcher',
-  //           fullScreenIntent: true,
-  //         );
-
-  //     const NotificationDetails notificationDetails = NotificationDetails(
-  //       android: androidDetails,
-  //     );
-
-  //     await _localNotificationsPlugin.show(
-  //       DateTime.now().millisecondsSinceEpoch.remainder(100000),
-  //       title.isEmpty ? 'إشعار جديد' : title,
-  //       body.isEmpty ? 'لديك إشعار جديد' : body,
-  //       notificationDetails,
-  //     );
-
-  //     print('🔔 Notification shown: $title');
-  //   } catch (e) {
-  //     print('❌ Error showing notification: $e');
-  //   }
-  // }
+ 
 
   void _reconnect() {
     if (_reconnectAttempts >= _maxReconnectAttempts) {

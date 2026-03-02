@@ -32,6 +32,7 @@ void main() {
       await Future.wait([
         setupGetIt(),
         FirebaseNotificationService.initializeFirebaseMessaging(),
+         UnifiedSSEService.initializeNotifications(),
       ]);
 
       FlutterError.onError = (FlutterErrorDetails details) {

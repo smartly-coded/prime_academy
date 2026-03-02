@@ -97,8 +97,11 @@ class FirebaseNotificationService {
   await Firebase.initializeApp();
   print('📩 Background message: ${message.notification?.title}');
   print('📦 Data: ${message.data}');
+   print('📩 Background title: ${message.notification?.title}');
+  print('📩 Background body: ${message.notification?.body}');
+  print('📦 Background data: ${message.data}');
+  print('📦 Has notification: ${message.notification != null}');
   
-  // ✅ لو في data بس من غير notification object
   if (message.notification == null && message.data.isNotEmpty) {
     final plugin = FlutterLocalNotificationsPlugin();
     

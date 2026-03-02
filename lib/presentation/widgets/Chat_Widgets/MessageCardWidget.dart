@@ -228,28 +228,6 @@ class MessageCardWidget extends StatelessWidget {
             ),
             const SizedBox(width: 6),
 
-            // CircleAvatar(
-            //   radius: 28,
-
-            //   backgroundImage: _buildProfileImage(userImageUrl),
-            //   backgroundColor: Color.fromRGBO(49, 54, 72, 1),
-            //   child: userImageUrl == null || userImageUrl.isEmpty
-            //       ? isStudent
-            //             ? SvgPicture.asset(
-            //                 'assets/icons/svgviewer-output (3).svg',
-            //                 width: 30,
-            //                 height: 30,
-            //                 color: Colors.white,
-            //               )
-            //             : SvgPicture.asset(
-            //                 'assets/icons/person_laptop.svg',
-            //                 width: 27,
-            //                 height: 27,
-            //                 color: Colors.amber,
-            //               )
-            //       //  const Icon(Icons.person, color: Colors.white, size: 20)
-            //       : null,
-            // ),
             CircleAvatar(
               radius: 28,
               backgroundColor: const Color.fromRGBO(49, 54, 72, 1),
@@ -260,8 +238,18 @@ class MessageCardWidget extends StatelessWidget {
                         width: 56,
                         height: 56,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          );
+                        },
                         errorBuilder: (context, error, stackTrace) {
                           print("Image Load Error: $error");
+                          print("🔴 iOS Image Load Error: $error");
+                          print(
+                            "🔴 iOS Image URL: ${fileManager.buildImageUrl(userImageUrl!)}",
+                          );
                           return isStudent
                               ? SvgPicture.asset(
                                   'assets/icons/svgviewer-output (3).svg',

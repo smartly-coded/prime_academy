@@ -28,7 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  audioplayers: ^6.5.1
+  audioplayers: ^6.6.0
   build_runner: ^2.4.9
   
   chewie: ^1.13.0
@@ -98,6 +98,7 @@ flutter:
     - assets/frames/
     - assets/fonts/
     - assets/icons/student_cap.svg
+    - assets/sounds/
 
   fonts:
     - family: Bahij
